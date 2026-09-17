@@ -302,9 +302,9 @@
       <!-- FOOTER -->
       <div class="sidebar__footer">
         <div class="user">
-          <div class="user__avatar">JP</div>
+          <div class="user__avatar">PG</div>
           <div class="user__meta">
-            <div class="user__name">June</div>
+            <div class="user__name">Precious</div>
             <div class="user__status">
               <span class="dot"></span> Online
             </div>
