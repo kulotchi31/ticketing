@@ -48,6 +48,17 @@ class TicketController extends Controller
      */
   public function createData()
 {
+
+    $users = User::select(
+        'id',
+        'name',
+        'fk_provider_id'
+    )
+    ->where('type', 'worker')
+    ->whereNotNull('fk_provider_id')
+    ->orderBy('name')
+    ->get();
+
     return response()->json([
         'campuses' => Campus::orderBy('campus_name')->get(),
 
@@ -58,7 +69,7 @@ class TicketController extends Controller
         'request_types' => RequestType::orderBy('rt_name')->get(),
 
         'categories' => Category::orderBy('category_name')->get(),
-        'users' => User::orderBy('name')->get(),
+        'users' => $users,
     ]);
 }
 
@@ -92,11 +103,6 @@ class TicketController extends Controller
 
             'assign_to' => 'nullable|exists:users,id',
 
-            'status' => [
-                'required',
-                'in:For Approval,Accepted,Working,Pending Done',
-            ],
-
             'classification' => [
                 'nullable',
                 'in:High,Medium',
@@ -119,7 +125,8 @@ class TicketController extends Controller
             'fk_category_id' => $request->fk_category_id,
             'created_by' => $request->created_by,
             'assign_to' => $request->assign_to,
-            'status' => $request->status,
+            'status' => "Accepted",
+            'is_walk_in' => "Yes",
             'classification' => $request->classification,
             'is_walk_in' => $request->is_walk_in,
         ]);

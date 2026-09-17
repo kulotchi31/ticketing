@@ -288,25 +288,6 @@
 
 
 
-              <a
-                class="nav__subitem {{ request()->routeIs('request.*') ? 'active' : '' }}"
-                href="{{ route('request.index') }}"
-                data-page="request"
-            >
-                <i class="bi bi-list-check"></i>
-                <span>Request Type</span>
-            </a>
-
-
-              <a
-                class="nav__subitem {{ request()->routeIs('category.*') ? 'active' : '' }}"
-                href="{{ route('category.index') }}"
-                data-page="category"
-            >
-                <i class="bi bi-tags"></i>
-                <span>Category</span>
-            </a>
-
 
         </div>
 
