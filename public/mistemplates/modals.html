@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Template • Modals</title>
+
+  <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="assets/css/bootstrap-icons.min.css">
+
+ 
+</head>
+
+<body class="theme-default">
+
+  <!-- sidebar overlay (template overlay) -->
+  <div class="overlay" id="overlay" aria-hidden="true"></div>
+
+  <div class="app" data-page="modals">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+
+      <!-- BRAND -->
+      <div class="sidebar__brand">
+        <div class="brand__logo">A</div>
+        <div class="brand__text">
+          <div class="brand__title">Admin Panel</div>
+          <div class="brand__sub">v1.0</div>
+        </div>
+      </div>
+
+      <!-- SEARCH -->
+      <div class="sidebar__search">
+        <input type="text" placeholder="Search...">
+      </div>
+
+      <nav class="sidebar__nav">
+
+        <!-- DASHBOARD -->
+        <a class="nav__item" href="index.html" data-page="dashboard">
+          <i class="bi bi-speedometer2 nav__icon"></i>
+          <span class="nav__label">Dashboard</span>
+        </a>
+
+        <!-- MANAGEMENT GROUP -->
+        <div class="nav__group" data-group="management">
+          <!-- open: para bukas na yung submenu like your screenshot -->
+          <div class="nav__item nav__toggle" data-toggle="management">
+            <i class="bi bi-people nav__icon"></i>
+            <span class="nav__label">Management</span>
+            <i class="bi bi-chevron-right nav__arrow"></i>
+          </div>
+
+          <div class="nav__submenu" id="management">
+            <a class="nav__subitem" href="users.html" data-page="users">
+              <i class="bi bi-person"></i>
+              <span>Users</span>
+            </a>
+
+            <a class="nav__subitem" href="roles.html" data-page="roles">
+              <i class="bi bi-shield-lock"></i>
+              <span>Roles</span>
+            </a>
+
+            <a class="nav__subitem" href="activity-log.html" data-page="activity-log">
+              <i class="bi bi-clock-history"></i>
+              <span>Activity Logs</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- DATA GROUP -->
+        <div class="nav__group" data-group="data">
+          <div class="nav__item nav__toggle" data-toggle="data">
+            <i class="bi bi-database nav__icon"></i>
+            <span class="nav__label">Data</span>
+            <i class="bi bi-chevron-right nav__arrow"></i>
+          </div>
+
+          <div class="nav__submenu" id="data">
+            <a class="nav__subitem" href="tables.html" data-page="tables">
+              <i class="bi bi-table"></i>
+              <span>Tables</span>
+            </a>
+
+            <a class="nav__subitem" href="forms.html" data-page="forms">
+              <i class="bi bi-file-text"></i>
+              <span>Forms</span>
+            </a>
+
+            <a class="nav__subitem" href="uploads.html" data-page="uploads">
+              <i class="bi bi-upload"></i>
+              <span>Uploads</span>
+            </a>
+
+            <a class="nav__subitem" href="calendar.html" data-page="calendar">
+              <i class="bi bi-calendar-event"></i>
+              <span>Calendar</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- UI GROUP -->
+        <div class="nav__group" data-group="ui">
+          <div class="nav__item nav__toggle" data-toggle="ui">
+            <i class="bi bi-layers nav__icon"></i>
+            <span class="nav__label">UI Components</span>
+            <i class="bi bi-chevron-right nav__arrow"></i>
+          </div>
+
+          <div class="nav__submenu" id="ui">
+            <a class="nav__subitem" href="components.html" data-page="components">
+              <i class="bi bi-puzzle"></i>
+              <span>Components</span>
+            </a>
+
+            <a class="nav__subitem" href="icons.html" data-page="icons">
+              <i class="bi bi-stars"></i>
+              <span>Icons</span>
+            </a>
+
+            <a class="nav__subitem" href="charts.html" data-page="charts">
+              <i class="bi bi-bar-chart"></i>
+              <span>Charts</span>
+            </a>
+
+            <a class="nav__subitem" href="widgets.html" data-page="widgets">
+              <i class="bi bi-grid-3x3-gap"></i>
+              <span>Widgets</span>
+            </a>
+
+            <a class="nav__subitem active" href="modals.html" data-page="modals">
+              <i class="bi bi-folder"></i>
+              <span>Modal</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- PAGES -->
+        <a class="nav__item" href="profile.html" data-page="profile">
+          <i class="bi bi-person-badge nav__icon"></i>
+          <span class="nav__label">Profile</span>
+        </a>
+
+        <a class="nav__item" href="settings.html" data-page="settings">
+          <i class="bi bi-gear nav__icon"></i>
+          <span class="nav__label">Settings</span>
+        </a>
+
+        <a class="nav__item" href="blank.html" data-page="blank">
+          <i class="bi bi-file-earmark nav__icon"></i>
+          <span class="nav__label">Blank Page</span>
+        </a>
+
+        <a class="nav__item" href="404.html" data-page="404">
+          <i class="bi bi-exclamation-circle nav__icon"></i>
+          <span class="nav__label">404 Page</span>
+        </a>
+
+        <!-- AUTH -->
+        <a class="nav__item" href="login.html" data-page="login">
+          <i class="bi bi-box-arrow-in-right nav__icon"></i>
+          <span class="nav__label">Login</span>
+        </a>
+
+      </nav>
+
+      <!-- FOOTER -->
+      <div class="sidebar__footer">
+        <div class="user">
+          <div class="user__avatar">JP</div>
+          <div class="user__meta">
+            <div class="user__name">June</div>
+            <div class="user__status">
+              <span class="dot"></span> Online
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar__left">
+          <button class="btn-icon topbar__burger" id="btnSidebar" aria-label="Toggle Sidebar">☰</button>
+          <button class="btn-icon" id="btnCollapse" aria-label="Collapse Sidebar" title="Collapse Sidebar">⫶</button>
+
+          <div class="topbar__links">
+            <a href="#" class="topbar__link">Home</a>
+            <a href="#" class="topbar__link">Contact</a>
+          </div>
+        </div>
+
+        <div class="topbar__right">
+          <button class="btn-icon" id="themeBtn" type="button" title="Theme">
+            <i class="bi bi-palette"></i>
+          </button>
+
+          <div class="dd" id="ddProfile">
+            <button class="btn-icon dd__btn" type="button" aria-haspopup="true" aria-expanded="false">
+              <i class="bi bi-person-circle"></i>
+            </button>
+            <div class="dd__menu" role="menu" aria-label="Profile">
+              <div class="dd__head">Account</div>
+              <a class="dd__item" href="profile.html"><i class="bi bi-person"></i>
+                <div class="dd__title">Profile</div>
+              </a>
+              <a class="dd__item" href="settings.html"><i class="bi bi-gear"></i>
+                <div class="dd__title">Settings</div>
+              </a>
+              <a class="dd__item dd__danger" href="login.html"><i class="bi bi-box-arrow-right"></i>
+                <div class="dd__title">Logout</div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <section class="content">
+        <div class="content__head">
+          <h1 class="page-title">Modals</h1>
+          <div class="breadcrumb">Home / UI Components / Modals</div>
+        </div>
+
+        <div class="demo-grid">
+          <div class="card">
+            <div class="card__header">
+              <h3>Center Modal (Small)</h3>
+              <div class="muted">Best for confirmations, short forms</div>
+            </div>
+            <div class="pad">
+              <div class="btn-row">
+                <button class="btn-primary" type="button" data-open="#modalSmall">
+                  <i class="bi bi-box"></i> Open Small
+                </button>
+                <span class="muted">Close: <code class="kbd">Esc</code> or click outside</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card__header">
+              <h3>Center Modal (Medium)</h3>
+              <div class="muted">Good for forms, details</div>
+            </div>
+            <div class="pad">
+              <div class="btn-row">
+                <button class="btn-primary" type="button" data-open="#modalMedium">
+                  <i class="bi bi-layout-text-window"></i> Open Medium
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card__header">
+              <h3>Half Modal (Right Drawer)</h3>
+              <div class="muted">Great for settings or side forms</div>
+            </div>
+            <div class="pad">
+              <div class="btn-row">
+                <button class="btn-primary" type="button" data-open="#modalHalf">
+                  <i class="bi bi-layout-sidebar-inset-reverse"></i> Open Half
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card__header">
+              <h3>Full Screen Modal</h3>
+              <div class="muted">For complex workflows / large content</div>
+            </div>
+            <div class="pad">
+              <div class="btn-row">
+                <button class="btn-primary" type="button" data-open="#modalFull">
+                  <i class="bi bi-arrows-fullscreen"></i> Open Full
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <footer class="footer">
+        <span>© 2026 Admin Template</span>
+        <span class="muted">v1.0</span>
+      </footer>
+    </main>
+
+  </div>
+
+  <!-- Theme panel (ONLY ONE) -->
+  <div id="themePanel" class="theme-panel">
+    <h4>Appearance</h4>
+    <button class="theme-option" data-theme="theme-default">🔵 Default Blue-Violet</button>
+    <button class="theme-option" data-theme="theme-blue">🔷 Modern Blue</button>
+    <button class="theme-option" data-theme="theme-softblue">🌊 Soft Blue</button>
+    <button class="theme-option" data-theme="theme-dark">🌑 Dark Elegant</button>
+    <button class="theme-option" data-theme="theme-purple">🟣 Purple-Blue</button>
+    <button class="theme-option" data-theme="theme-blueorange">🟧 Blue + Orange</button>
+  </div>
+
+  <!-- Modal Backdrop -->
+  <div class="modal-backdrop" id="modalBackdrop" aria-hidden="true"></div>
+
+  <!-- ========================= MODALS ========================= -->
+
+  <div class="modal modal--center modal--sm" id="modalSmall" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal__dialog">
+      <div class="modal__head">
+        <h3 class="modal__title"><i class="bi bi-exclamation-circle"></i> Confirm Action</h3>
+        <button class="modal__close" type="button" data-close><i class="bi bi-x-lg"></i> Close</button>
+      </div>
+      <div class="modal__body">
+        <div style="font-weight:900;">Are you sure you want to continue?</div>
+        <div class="muted" style="margin-top:6px;">This is a small center modal.</div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn-ghost" type="button" data-close>Cancel</button>
+        <button class="btn-primary" type="button" id="btnConfirmSmall">
+          <i class="bi bi-check2"></i> Yes, Continue
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal modal--center modal--md" id="modalMedium" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal__dialog">
+      <div class="modal__head">
+        <h3 class="modal__title"><i class="bi bi-person-plus"></i> Add User</h3>
+        <button class="modal__close" type="button" data-close><i class="bi bi-x-lg"></i> Close</button>
+      </div>
+      <div class="modal__body">
+        <div class="muted">Example medium modal with a form.</div>
+        <div class="form-row">
+          <input class="input" type="text" placeholder="Full Name">
+          <input class="input" type="email" placeholder="Email">
+          <select class="select">
+            <option>Admin</option>
+            <option>Staff</option>
+            <option>Viewer</option>
+          </select>
+          <textarea class="textarea" placeholder="Notes (optional)"></textarea>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn-ghost" type="button" data-close>Cancel</button>
+        <button class="btn-primary" type="button"><i class="bi bi-save"></i> Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal modal--half modal--lg" id="modalHalf" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal__dialog">
+      <div class="modal__head">
+        <h3 class="modal__title"><i class="bi bi-sliders"></i> Quick Settings</h3>
+        <button class="modal__close" type="button" data-close><i class="bi bi-x-lg"></i> Close</button>
+      </div>
+      <div class="modal__body">
+        <div class="muted">This is a half modal (drawer) on the right.</div>
+        <div class="divider"></div>
+        <div class="form-row">
+          <label style="font-weight:900;">Theme</label>
+          <select class="select">
+            <option>Default</option>
+            <option>Blue</option>
+            <option>Soft Blue</option>
+            <option>Dark</option>
+          </select>
+
+          <label style="font-weight:900;">Notifications</label>
+          <select class="select">
+            <option>Enabled</option>
+            <option>Muted</option>
+          </select>
+
+          <label style="font-weight:900;">Notes</label>
+          <textarea class="textarea" placeholder="Write something..."></textarea>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn-ghost" type="button" data-close>Close</button>
+        <button class="btn-primary" type="button"><i class="bi bi-check2-circle"></i> Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal modal--full" id="modalFull" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal__dialog">
+      <div class="modal__head">
+        <h3 class="modal__title"><i class="bi bi-window-fullscreen"></i> Fullscreen Modal</h3>
+        <button class="modal__close" type="button" data-close><i class="bi bi-x-lg"></i> Close</button>
+      </div>
+      <div class="modal__body">
+        <div style="display:grid; gap:12px;">
+          <div class="pill">
+            <i class="bi bi-info-circle"></i>
+            <span>Perfect for long content, reports, multi-step forms.</span>
+          </div>
+
+          <div class="grid two">
+            <div class="card">
+              <div class="card__header">
+                <h3>Panel A</h3>
+                <div class="muted">Demo content</div>
+              </div>
+              <div class="pad">
+                <p class="muted" style="margin:0;">You can put charts, tables, or anything here.</p>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card__header">
+                <h3>Panel B</h3>
+                <div class="muted">Demo content</div>
+              </div>
+              <div class="pad">
+                <p class="muted" style="margin:0;">Scrollable inside full modal body.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card__header">
+              <h3>More Content</h3>
+              <div class="muted">Just to show scrolling</div>
+            </div>
+            <div class="pad">
+              <div class="muted">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                <br><br>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                <br><br>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                <br><br>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                <br><br>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn-ghost" type="button" data-close>Close</button>
+        <button class="btn-primary" type="button"><i class="bi bi-download"></i> Export (Demo)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Keep your external JS (optional). If missing, our fallback will still work -->
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/theme.js"></script>
+
+  <script>
+    /* =========================
+      MODAL Controller (WORKING)
+    ========================== */
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    let activeModal = null;
+
+    function openModal(selectorOrEl) {
+      const el = typeof selectorOrEl === 'string' ? document.querySelector(selectorOrEl) : selectorOrEl;
+      if (!el) return;
+
+      closeModal();
+
+      activeModal = el;
+      activeModal.classList.add('show');
+      activeModal.setAttribute('aria-hidden', 'false');
+
+      if (modalBackdrop) modalBackdrop.classList.add('show');
+
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+
+      const closeBtn = activeModal.querySelector('[data-close]');
+      if (closeBtn) closeBtn.focus();
+    }
+
+    function closeModal() {
+      if (!activeModal) return;
+
+      activeModal.classList.remove('show');
+      activeModal.setAttribute('aria-hidden', 'true');
+      activeModal = null;
+
+      if (modalBackdrop) modalBackdrop.classList.remove('show');
+
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+    }
+
+    document.addEventListener('click', (e) => {
+      const openBtn = e.target.closest('[data-open]');
+      if (openBtn) {
+        e.preventDefault();
+        openModal(openBtn.getAttribute('data-open'));
+        return;
+      }
+
+      if (e.target.closest('[data-close]')) {
+        e.preventDefault();
+        closeModal();
+        return;
+      }
+
+      // click outside dialog closes
+      if (activeModal) {
+        const dialog = activeModal.querySelector('.modal__dialog');
+        if (dialog && !dialog.contains(e.target) && e.target.closest('.modal') === activeModal) {
+          closeModal();
+        }
+      }
+    });
+
+    if (modalBackdrop) modalBackdrop.addEventListener('click', closeModal);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    const btnConfirmSmall = document.getElementById('btnConfirmSmall');
+    if (btnConfirmSmall) {
+      btnConfirmSmall.addEventListener('click', () => {
+        alert('Confirmed! (demo)');
+        closeModal();
+      });
+    }
+
+    /* =========================
+      SIDEBAR fallback (WORKING)
+      - if app.js is missing, this will still toggle sidebar
+    ========================== */
+    (function sidebarFallback() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('overlay');
+      const btnSidebar = document.getElementById('btnSidebar');
+      const btnCollapse = document.getElementById('btnCollapse');
+
+      if (!sidebar || !overlay || !btnSidebar) return;
+
+      function openSidebar() {
+        sidebar.classList.add('is-open');
+        overlay.classList.add('show');
+        overlay.setAttribute('aria-hidden', 'false');
+      }
+
+      function closeSidebar() {
+        sidebar.classList.remove('is-open');
+        overlay.classList.remove('show');
+        overlay.setAttribute('aria-hidden', 'true');
+      }
+
+      // mobile toggle
+      btnSidebar.addEventListener('click', (e) => {
+        e.preventDefault();
+        const opened = sidebar.classList.contains('is-open');
+        opened ? closeSidebar() : openSidebar();
+      });
+
+      // collapse toggle (desktop)
+      if (btnCollapse) {
+        btnCollapse.addEventListener('click', (e) => {
+          e.preventDefault();
+          sidebar.classList.toggle('is-collapsed');
+          // optional: also reflect in body/app
+          document.body.classList.toggle('sidebar-collapsed');
+        });
+      }
+
+      // click overlay closes
+      overlay.addEventListener('click', closeSidebar);
+
+      // auto close on resize (optional safety)
+      window.addEventListener('resize', () => {
+        if (window.innerWidth >= 1024) {
+          // desktop: remove mobile open state + overlay
+          closeSidebar();
+        }
+      });
+    })();
+  </script>
+
+</body>
+</html>

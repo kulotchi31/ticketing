@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Register • MIS TEMPLATE</title>
+
+
+  <link rel="stylesheet" href="assets/css/register.css">
+</head>
+
+<body>
+
+  <div class="auth">
+    <div class="auth-card">
+
+      <div class="auth-head">
+        <div class="auth-logo">A</div>
+        <div class="auth-title">MIS TEMPLATE</div>
+        <div class="auth-sub">Create your account</div>
+      </div>
+
+      <div class="auth-body">
+        <div class="notice" id="regNotice">Please fill out all fields correctly.</div>
+
+        <form id="regForm" autocomplete="off">
+          <div class="grid">
+            <div class="field">
+              <label for="first">First Name</label>
+              <input id="first" type="text" placeholder="Juan" required>
+            </div>
+
+            <div class="field">
+              <label for="last">Last Name</label>
+              <input id="last" type="text" placeholder="Dela Cruz" required>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" type="email" placeholder="you@example.com" required>
+          </div>
+
+          <div class="field">
+            <label for="password">Password</label>
+            <div class="input">
+              <input id="password" type="password" placeholder="••••••••" required minlength="6">
+              <button class="toggle-pass" type="button" data-toggle="password">SHOW</button>
+            </div>
+
+            <div class="strength">
+              <div class="bar"><span id="pBar"></span></div>
+              <label id="pLabel">Weak</label>
+            </div>
+            <div class="hint">Tip: use 8+ chars with letters & numbers.</div>
+          </div>
+
+          <div class="field">
+            <label for="confirm">Confirm Password</label>
+            <div class="input">
+              <input id="confirm" type="password" placeholder="••••••••" required minlength="6">
+              <button class="toggle-pass" type="button" data-toggle="confirm">SHOW</button>
+            </div>
+            <div class="hint" id="matchHint"></div>
+          </div>
+
+          <div class="row">
+            <label class="check">
+              <input type="checkbox" id="terms" required>
+              I agree to the terms
+            </label>
+            <a href="login.html">Back to login</a>
+          </div>
+
+          <button class="btn-primary" type="submit">Create Account</button>
+        </form>
+      </div>
+
+      <div class="auth-footer">
+        Already have an account?
+        <a href="login.html">Sign In</a>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Toggle show/hide password buttons
+    document.querySelectorAll('[data-toggle]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-toggle');
+        const input = document.getElementById(id);
+        const isHidden = input.type === 'password';
+        input.type = isHidden ? 'text' : 'password';
+        btn.textContent = isHidden ? 'HIDE' : 'SHOW';
+      });
+    });
+
+    // Simple password strength meter
+    const pass = document.getElementById('password');
+    const pBar = document.getElementById('pBar');
+    const pLabel = document.getElementById('pLabel');
+
+    function strengthScore(v) {
+      let s = 0;
+      if (v.length >= 8) s++;
+      if (/[A-Z]/.test(v)) s++;
+      if (/[0-9]/.test(v)) s++;
+      if (/[^A-Za-z0-9]/.test(v)) s++;
+      return s; // 0-4
+    }
+
+    pass.addEventListener('input', () => {
+      const v = pass.value || "";
+      const s = strengthScore(v);
+
+      let pct = 0, label = "Weak", color = "#dc2626";
+      if (v.length === 0) { pct = 0; label = "Weak"; color = "#dc2626"; }
+      else if (s <= 1) { pct = 25; label = "Weak"; color = "#dc2626"; }
+      else if (s === 2) { pct = 50; label = "Fair"; color = "#f59e0b"; }
+      else if (s === 3) { pct = 75; label = "Good"; color = "#16a34a"; }
+      else { pct = 100; label = "Strong"; color = "#15803d"; }
+
+      pBar.style.width = pct + "%";
+      pBar.style.background = color;
+      pLabel.textContent = label;
+      pLabel.style.color = color;
+
+      checkMatch();
+    });
+
+    // Password match
+    const confirm = document.getElementById('confirm');
+    const matchHint = document.getElementById('matchHint');
+
+    function checkMatch() {
+      const a = pass.value;
+      const b = confirm.value;
+
+      matchHint.textContent = "";
+      matchHint.style.color = "";
+
+      if (!a && !b) return;
+      if (b.length === 0) return;
+
+      if (a === b) {
+        matchHint.textContent = "Passwords match ✓";
+        matchHint.style.color = "#16a34a";
+      } else {
+        matchHint.textContent = "Passwords do not match.";
+        matchHint.style.color = "#dc2626";
+      }
+    }
+
+    confirm.addEventListener('input', checkMatch);
+
+    // Demo submit (replace with backend)
+    const regNotice = document.getElementById('regNotice');
+    document.getElementById('regForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      regNotice.classList.remove('show');
+      regNotice.classList.remove('ok');
+
+      if (pass.value !== confirm.value) {
+        regNotice.textContent = "Password and Confirm Password must match.";
+        regNotice.classList.add('show');
+        return;
+      }
+
+      // Demo only
+      regNotice.textContent = "Demo only: connect this to your backend register.";
+      regNotice.classList.add('show');
+      regNotice.classList.add('ok');
+    });
+  </script>
+
+</body>
+
+</html>

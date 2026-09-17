@@ -1,0 +1,901 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Template • Tables</title>
+  <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="assets/css/bootstrap-icons.min.css">
+
+  <!-- ✅ 5 TABLE DESIGNS (embedded) -->
+  <style>
+    /* ============================
+       TABLE DESIGNS (5 OPTIONS)
+       class="table table--v1|v2|v3|glass|compact"
+    ============================ */
+
+    .table-responsive {
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 14px;
+    }
+
+    .table th,
+    .table td {
+      padding: 12px 14px;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    .table thead th {
+      text-align: left;
+      font-weight: 900;
+      letter-spacing: .2px;
+    }
+
+    /* Helper */
+    .table-cta {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    /* --------------------------------
+       DESIGN 1: Clean Lines (v1)
+    ---------------------------------*/
+    .table--v1 {
+      background: #fff;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .table--v1 thead th {
+      background: rgba(0, 0, 0, .04);
+      border-bottom: 1px solid rgba(0, 0, 0, .10);
+    }
+
+    .table--v1 tbody td {
+      border-bottom: 1px solid rgba(0, 0, 0, .06);
+    }
+
+    .table--v1 tbody tr:hover {
+      background: rgba(0, 0, 0, .025);
+    }
+
+    /* --------------------------------
+       DESIGN 2: Soft Card Rows (v2)
+       (rows look like mini cards)
+    ---------------------------------*/
+    .table--v2 {
+      border-collapse: separate;
+      border-spacing: 0 10px;
+    }
+
+    .table--v2 thead th {
+      color: rgba(0, 0, 0, .65);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      padding-bottom: 6px;
+    }
+
+    .table--v2 tbody td {
+      background: #fff;
+      border-top: 1px solid rgba(0, 0, 0, .06);
+      border-bottom: 1px solid rgba(0, 0, 0, .06);
+    }
+
+    .table--v2 tbody tr td:first-child {
+      border-left: 1px solid rgba(0, 0, 0, .06);
+      border-top-left-radius: 12px;
+      border-bottom-left-radius: 12px;
+    }
+
+    .table--v2 tbody tr td:last-child {
+      border-right: 1px solid rgba(0, 0, 0, .06);
+      border-top-right-radius: 12px;
+      border-bottom-right-radius: 12px;
+    }
+
+    .table--v2 tbody tr:hover td {
+      background: rgba(0, 0, 0, .02);
+    }
+
+    /* --------------------------------
+       DESIGN 3: Stripe + Sticky Head (v3)
+    ---------------------------------*/
+    .table--v3 {
+      background: #fff;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .table--v3 thead th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: #111827;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, .12);
+    }
+
+    .table--v3 tbody tr:nth-child(odd) td {
+      background: rgba(17, 24, 39, .03);
+    }
+
+    .table--v3 tbody td {
+      border-bottom: 1px solid rgba(0, 0, 0, .06);
+    }
+
+    .table--v3 tbody tr:hover td {
+      background: rgba(17, 24, 39, .06);
+    }
+
+    /* --------------------------------
+       DESIGN 4: Glass / Frosted (glass)
+    ---------------------------------*/
+    .table--glass {
+      border-radius: 16px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, .55);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(0, 0, 0, .08);
+    }
+
+    .table--glass thead th {
+      background: rgba(255, 255, 255, .7);
+      border-bottom: 1px solid rgba(0, 0, 0, .10);
+    }
+
+    .table--glass tbody td {
+      border-bottom: 1px solid rgba(0, 0, 0, .06);
+    }
+
+    .table--glass tbody tr:hover td {
+      background: rgba(255, 255, 255, .35);
+    }
+
+    /* --------------------------------
+       DESIGN 5: Compact + Dense (compact)
+    ---------------------------------*/
+    .table--compact {
+      background: #fff;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .table--compact th,
+    .table--compact td {
+      padding: 8px 10px;
+      font-size: 13px;
+    }
+
+    .table--compact thead th {
+      background: rgba(0, 0, 0, .04);
+      border-bottom: 1px solid rgba(0, 0, 0, .10);
+    }
+
+    .table--compact tbody td {
+      border-bottom: 1px solid rgba(0, 0, 0, .06);
+    }
+
+    .table--compact tbody tr:hover {
+      background: rgba(0, 0, 0, .02);
+    }
+
+    /* Little demo header */
+    .demo-block {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(0, 0, 0, .06);
+    }
+
+    .demo-title {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .demo-title b {
+      font-size: 14px;
+    }
+
+    .demo-title span {
+      font-size: 12px;
+      opacity: .7;
+    }
+
+    .demo-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, .04);
+      border: 1px solid rgba(0, 0, 0, .06);
+      white-space: nowrap;
+    }
+  </style>
+</head>
+
+<body class="theme-default">
+  <div class="overlay" id="overlay" aria-hidden="true"></div>
+
+  <div class="app" data-page="tables">
+    <aside class="sidebar" id="sidebar">
+
+      <!-- BRAND -->
+      <div class="sidebar__brand">
+        <div class="brand__logo">A</div>
+        <div class="brand__text">
+          <div class="brand__title">Admin Panel</div>
+          <div class="brand__sub">v1.0</div>
+        </div>
+      </div>
+
+      <!-- SEARCH -->
+      <div class="sidebar__search">
+        <input type="text" placeholder="Search...">
+      </div>
+
+      <nav class="sidebar__nav">
+
+        <!-- DASHBOARD -->
+        <a class="nav__item" href="index.html" data-page="dashboard">
+          <i class="bi bi-speedometer2 nav__icon"></i>
+          <span class="nav__label">Dashboard</span>
+        </a>
+
+        <!-- MANAGEMENT GROUP -->
+        <div class="nav__group" data-group="management">
+          <!-- open: para bukas na yung submenu like your screenshot -->
+          <div class="nav__item nav__toggle" data-toggle="management">
+            <i class="bi bi-people nav__icon"></i>
+            <span class="nav__label">Management</span>
+            <i class="bi bi-chevron-right nav__arrow"></i>
+          </div>
+
+          <div class="nav__submenu" id="management">
+            <a class="nav__subitem" href="users.html" data-page="users">
+              <i class="bi bi-person"></i>
+              <span>Users</span>
+            </a>
+
+            <a class="nav__subitem" href="roles.html" data-page="roles">
+              <i class="bi bi-shield-lock"></i>
+              <span>Roles</span>
+            </a>
+
+            <a class="nav__subitem active" href="activity-log.html" data-page="activity-log">
+              <i class="bi bi-clock-history"></i>
+              <span>Activity Logs</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- DATA GROUP -->
+        <div class="nav__group" data-group="data">
+          <div class="nav__item nav__toggle" data-toggle="data">
+            <i class="bi bi-database nav__icon"></i>
+            <span class="nav__label">Data</span>
+            <i class="bi bi-chevron-right nav__arrow"></i>
+          </div>
+
+          <div class="nav__submenu" id="data">
+            <a class="nav__subitem" href="tables.html" data-page="tables">
+              <i class="bi bi-table"></i>
+              <span>Tables</span>
+            </a>
+
+            <a class="nav__subitem" href="forms.html" data-page="forms">
+              <i class="bi bi-file-text"></i>
+              <span>Forms</span>
+            </a>
+
+            <a class="nav__subitem" href="uploads.html" data-page="uploads">
+              <i class="bi bi-upload"></i>
+              <span>Uploads</span>
+            </a>
+
+            <a class="nav__subitem" href="calendar.html" data-page="calendar">
+              <i class="bi bi-calendar-event"></i>
+              <span>Calendar</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- UI GROUP -->
+        <div class="nav__group" data-group="ui">
+          <div class="nav__item nav__toggle" data-toggle="ui">
+            <i class="bi bi-layers nav__icon"></i>
+            <span class="nav__label">UI Components</span>
+            <i class="bi bi-chevron-right nav__arrow"></i>
+          </div>
+
+          <div class="nav__submenu" id="ui">
+            <a class="nav__subitem" href="components.html" data-page="components">
+              <i class="bi bi-puzzle"></i>
+              <span>Components</span>
+            </a>
+
+            <a class="nav__subitem" href="icons.html" data-page="icons">
+              <i class="bi bi-stars"></i>
+              <span>Icons</span>
+            </a>
+
+            <a class="nav__subitem" href="charts.html" data-page="charts">
+              <i class="bi bi-bar-chart"></i>
+              <span>Charts</span>
+            </a>
+
+            <a class="nav__subitem" href="widgets.html" data-page="widgets">
+              <i class="bi bi-grid-3x3-gap"></i>
+              <span>Widgets</span>
+            </a>
+
+            <a class="nav__subitem" href="modals.html" data-page="modals">
+              <i class="bi bi-folder"></i>
+              <span>Modal</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- PAGES -->
+        <a class="nav__item" href="profile.html" data-page="profile">
+          <i class="bi bi-person-badge nav__icon"></i>
+          <span class="nav__label">Profile</span>
+        </a>
+
+        <a class="nav__item" href="settings.html" data-page="settings">
+          <i class="bi bi-gear nav__icon"></i>
+          <span class="nav__label">Settings</span>
+        </a>
+
+        <a class="nav__item" href="blank.html" data-page="blank">
+          <i class="bi bi-file-earmark nav__icon"></i>
+          <span class="nav__label">Blank Page</span>
+        </a>
+
+        <a class="nav__item" href="404.html" data-page="404">
+          <i class="bi bi-exclamation-circle nav__icon"></i>
+          <span class="nav__label">404 Page</span>
+        </a>
+
+        <!-- AUTH -->
+        <a class="nav__item" href="login.html" data-page="login">
+          <i class="bi bi-box-arrow-in-right nav__icon"></i>
+          <span class="nav__label">Login</span>
+        </a>
+
+      </nav>
+
+      <!-- FOOTER -->
+      <div class="sidebar__footer">
+        <div class="user">
+          <div class="user__avatar">JP</div>
+          <div class="user__meta">
+            <div class="user__name">June</div>
+            <div class="user__status">
+              <span class="dot"></span> Online
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar__left">
+          <button class="btn-icon topbar__burger" id="btnSidebar" aria-label="Toggle Sidebar">☰</button>
+          <button class="btn-icon" id="btnCollapse" aria-label="Collapse Sidebar" title="Collapse Sidebar">⫶</button>
+          <div class="topbar__links">
+            <a href="#" class="topbar__link">Home</a>
+            <a href="#" class="topbar__link">Contact</a>
+          </div>
+        </div>
+        <div class="topbar__right">
+          <button class="btn-icon" id="themeBtn" type="button" title="Theme">
+            <i class="bi bi-palette"></i>
+          </button>
+
+          <!-- Notifications -->
+          <div class="dd" id="ddNotif">
+            <button class="btn-icon dd__btn" type="button" aria-haspopup="true" aria-expanded="false">
+              <i class="bi bi-bell"></i>
+              <span class="dd__dot">3</span>
+            </button>
+
+            <div class="dd__menu" role="menu" aria-label="Notifications">
+              <div class="dd__head">Notifications</div>
+
+              <a class="dd__item" href="#">
+                <i class="bi bi-info-circle"></i>
+                <div>
+                  <div class="dd__title">System update</div>
+                  <div class="dd__meta">2 mins ago</div>
+                </div>
+              </a>
+
+              <a class="dd__item" href="#">
+                <i class="bi bi-person-plus"></i>
+                <div>
+                  <div class="dd__title">New user registered</div>
+                  <div class="dd__meta">15 mins ago</div>
+                </div>
+              </a>
+
+              <a class="dd__item" href="#">
+                <i class="bi bi-check2-circle"></i>
+                <div>
+                  <div class="dd__title">Backup complete</div>
+                  <div class="dd__meta">1 hour ago</div>
+                </div>
+              </a>
+
+              <a class="dd__footer" href="#">View all</a>
+            </div>
+          </div>
+
+          <!-- Profile -->
+          <div class="dd" id="ddProfile">
+            <button class="btn-icon dd__btn" type="button" aria-haspopup="true" aria-expanded="false">
+              <i class="bi bi-person-circle"></i>
+            </button>
+
+            <div class="dd__menu" role="menu" aria-label="Profile">
+              <div class="dd__head">Account</div>
+
+              <a class="dd__item" href="profile.html">
+                <i class="bi bi-person"></i>
+                <div class="dd__title">Profile</div>
+              </a>
+
+              <a class="dd__item" href="settings.html">
+                <i class="bi bi-gear"></i>
+                <div class="dd__title">Settings</div>
+              </a>
+
+              <a class="dd__item" href="activity-log.html">
+                <i class="bi bi-clock-history"></i>
+                <div class="dd__title">Activity Logs</div>
+              </a>
+
+              <a class="dd__item dd__danger" href="login.html">
+                <i class="bi bi-box-arrow-right"></i>
+                <div class="dd__title">Logout</div>
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </header>
+
+      <section class="content">
+        <div class="content__head">
+          <h1 class="page-title">Tables (5 Designs)</h1>
+          <div class="breadcrumb">Home / Tables</div>
+        </div>
+
+        <!-- ✅ 5 TABLES ON ONE PAGE -->
+        <div class="grid one">
+
+          <!-- TABLE 1 -->
+          <div class="card">
+            <div class="demo-block">
+              <div class="demo-title">
+                <b>Design 1 — Clean Lines</b>
+                <span>Class: <code>table table--v1</code></span>
+              </div>
+              <div class="demo-pill"><i class="bi bi-eye"></i> Preview</div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table table--v1">
+                <thead>
+                  <tr>
+                    <th style="width:70px;">#</th>
+                    <th>Item</th>
+                    <th>Category</th>
+                    <th style="width:90px;">Stock</th>
+                    <th style="width:110px;">Status</th>
+                    <th style="width:120px;">Updated</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>Mouse</td>
+                    <td>Hardware</td>
+                    <td>45</td>
+                    <td><span class="badge badge-success">OK</span></td>
+                    <td>Today</td>
+                  </tr>
+                  <tr>
+                    <td>2</td>
+                    <td>Keyboard</td>
+                    <td>Hardware</td>
+                    <td>8</td>
+                    <td><span class="badge badge-warning">Low</span></td>
+                    <td>Yesterday</td>
+                  </tr>
+                  <tr>
+                    <td>3</td>
+                    <td>USB Cable</td>
+                    <td>Accessories</td>
+                    <td>120</td>
+                    <td><span class="badge badge-success">OK</span></td>
+                    <td>Today</td>
+                  </tr>
+                  <tr>
+                    <td>4</td>
+                    <td>Headset</td>
+                    <td>Audio</td>
+                    <td>5</td>
+                    <td><span class="badge badge-warning">Low</span></td>
+                    <td>2 days ago</td>
+                  </tr>
+                  <tr>
+                    <td>5</td>
+                    <td>Webcam</td>
+                    <td>Hardware</td>
+                    <td>22</td>
+                    <td><span class="badge badge-success">OK</span></td>
+                    <td>Today</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- TABLE 2 -->
+          <div class="card">
+            <div class="demo-block">
+              <div class="demo-title">
+                <b>Design 2 — Soft Card Rows</b>
+                <span>Class: <code>table table--v2</code></span>
+              </div>
+              <div class="demo-pill"><i class="bi bi-layers"></i> Card Rows</div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table table--v2">
+                <thead>
+                  <tr>
+                    <th style="width:70px;">#</th>
+                    <th>Item</th>
+                    <th>Category</th>
+                    <th style="width:90px;">Stock</th>
+                    <th style="width:110px;">Status</th>
+                    <th style="width:120px;">Updated</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>Mouse</td>
+                    <td>Hardware</td>
+                    <td>45</td>
+                    <td><span class="badge badge-success">OK</span></td>
+                    <td>Today</td>
+                  </tr>
+                  <tr>
+                    <td>2</td>
+                    <td>Keyboard</td>
+                    <td>Hardware</td>
+                    <td>8</td>
+                    <td><span class="badge badge-warning">Low</span></td>
+                    <td>Yesterday</td>
+                  </tr>
+                  <tr>
+                    <td>3</td>
+                    <td>USB Cable</td>
+                    <td>Accessories</td>
+                    <td>120</td>
+                    <td><span class="badge badge-success">OK</span></td>
+                    <td>Today</td>
+                  </tr>
+                  <tr>
+                    <td>4</td>
+                    <td>Headset</td>
+                    <td>Audio</td>
+                    <td>5</td>
+                    <td><span class="badge badge-warning">Low</span></td>
+                    <td>2 days ago</td>
+                  </tr>
+                  <tr>
+                    <td>5</td>
+                    <td>Webcam</td>
+                    <td>Hardware</td>
+                    <td>22</td>
+                    <td><span class="badge badge-success">OK</span></td>
+                    <td>Today</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- TABLE 3 -->
+          <div class="card">
+            <div class="demo-block">
+              <div class="demo-title">
+                <b>Design 3 — Stripe + Sticky Header</b>
+                <span>Class: <code>table table--v3</code></span>
+              </div>
+              <div class="demo-pill"><i class="bi bi-pin-angle"></i> Sticky Head</div>
+            </div>
+
+            <div class="table-responsive" style="max-height:320px;">
+              <table class="table table--v3">
+                <thead>
+                  <tr>
+                    <th style="width:70px;">#</th>
+                    <th>Item</th>
+                    <th>Category</th>
+                    <th style="width:90px;">Stock</th>
+                    <th style="width:110px;">Status</th>
+                    <th style="width:120px;">Updated</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>Mouse</td>
+                    <td>Hardware</td>
+                    <td>45</td>
+                    <td><span class="badge badge-success">OK</span></td>
+                    <td>Today</td>
+                  </tr>
+                  <tr>
+                    <td>2</td>
+                    <td>Keyboard</td>
+                    <td>Hardware</td>
+                    <td>8</td>
+                    <td><span class="badge badge-warning">Low</span></td>
+                    <td>Yesterday</td>
+                  </tr>
+                  <tr>
+                    <td>3</td>
+                    <td>USB Cable</td>
+                    <td>Accessories</td>
+                    <td>120</td>
+                    <td><span class="badge badge-success">OK</span></td>
+                    <td>Today</td>
+                  </tr>
+                  <tr>
+                    <td>4</td>
+                    <td>Headset</td>
+                    <td>Audio</td>
+                    <td>5</td>
+                    <td><span class="badge badge-warning">Low</span></td>
+                    <td>2 days ago</td>
+                  </tr>
+                  <tr>
+                    <td>5</td>
+                    <td>Webcam</td>
+                    <td>Hardware</td>
+                    <td>22</td>
+                    <td><span class="badge badge-success">OK</span></td>
+                    <td>Today</td>
+                  </tr>
+                  <tr>
+                    <td>6</td>
+                    <td>HDMI</td>
+                    <td>Accessories</td>
+                    <td>31</td>
+                    <td><span class="badge badge-success">OK</span></td>
+                    <td>Today</td>
+                  </tr>
+                  <tr>
+                    <td>7</td>
+                    <td>Speaker</td>
+                    <td>Audio</td>
+                    <td>7</td>
+                    <td><span class="badge badge-warning">Low</span></td>
+                    <td>3 days ago</td>
+                  </tr>
+                  <tr>
+                    <td>8</td>
+                    <td>SSD</td>
+                    <td>Hardware</td>
+                    <td>16</td>
+                    <td><span class="badge badge-success">OK</span></td>
+                    <td>Today</td>
+                  </tr>
+                  <tr>
+                    <td>9</td>
+                    <td>Power Strip</td>
+                    <td>Electrical</td>
+                    <td>60</td>
+                    <td><span class="badge badge-success">OK</span></td>
+                    <td>Yesterday</td>
+                  </tr>
+                  <tr>
+                    <td>10</td>
+                    <td>LAN Cable</td>
+                    <td>Accessories</td>
+                    <td>200</td>
+                    <td><span class="badge badge-success">OK</span></td>
+                    <td>Today</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- TABLE 4 -->
+          <div class="card">
+            <div class="demo-block">
+              <div class="demo-title">
+                <b>Design 4 — Glass / Frosted</b>
+                <span>Class: <code>table table--glass</code></span>
+              </div>
+              <div class="demo-pill"><i class="bi bi-droplet"></i> Glass</div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table table--glass">
+                <thead>
+                  <tr>
+                    <th style="width:70px;">#</th>
+                    <th>Item</th>
+                    <th>Category</th>
+                    <th style="width:90px;">Stock</th>
+                    <th style="width:110px;">Status</th>
+                    <th style="width:120px;">Updated</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>Mouse</td>
+                    <td>Hardware</td>
+                    <td>45</td>
+                    <td><span class="badge badge-success">OK</span></td>
+                    <td>Today</td>
+                  </tr>
+                  <tr>
+                    <td>2</td>
+                    <td>Keyboard</td>
+                    <td>Hardware</td>
+                    <td>8</td>
+                    <td><span class="badge badge-warning">Low</span></td>
+                    <td>Yesterday</td>
+                  </tr>
+                  <tr>
+                    <td>3</td>
+                    <td>USB Cable</td>
+                    <td>Accessories</td>
+                    <td>120</td>
+                    <td><span class="badge badge-success">OK</span></td>
+                    <td>Today</td>
+                  </tr>
+                  <tr>
+                    <td>4</td>
+                    <td>Headset</td>
+                    <td>Audio</td>
+                    <td>5</td>
+                    <td><span class="badge badge-warning">Low</span></td>
+                    <td>2 days ago</td>
+                  </tr>
+                  <tr>
+                    <td>5</td>
+                    <td>Webcam</td>
+                    <td>Hardware</td>
+                    <td>22</td>
+                    <td><span class="badge badge-success">OK</span></td>
+                    <td>Today</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- TABLE 5 -->
+          <div class="card">
+            <div class="demo-block">
+              <div class="demo-title">
+                <b>Design 5 — Compact / Dense</b>
+                <span>Class: <code>table table--compact</code></span>
+              </div>
+              <div class="demo-pill"><i class="bi bi-arrows-collapse"></i> Compact</div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table table--compact">
+                <thead>
+                  <tr>
+                    <th style="width:70px;">#</th>
+                    <th>Item</th>
+                    <th>Category</th>
+                    <th style="width:90px;">Stock</th>
+                    <th style="width:110px;">Status</th>
+                    <th style="width:120px;">Updated</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>Mouse</td>
+                    <td>Hardware</td>
+                    <td>45</td>
+                    <td><span class="badge badge-success">OK</span></td>
+                    <td>Today</td>
+                  </tr>
+                  <tr>
+                    <td>2</td>
+                    <td>Keyboard</td>
+                    <td>Hardware</td>
+                    <td>8</td>
+                    <td><span class="badge badge-warning">Low</span></td>
+                    <td>Yesterday</td>
+                  </tr>
+                  <tr>
+                    <td>3</td>
+                    <td>USB Cable</td>
+                    <td>Accessories</td>
+                    <td>120</td>
+                    <td><span class="badge badge-success">OK</span></td>
+                    <td>Today</td>
+                  </tr>
+                  <tr>
+                    <td>4</td>
+                    <td>Headset</td>
+                    <td>Audio</td>
+                    <td>5</td>
+                    <td><span class="badge badge-warning">Low</span></td>
+                    <td>2 days ago</td>
+                  </tr>
+                  <tr>
+                    <td>5</td>
+                    <td>Webcam</td>
+                    <td>Hardware</td>
+                    <td>22</td>
+                    <td><span class="badge badge-success">OK</span></td>
+                    <td>Today</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <footer class="footer">
+        <span>© 2026 Admin Template</span>
+        <span class="muted">v1.0</span>
+      </footer>
+    </main>
+  </div>
+
+  <div id="themePanel" class="theme-panel">
+    <h4>Appearance</h4>
+
+    <button class="theme-option" data-theme="theme-default">🟧 Blue + Orange</button>
+    <button class="theme-option" data-theme="theme-blue">🔷 Modern Blue</button>
+    <button class="theme-option" data-theme="theme-softblue">🌊 Soft Blue</button>
+    <button class="theme-option" data-theme="theme-dark">🌑 Dark Elegant</button>
+    <button class="theme-option" data-theme="theme-purple">🟣 Purple-Blue</button>
+    <button class="theme-option" data-theme="theme-blueviolet">🔵 Default Blue-Violet</button>
+  </div>
+
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/theme.js"></script>
+</body>
+
+</html>

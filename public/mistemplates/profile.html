@@ -1,0 +1,622 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Template • Profile</title>
+  <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="assets/css/bootstrap-icons.min.css">
+</head>
+
+<body class="theme-default">
+
+  <div class="overlay" id="overlay" aria-hidden="true"></div>
+
+  <div class="app" data-page="profile">
+
+    <aside class="sidebar" id="sidebar">
+
+      <!-- BRAND -->
+      <div class="sidebar__brand">
+        <div class="brand__logo">A</div>
+        <div class="brand__text">
+          <div class="brand__title">Admin Panel</div>
+          <div class="brand__sub">v1.0</div>
+        </div>
+      </div>
+
+      <!-- SEARCH -->
+      <div class="sidebar__search">
+        <input type="text" placeholder="Search...">
+      </div>
+
+      <nav class="sidebar__nav">
+
+        <!-- DASHBOARD -->
+        <a class="nav__item" href="index.html" data-page="dashboard">
+          <i class="bi bi-speedometer2 nav__icon"></i>
+          <span class="nav__label">Dashboard</span>
+        </a>
+
+        <!-- MANAGEMENT GROUP -->
+        <div class="nav__group" data-group="management">
+          <!-- open: para bukas na yung submenu like your screenshot -->
+          <div class="nav__item nav__toggle" data-toggle="management">
+            <i class="bi bi-people nav__icon"></i>
+            <span class="nav__label">Management</span>
+            <i class="bi bi-chevron-right nav__arrow"></i>
+          </div>
+
+          <div class="nav__submenu" id="management">
+            <a class="nav__subitem" href="users.html" data-page="users">
+              <i class="bi bi-person"></i>
+              <span>Users</span>
+            </a>
+
+            <a class="nav__subitem" href="roles.html" data-page="roles">
+              <i class="bi bi-shield-lock"></i>
+              <span>Roles</span>
+            </a>
+
+            <a class="nav__subitem" href="activity-log.html" data-page="activity-log">
+              <i class="bi bi-clock-history"></i>
+              <span>Activity Logs</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- DATA GROUP -->
+        <div class="nav__group" data-group="data">
+          <div class="nav__item nav__toggle" data-toggle="data">
+            <i class="bi bi-database nav__icon"></i>
+            <span class="nav__label">Data</span>
+            <i class="bi bi-chevron-right nav__arrow"></i>
+          </div>
+
+          <div class="nav__submenu" id="data">
+            <a class="nav__subitem" href="tables.html" data-page="tables">
+              <i class="bi bi-table"></i>
+              <span>Tables</span>
+            </a>
+
+            <a class="nav__subitem" href="forms.html" data-page="forms">
+              <i class="bi bi-file-text"></i>
+              <span>Forms</span>
+            </a>
+
+            <a class="nav__subitem" href="uploads.html" data-page="uploads">
+              <i class="bi bi-upload"></i>
+              <span>Uploads</span>
+            </a>
+
+            <a class="nav__subitem" href="calendar.html" data-page="calendar">
+              <i class="bi bi-calendar-event"></i>
+              <span>Calendar</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- UI GROUP -->
+        <div class="nav__group" data-group="ui">
+          <div class="nav__item nav__toggle" data-toggle="ui">
+            <i class="bi bi-layers nav__icon"></i>
+            <span class="nav__label">UI Components</span>
+            <i class="bi bi-chevron-right nav__arrow"></i>
+          </div>
+
+          <div class="nav__submenu" id="ui">
+            <a class="nav__subitem" href="components.html" data-page="components">
+              <i class="bi bi-puzzle"></i>
+              <span>Components</span>
+            </a>
+
+            <a class="nav__subitem" href="icons.html" data-page="icons">
+              <i class="bi bi-stars"></i>
+              <span>Icons</span>
+            </a>
+
+            <a class="nav__subitem" href="charts.html" data-page="charts">
+              <i class="bi bi-bar-chart"></i>
+              <span>Charts</span>
+            </a>
+
+            <a class="nav__subitem" href="widgets.html" data-page="widgets">
+              <i class="bi bi-grid-3x3-gap"></i>
+              <span>Widgets</span>
+            </a>
+
+            <a class="nav__subitem" href="modals.html" data-page="modals">
+              <i class="bi bi-folder"></i>
+              <span>Modal</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- PAGES -->
+        <a class="nav__item active" href="profile.html" data-page="profile">
+          <i class="bi bi-person-badge nav__icon"></i>
+          <span class="nav__label">Profile</span>
+        </a>
+
+        <a class="nav__item" href="settings.html" data-page="settings">
+          <i class="bi bi-gear nav__icon"></i>
+          <span class="nav__label">Settings</span>
+        </a>
+
+        <a class="nav__item" href="blank.html" data-page="blank">
+          <i class="bi bi-file-earmark nav__icon"></i>
+          <span class="nav__label">Blank Page</span>
+        </a>
+
+        <a class="nav__item" href="404.html" data-page="404">
+          <i class="bi bi-exclamation-circle nav__icon"></i>
+          <span class="nav__label">404 Page</span>
+        </a>
+
+        <!-- AUTH -->
+        <a class="nav__item" href="login.html" data-page="login">
+          <i class="bi bi-box-arrow-in-right nav__icon"></i>
+          <span class="nav__label">Login</span>
+        </a>
+
+      </nav>
+
+      <!-- FOOTER -->
+      <div class="sidebar__footer">
+        <div class="user">
+          <div class="user__avatar">JP</div>
+          <div class="user__meta">
+            <div class="user__name">June</div>
+            <div class="user__status">
+              <span class="dot"></span> Online
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar__left">
+          <button class="btn-icon topbar__burger" id="btnSidebar" aria-label="Toggle Sidebar">☰</button>
+          <button class="btn-icon" id="btnCollapse" aria-label="Collapse Sidebar" title="Collapse Sidebar">⫶</button>
+
+          <div class="topbar__links">
+            <a href="#" class="topbar__link">Home</a>
+            <a href="#" class="topbar__link">Contact</a>
+          </div>
+        </div>
+
+        <div class="topbar__right">
+          <button class="btn-icon" id="themeBtn" type="button" title="Theme">
+            <i class="bi bi-palette"></i>
+          </button>
+
+          <!-- Notifications -->
+          <div class="dd" id="ddNotif">
+            <button class="btn-icon dd__btn" type="button" aria-haspopup="true" aria-expanded="false">
+              <i class="bi bi-bell"></i>
+              <span class="dd__dot">3</span>
+            </button>
+
+            <div class="dd__menu" role="menu" aria-label="Notifications">
+              <div class="dd__head">Notifications</div>
+
+              <a class="dd__item" href="#">
+                <i class="bi bi-info-circle"></i>
+                <div>
+                  <div class="dd__title">System update</div>
+                  <div class="dd__meta">2 mins ago</div>
+                </div>
+              </a>
+
+              <a class="dd__item" href="#">
+                <i class="bi bi-person-plus"></i>
+                <div>
+                  <div class="dd__title">New user registered</div>
+                  <div class="dd__meta">15 mins ago</div>
+                </div>
+              </a>
+
+              <a class="dd__item" href="#">
+                <i class="bi bi-check2-circle"></i>
+                <div>
+                  <div class="dd__title">Backup complete</div>
+                  <div class="dd__meta">1 hour ago</div>
+                </div>
+              </a>
+
+              <a class="dd__footer" href="#">View all</a>
+            </div>
+          </div>
+
+          <!-- Profile -->
+          <div class="dd" id="ddProfile">
+            <button class="btn-icon dd__btn" type="button" aria-haspopup="true" aria-expanded="false">
+              <i class="bi bi-person-circle"></i>
+            </button>
+
+            <div class="dd__menu" role="menu" aria-label="Profile">
+              <div class="dd__head">Account</div>
+
+              <a class="dd__item" href="profile.html">
+                <i class="bi bi-person"></i>
+                <div class="dd__title">Profile</div>
+              </a>
+
+              <a class="dd__item" href="settings.html">
+                <i class="bi bi-gear"></i>
+                <div class="dd__title">Settings</div>
+              </a>
+
+              <a class="dd__item" href="activity-log.html">
+                <i class="bi bi-clock-history"></i>
+                <div class="dd__title">Activity Logs</div>
+              </a>
+
+              <a class="dd__item dd__danger" href="login.html">
+                <i class="bi bi-box-arrow-right"></i>
+                <div class="dd__title">Logout</div>
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </header>
+
+      <section class="content">
+        <div class="content__head">
+          <h1 class="page-title">Profile</h1>
+          <div class="breadcrumb">Home / Profile</div>
+        </div>
+
+        <div class="grid two">
+          <!-- Profile Card -->
+          <div class="card">
+            <div class="profile">
+              <div class="profile__cover"></div>
+
+              <div class="profile__body">
+                <div class="profile__avatar" id="avatarInitials">JB</div>
+
+                <div class="profile__info">
+                  <div class="profile__name" id="pName">June Bernard Tayopon</div>
+                  <div class="profile__role muted" id="pRole">Administrator</div>
+                </div>
+
+                <div class="profile__stats">
+                  <div class="pstat">
+                    <div class="pstat__v" id="pActions">52</div>
+                    <div class="pstat__l muted">Actions</div>
+                  </div>
+                  <div class="pstat">
+                    <div class="pstat__v" id="pRoles">6</div>
+                    <div class="pstat__l muted">Roles</div>
+                  </div>
+                  <div class="pstat">
+                    <div class="pstat__v" id="pUploads">12</div>
+                    <div class="pstat__l muted">Uploads</div>
+                  </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="profile__row">
+                  <div class="muted">Email</div>
+                  <div><strong id="pEmail">admin@email.com</strong></div>
+                </div>
+                <div class="profile__row">
+                  <div class="muted">Phone</div>
+                  <div><strong id="pPhone">+63 9xx xxx xxxx</strong></div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="form__actions">
+                  <button class="btn-primary" type="button" id="btnEditProfile">
+                    <i class="bi bi-pencil"></i> Edit Profile
+                  </button>
+                  <button class="btn-ghost" type="button" id="btnChangePassword">
+                    <i class="bi bi-shield-lock"></i> Change Password
+                  </button>
+                </div>
+
+                <div class="form__msg" id="profileMsg" aria-live="polite"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Activity -->
+          <div class="card">
+            <div class="card__header">
+              <h3>Recent Activity</h3>
+              <div class="muted">Last 7 days</div>
+            </div>
+
+            <div class="list">
+              <div class="list__item">
+                <i class="bi bi-person-check"></i>
+                <div>
+                  <div class="list__title">Logged in</div>
+                  <div class="list__meta">Today • 10:14 AM</div>
+                </div>
+              </div>
+
+              <div class="list__item">
+                <i class="bi bi-pencil-square"></i>
+                <div>
+                  <div class="list__title">Updated settings</div>
+                  <div class="list__meta">Yesterday</div>
+                </div>
+              </div>
+
+              <div class="list__item">
+                <i class="bi bi-cloud-upload"></i>
+                <div>
+                  <div class="list__title">Uploaded a file</div>
+                  <div class="list__meta">2 days ago</div>
+                </div>
+              </div>
+
+              <div class="list__item">
+                <i class="bi bi-shield-check"></i>
+                <div>
+                  <div class="list__title">Changed role permissions</div>
+                  <div class="list__meta">4 days ago</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Quick Profile Details (read-only) -->
+            <div class="pad">
+              <div class="muted" style="margin-bottom:8px;font-weight:900;">Profile Details</div>
+
+              <div class="table-responsive">
+                <table class="table table--v3">
+                  <tbody>
+                    <tr>
+                      <td style="width:160px" class="muted"><strong>User ID</strong></td>
+                      <td>#0001</td>
+                    </tr>
+                    <tr>
+                      <td class="muted"><strong>Department</strong></td>
+                      <td>Management Information System</td>
+                    </tr>
+                    <tr>
+                      <td class="muted"><strong>Address</strong></td>
+                      <td>Philippines</td>
+                    </tr>
+                    <tr>
+                      <td class="muted"><strong>Status</strong></td>
+                      <td><span class="chip chip--success">Active</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- =========================
+             MODAL: EDIT PROFILE
+        ========================== -->
+        <div class="modal" id="modalEditProfile" aria-hidden="true">
+          <div class="modal__backdrop" data-close="1"></div>
+
+          <div class="modal__card" role="dialog" aria-modal="true">
+            <div class="modal__head">
+              <div class="modal__title"><i class="bi bi-pencil-square"></i> Edit Profile</div>
+              <button class="btn-icon" type="button" data-close="1"><i class="bi bi-x-lg"></i></button>
+            </div>
+
+            <form class="form" id="editProfileForm">
+              <div class="form__row">
+                <label>Full Name</label>
+                <input type="text" id="editName" value="June Bernard Tayopon" required>
+              </div>
+
+              <div class="form__row">
+                <label>Role</label>
+                <select id="editRole" required>
+                  <option>Administrator</option>
+                  <option>Staff</option>
+                  <option>Viewer</option>
+                </select>
+              </div>
+
+              <div class="form__row">
+                <label>Email</label>
+                <input type="email" id="editEmail" value="admin@email.com" required>
+              </div>
+
+              <div class="form__row">
+                <label>Phone</label>
+                <input type="text" id="editPhone" value="+63 9xx xxx xxxx" required>
+              </div>
+
+              <div class="modal__foot">
+                <button class="btn-ghost" type="button" data-close="1">Cancel</button>
+                <button class="btn-primary" type="submit"><i class="bi bi-check2"></i> Save</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- =========================
+             MODAL: CHANGE PASSWORD
+        ========================== -->
+        <div class="modal" id="modalChangePass" aria-hidden="true">
+          <div class="modal__backdrop" data-close="1"></div>
+
+          <div class="modal__card" role="dialog" aria-modal="true">
+            <div class="modal__head">
+              <div class="modal__title"><i class="bi bi-shield-lock"></i> Change Password</div>
+              <button class="btn-icon" type="button" data-close="1"><i class="bi bi-x-lg"></i></button>
+            </div>
+
+            <form class="form" id="changePassForm">
+              <div class="form__row">
+                <label>Current Password</label>
+                <input type="password" id="curPass" placeholder="••••••••" required>
+              </div>
+
+              <div class="form__row">
+                <label>New Password</label>
+                <input type="password" id="newPass" placeholder="••••••••" minlength="6" required>
+              </div>
+
+              <div class="form__row">
+                <label>Confirm New Password</label>
+                <input type="password" id="newPass2" placeholder="••••••••" minlength="6" required>
+              </div>
+
+              <div class="muted" id="passHint" style="margin-top:-6px;min-height:18px;"></div>
+
+              <div class="modal__foot">
+                <button class="btn-ghost" type="button" data-close="1">Cancel</button>
+                <button class="btn-primary" type="submit"><i class="bi bi-check2"></i> Update</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+      </section>
+
+      <footer class="footer">
+        <span>© 2026 Admin Template</span>
+        <span class="muted">v1.0</span>
+      </footer>
+    </main>
+
+  </div>
+
+  <div id="themePanel" class="theme-panel">
+    <h4>Appearance</h4>
+
+    <button class="theme-option" data-theme="theme-default">🟧 Blue + Orange</button>
+    <button class="theme-option" data-theme="theme-blue">🔷 Modern Blue</button>
+    <button class="theme-option" data-theme="theme-softblue">🌊 Soft Blue</button>
+    <button class="theme-option" data-theme="theme-dark">🌑 Dark Elegant</button>
+    <button class="theme-option" data-theme="theme-purple">🟣 Purple-Blue</button>
+    <button class="theme-option" data-theme="theme-blueviolet">🔵 Default Blue-Violet</button>
+  </div>
+
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/theme.js"></script>
+
+  <script>
+    // ===== Modal helpers (works with your .modal + [data-close] setup) =====
+    function openModal(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.add('open');
+      el.setAttribute('aria-hidden', 'false');
+    }
+    function closeModal(el) {
+      el.classList.remove('open');
+      el.setAttribute('aria-hidden', 'true');
+    }
+
+    // Open buttons
+    document.getElementById('btnEditProfile')?.addEventListener('click', () => openModal('modalEditProfile'));
+    document.getElementById('btnChangePassword')?.addEventListener('click', () => openModal('modalChangePass'));
+
+    // Close handlers
+    document.querySelectorAll('.modal [data-close="1"]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const modal = btn.closest('.modal');
+        if (modal) closeModal(modal);
+      });
+    });
+
+    // Click outside (backdrop)
+    document.querySelectorAll('.modal').forEach(modal => {
+      modal.addEventListener('click', (e) => {
+        if (e.target && e.target.classList.contains('modal__backdrop')) {
+          closeModal(modal);
+        }
+      });
+    });
+
+    // ===== Edit profile (demo update UI only) =====
+    const profileMsg = document.getElementById('profileMsg');
+
+    function initialsFromName(name) {
+      const parts = (name || '').trim().split(/\s+/).filter(Boolean);
+      const a = parts[0]?.[0] || 'U';
+      const b = parts.length > 1 ? parts[parts.length - 1][0] : '';
+      return (a + b).toUpperCase();
+    }
+
+    document.getElementById('editProfileForm')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById('editName').value.trim();
+      const role = document.getElementById('editRole').value.trim();
+      const email = document.getElementById('editEmail').value.trim();
+      const phone = document.getElementById('editPhone').value.trim();
+
+      // Update visible UI
+      document.getElementById('pName').textContent = name;
+      document.getElementById('pRole').textContent = role;
+      document.getElementById('pEmail').textContent = email;
+      document.getElementById('pPhone').textContent = phone;
+      document.getElementById('avatarInitials').textContent = initialsFromName(name);
+
+      profileMsg.textContent = "Profile updated (demo only). Connect this to backend later.";
+      setTimeout(() => profileMsg.textContent = "", 2500);
+
+      closeModal(document.getElementById('modalEditProfile'));
+    });
+
+    // ===== Change password (demo validate only) =====
+    const hint = document.getElementById('passHint');
+    const np = document.getElementById('newPass');
+    const np2 = document.getElementById('newPass2');
+
+    function checkPassMatch() {
+      if (!np.value && !np2.value) {
+        hint.textContent = "";
+        return;
+      }
+      if (np.value === np2.value) {
+        hint.textContent = "Passwords match ✓";
+        hint.style.color = "#16a34a";
+      } else {
+        hint.textContent = "Passwords do not match.";
+        hint.style.color = "#dc2626";
+      }
+    }
+    np?.addEventListener('input', checkPassMatch);
+    np2?.addEventListener('input', checkPassMatch);
+
+    document.getElementById('changePassForm')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      if (np.value !== np2.value) {
+        hint.textContent = "Passwords do not match.";
+        hint.style.color = "#dc2626";
+        return;
+      }
+
+      profileMsg.textContent = "Password updated (demo only). Connect this to backend later.";
+      setTimeout(() => profileMsg.textContent = "", 2500);
+
+      // Clear inputs
+      document.getElementById('curPass').value = "";
+      np.value = "";
+      np2.value = "";
+      hint.textContent = "";
+
+      closeModal(document.getElementById('modalChangePass'));
+    });
+  </script>
+
+</body>
+
+</html>

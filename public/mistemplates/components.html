@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Template • Components</title>
+
+  <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="assets/css/bootstrap-icons.min.css">
+</head>
+
+<body class="theme-default">
+
+  <div class="overlay" id="overlay" aria-hidden="true"></div>
+
+  <!-- page id should match -->
+  <div class="app" data-page="components">
+
+    <aside class="sidebar" id="sidebar">
+
+      <!-- BRAND -->
+      <div class="sidebar__brand">
+        <div class="brand__logo">A</div>
+        <div class="brand__text">
+          <div class="brand__title">Admin Panel</div>
+          <div class="brand__sub">v1.0</div>
+        </div>
+      </div>
+
+      <!-- SEARCH -->
+      <div class="sidebar__search">
+        <input type="text" placeholder="Search...">
+      </div>
+
+      <nav class="sidebar__nav">
+
+        <!-- DASHBOARD -->
+        <a class="nav__item" href="index.html" data-page="dashboard">
+          <i class="bi bi-speedometer2 nav__icon"></i>
+          <span class="nav__label">Dashboard</span>
+        </a>
+
+        <!-- MANAGEMENT GROUP -->
+        <div class="nav__group" data-group="management">
+          <!-- open: para bukas na yung submenu like your screenshot -->
+          <div class="nav__item nav__toggle" data-toggle="management">
+            <i class="bi bi-people nav__icon"></i>
+            <span class="nav__label">Management</span>
+            <i class="bi bi-chevron-right nav__arrow"></i>
+          </div>
+
+          <div class="nav__submenu" id="management">
+            <a class="nav__subitem" href="users.html" data-page="users">
+              <i class="bi bi-person"></i>
+              <span>Users</span>
+            </a>
+
+            <a class="nav__subitem" href="roles.html" data-page="roles">
+              <i class="bi bi-shield-lock"></i>
+              <span>Roles</span>
+            </a>
+
+            <a class="nav__subitem" href="activity-log.html" data-page="activity-log">
+              <i class="bi bi-clock-history"></i>
+              <span>Activity Logs</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- DATA GROUP -->
+        <div class="nav__group" data-group="data">
+          <div class="nav__item nav__toggle" data-toggle="data">
+            <i class="bi bi-database nav__icon"></i>
+            <span class="nav__label">Data</span>
+            <i class="bi bi-chevron-right nav__arrow"></i>
+          </div>
+
+          <div class="nav__submenu" id="data">
+            <a class="nav__subitem" href="tables.html" data-page="tables">
+              <i class="bi bi-table"></i>
+              <span>Tables</span>
+            </a>
+
+            <a class="nav__subitem" href="forms.html" data-page="forms">
+              <i class="bi bi-file-text"></i>
+              <span>Forms</span>
+            </a>
+
+            <a class="nav__subitem" href="uploads.html" data-page="uploads">
+              <i class="bi bi-upload"></i>
+              <span>Uploads</span>
+            </a>
+
+            <a class="nav__subitem" href="calendar.html" data-page="calendar">
+              <i class="bi bi-calendar-event"></i>
+              <span>Calendar</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- UI GROUP -->
+        <div class="nav__group" data-group="ui">
+          <div class="nav__item nav__toggle" data-toggle="ui">
+            <i class="bi bi-layers nav__icon"></i>
+            <span class="nav__label">UI Components</span>
+            <i class="bi bi-chevron-right nav__arrow"></i>
+          </div>
+
+          <div class="nav__submenu" id="ui">
+            <a class="nav__subitem active" href="components.html" data-page="components">
+              <i class="bi bi-puzzle"></i>
+              <span>Components</span>
+            </a>
+
+            <a class="nav__subitem" href="icons.html" data-page="icons">
+              <i class="bi bi-stars"></i>
+              <span>Icons</span>
+            </a>
+
+            <a class="nav__subitem" href="charts.html" data-page="charts">
+              <i class="bi bi-bar-chart"></i>
+              <span>Charts</span>
+            </a>
+
+            <a class="nav__subitem" href="widgets.html" data-page="widgets">
+              <i class="bi bi-grid-3x3-gap"></i>
+              <span>Widgets</span>
+            </a>
+
+            <a class="nav__subitem" href="modals.html" data-page="modals">
+              <i class="bi bi-folder"></i>
+              <span>Modal</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- PAGES -->
+        <a class="nav__item" href="profile.html" data-page="profile">
+          <i class="bi bi-person-badge nav__icon"></i>
+          <span class="nav__label">Profile</span>
+        </a>
+
+        <a class="nav__item" href="settings.html" data-page="settings">
+          <i class="bi bi-gear nav__icon"></i>
+          <span class="nav__label">Settings</span>
+        </a>
+
+        <a class="nav__item" href="blank.html" data-page="blank">
+          <i class="bi bi-file-earmark nav__icon"></i>
+          <span class="nav__label">Blank Page</span>
+        </a>
+
+        <a class="nav__item" href="404.html" data-page="404">
+          <i class="bi bi-exclamation-circle nav__icon"></i>
+          <span class="nav__label">404 Page</span>
+        </a>
+
+        <!-- AUTH -->
+        <a class="nav__item" href="login.html" data-page="login">
+          <i class="bi bi-box-arrow-in-right nav__icon"></i>
+          <span class="nav__label">Login</span>
+        </a>
+
+      </nav>
+
+      <!-- FOOTER -->
+      <div class="sidebar__footer">
+        <div class="user">
+          <div class="user__avatar">JP</div>
+          <div class="user__meta">
+            <div class="user__name">June</div>
+            <div class="user__status">
+              <span class="dot"></span> Online
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar__left">
+          <button class="btn-icon topbar__burger" id="btnSidebar" aria-label="Toggle Sidebar">☰</button>
+          <button class="btn-icon" id="btnCollapse" aria-label="Collapse Sidebar" title="Collapse Sidebar">⫶</button>
+
+          <div class="topbar__links">
+            <a href="#" class="topbar__link">Home</a>
+            <a href="#" class="topbar__link">Contact</a>
+          </div>
+        </div>
+
+        <div class="topbar__right">
+          <button class="btn-icon" id="themeBtn" type="button" title="Theme">
+            <i class="bi bi-palette"></i>
+          </button>
+
+          <!-- Notifications -->
+          <div class="dd" id="ddNotif">
+            <button class="btn-icon dd__btn" type="button" aria-haspopup="true" aria-expanded="false">
+              <i class="bi bi-bell"></i>
+              <span class="dd__dot">3</span>
+            </button>
+
+            <div class="dd__menu" role="menu" aria-label="Notifications">
+              <div class="dd__head">Notifications</div>
+
+              <a class="dd__item" href="#">
+                <i class="bi bi-info-circle"></i>
+                <div>
+                  <div class="dd__title">System update</div>
+                  <div class="dd__meta">2 mins ago</div>
+                </div>
+              </a>
+
+              <a class="dd__item" href="#">
+                <i class="bi bi-person-plus"></i>
+                <div>
+                  <div class="dd__title">New user registered</div>
+                  <div class="dd__meta">15 mins ago</div>
+                </div>
+              </a>
+
+              <a class="dd__item" href="#">
+                <i class="bi bi-check2-circle"></i>
+                <div>
+                  <div class="dd__title">Backup complete</div>
+                  <div class="dd__meta">1 hour ago</div>
+                </div>
+              </a>
+
+              <a class="dd__footer" href="#">View all</a>
+            </div>
+          </div>
+
+          <!-- Profile -->
+          <div class="dd" id="ddProfile">
+            <button class="btn-icon dd__btn" type="button" aria-haspopup="true" aria-expanded="false">
+              <i class="bi bi-person-circle"></i>
+            </button>
+
+            <div class="dd__menu" role="menu" aria-label="Profile">
+              <div class="dd__head">Account</div>
+
+              <a class="dd__item" href="profile.html">
+                <i class="bi bi-person"></i>
+                <div class="dd__title">Profile</div>
+              </a>
+
+              <a class="dd__item" href="settings.html">
+                <i class="bi bi-gear"></i>
+                <div class="dd__title">Settings</div>
+              </a>
+
+              <a class="dd__item" href="activity-log.html">
+                <i class="bi bi-clock-history"></i>
+                <div class="dd__title">Activity Logs</div>
+              </a>
+
+              <a class="dd__item dd__danger" href="login.html">
+                <i class="bi bi-box-arrow-right"></i>
+                <div class="dd__title">Logout</div>
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </header>
+
+      <section class="content">
+        <div class="content__head">
+          <h1 class="page-title">Components</h1>
+          <div class="breadcrumb">Home / UI Components / Components</div>
+        </div>
+
+        <div class="grid two">
+          <!-- Buttons / Badges -->
+          <div class="card">
+            <div class="card__header">
+              <h3>Buttons & Badges</h3>
+              <div class="muted">UI basics</div>
+            </div>
+
+            <div class="pad">
+              <div class="row">
+                <button class="btn-primary" type="button"><i class="bi bi-check2"></i> Primary</button>
+                <button class="btn-ghost" type="button"><i class="bi bi-sliders"></i> Ghost</button>
+                <button class="btn-sm btn-edit" type="button"><i class="bi bi-pencil"></i> Edit</button>
+                <button class="btn-sm btn-delete" type="button"><i class="bi bi-trash"></i> Delete</button>
+              </div>
+
+              <div class="divider"></div>
+
+              <div class="row">
+                <span class="badge badge-success">Active</span>
+                <span class="badge badge-warning">Pending</span>
+                <span class="chip chip--info">Info</span>
+                <span class="chip chip--purple">Update</span>
+                <span class="chip chip--danger">Delete</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Alerts / Progress -->
+          <div class="card">
+            <div class="card__header">
+              <h3>Alerts & Progress</h3>
+              <div class="muted">Status UI</div>
+            </div>
+
+            <div class="pad">
+              <div class="alert alert--info">
+                <i class="bi bi-info-circle"></i>
+                <div>
+                  <div class="alert__title">Heads up!</div>
+                  <div class="alert__text">This is a demo alert component.</div>
+                </div>
+              </div>
+
+              <div class="alert alert--success">
+                <i class="bi bi-check2-circle"></i>
+                <div>
+                  <div class="alert__title">Success</div>
+                  <div class="alert__text">Action completed successfully.</div>
+                </div>
+              </div>
+
+              <div class="alert alert--danger">
+                <i class="bi bi-exclamation-triangle"></i>
+                <div>
+                  <div class="alert__title">Warning</div>
+                  <div class="alert__text">Please double-check your input.</div>
+                </div>
+              </div>
+
+              <div class="divider"></div>
+
+              <div class="progress">
+                <div class="progress__label">
+                  <span>Storage</span>
+                  <span class="muted">65%</span>
+                </div>
+                <div class="progress__bar">
+                  <div class="progress__fill" style="width:65%"></div>
+                </div>
+              </div>
+
+              <div class="progress">
+                <div class="progress__label">
+                  <span>Tasks</span>
+                  <span class="muted">32%</span>
+                </div>
+                <div class="progress__bar">
+                  <div class="progress__fill" style="width:32%"></div>
+                </div>
+              </div>
+
+              <div class="divider"></div>
+
+              <button class="btn-primary" type="button" id="openModalBtn">
+                <i class="bi bi-window"></i> Open Modal
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cards -->
+        <div class="grid one">
+          <div class="card">
+            <div class="card__header">
+              <h3>Cards</h3>
+              <div class="muted">Layout examples</div>
+            </div>
+
+            <div class="pad card-grid">
+              <div class="mini-card">
+                <div class="mini-card__icon"><i class="bi bi-people"></i></div>
+                <div class="mini-card__title">Users</div>
+                <div class="mini-card__meta">Manage accounts</div>
+              </div>
+
+              <div class="mini-card">
+                <div class="mini-card__icon"><i class="bi bi-table"></i></div>
+                <div class="mini-card__title">Tables</div>
+                <div class="mini-card__meta">View records</div>
+              </div>
+
+              <div class="mini-card">
+                <div class="mini-card__icon"><i class="bi bi-cloud-upload"></i></div>
+                <div class="mini-card__title">Uploads</div>
+                <div class="mini-card__meta">Manage files</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal" id="demoModal" aria-hidden="true">
+          <div class="modal__backdrop" data-close="1"></div>
+          <div class="modal__card" role="dialog" aria-modal="true">
+            <div class="modal__head">
+              <div class="modal__title">Demo Modal</div>
+              <button class="btn-icon" type="button" data-close="1"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="modal__body">
+              <p class="muted" style="margin:0">
+                This is a reusable modal component. You can use it for Add/Edit forms later.
+              </p>
+            </div>
+            <div class="modal__foot">
+              <button class="btn-ghost" type="button" data-close="1">Close</button>
+              <button class="btn-primary" type="button"><i class="bi bi-check2"></i> Confirm</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <span>© 2026 Admin Template</span>
+        <span class="muted">v1.0</span>
+      </footer>
+    </main>
+
+  </div>
+
+  <div id="themePanel" class="theme-panel">
+    <h4>Appearance</h4>
+
+    <button class="theme-option" data-theme="theme-default">🟧 Blue + Orange</button>
+    <button class="theme-option" data-theme="theme-blue">🔷 Modern Blue</button>
+    <button class="theme-option" data-theme="theme-softblue">🌊 Soft Blue</button>
+    <button class="theme-option" data-theme="theme-dark">🌑 Dark Elegant</button>
+    <button class="theme-option" data-theme="theme-purple">🟣 Purple-Blue</button>
+    <button class="theme-option" data-theme="theme-blueviolet">🔵 Default Blue-Violet</button>
+  </div>
+
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/theme.js"></script>
+</body>
+
+</html>

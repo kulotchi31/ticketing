@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Template • 404</title>
+  <link rel="stylesheet" href="assets/css/app.css">
+  <style>
+    .err{
+      min-height:100dvh;
+      display:grid;
+      place-items:center;
+      padding:18px;
+    }
+    .err-card{
+      width:min(560px, 100%);
+      background:#fff;
+      border:1px solid var(--card-border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:22px;
+    }
+    .err-card h1{ margin:0 0 8px; font-size:34px; }
+    .err-card p{ margin:0 0 16px; color:#6c757d; }
+    .err-actions{ display:flex; gap:10px; flex-wrap:wrap; }
+    .btn{
+      padding:10px 12px;
+      border-radius:4px;
+      cursor:pointer;
+      border:1px solid #ced4da;
+      background:#fff;
+    }
+    .btn.primary{ background:var(--active); border-color:var(--active); color:#fff; }
+    .btn:hover{ filter:brightness(.98); }
+    a{ text-decoration:none; }
+  </style>
+</head>
+<body>
+  <div class="err">
+    <div class="err-card">
+      <h1>404</h1>
+      <p>The page you’re looking for doesn’t exist.</p>
+      <div class="err-actions">
+        <a class="btn primary" href="index.html">Go Dashboard</a>
+        <a class="btn" href="login.html">Login</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

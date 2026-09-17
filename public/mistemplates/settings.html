@@ -1,0 +1,857 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Template • Settings</title>
+  <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="assets/css/bootstrap-icons.min.css">
+
+  <!-- Small extra CSS just for settings utilities -->
+  <style>
+    /* optional helpers; safe even if app.css doesn't have these */
+    .setting-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .setting-grid.two {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    @media (max-width: 900px) {
+      .setting-grid.two {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .color-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .color-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: var(--accent, #5b8cff);
+      border: 1px solid rgba(0, 0, 0, .12);
+    }
+
+    /* sticky topbar toggle support */
+    .topbar.is-sticky {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    /* card shadow toggle support */
+    body.no-card-shadow .card {
+      box-shadow: none !important;
+    }
+
+    /* compact sidebar toggle support (works with your existing collapse button too) */
+    body.sidebar-compact .sidebar {
+      width: 78px;
+    }
+
+    body.sidebar-compact .sidebar .nav__label,
+    body.sidebar-compact .sidebar .brand__text,
+    body.sidebar-compact .sidebar .sidebar__search,
+    body.sidebar-compact .sidebar .nav__arrow,
+    body.sidebar-compact .sidebar .nav__submenu {
+      display: none !important;
+    }
+
+    body.sidebar-compact .sidebar .nav__item,
+    body.sidebar-compact .sidebar .nav__toggle {
+      justify-content: center;
+    }
+
+    body.sidebar-compact .sidebar .user__meta {
+      display: none;
+    }
+
+    body.sidebar-compact .main {
+      margin-left: 78px;
+    }
+
+    @media (max-width: 980px) {
+      body.sidebar-compact .main {
+        margin-left: 0;
+      }
+
+      /* mobile drawer handles sidebar */
+    }
+
+    /* font size presets */
+    body.font-sm {
+      font-size: 14px;
+    }
+
+    body.font-md {
+      font-size: 16px;
+    }
+
+    body.font-lg {
+      font-size: 18px;
+    }
+
+    /* mini preview card */
+    .preview {
+      border: 1px dashed rgba(0, 0, 0, .12);
+      border-radius: 14px;
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .preview .row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .preview .btn-primary,
+    .preview .btn-ghost {
+      pointer-events: none;
+    }
+
+    /* preview only */
+
+    /* inline warning block */
+    .warn {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 12px;
+      border-radius: 14px;
+      background: rgba(255, 99, 99, .08);
+      border: 1px solid rgba(255, 99, 99, .25);
+    }
+  </style>
+</head>
+
+<body class="theme-default">
+
+  <div class="overlay" id="overlay" aria-hidden="true"></div>
+
+  <div class="app" data-page="settings">
+
+    <aside class="sidebar" id="sidebar">
+
+      <!-- BRAND -->
+      <div class="sidebar__brand">
+        <div class="brand__logo">A</div>
+        <div class="brand__text">
+          <div class="brand__title">Admin Panel</div>
+          <div class="brand__sub">v1.0</div>
+        </div>
+      </div>
+
+      <!-- SEARCH -->
+      <div class="sidebar__search">
+        <input type="text" placeholder="Search...">
+      </div>
+
+      <nav class="sidebar__nav">
+
+        <!-- DASHBOARD -->
+        <a class="nav__item" href="index.html" data-page="dashboard">
+          <i class="bi bi-speedometer2 nav__icon"></i>
+          <span class="nav__label">Dashboard</span>
+        </a>
+
+        <!-- MANAGEMENT GROUP -->
+        <div class="nav__group" data-group="management">
+          <!-- open: para bukas na yung submenu like your screenshot -->
+          <div class="nav__item nav__toggle" data-toggle="management">
+            <i class="bi bi-people nav__icon"></i>
+            <span class="nav__label">Management</span>
+            <i class="bi bi-chevron-right nav__arrow"></i>
+          </div>
+
+          <div class="nav__submenu" id="management">
+            <a class="nav__subitem" href="users.html" data-page="users">
+              <i class="bi bi-person"></i>
+              <span>Users</span>
+            </a>
+
+            <a class="nav__subitem" href="roles.html" data-page="roles">
+              <i class="bi bi-shield-lock"></i>
+              <span>Roles</span>
+            </a>
+
+            <a class="nav__subitem active" href="activity-log.html" data-page="activity-log">
+              <i class="bi bi-clock-history"></i>
+              <span>Activity Logs</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- DATA GROUP -->
+        <div class="nav__group" data-group="data">
+          <div class="nav__item nav__toggle" data-toggle="data">
+            <i class="bi bi-database nav__icon"></i>
+            <span class="nav__label">Data</span>
+            <i class="bi bi-chevron-right nav__arrow"></i>
+          </div>
+
+          <div class="nav__submenu" id="data">
+            <a class="nav__subitem" href="tables.html" data-page="tables">
+              <i class="bi bi-table"></i>
+              <span>Tables</span>
+            </a>
+
+            <a class="nav__subitem" href="forms.html" data-page="forms">
+              <i class="bi bi-file-text"></i>
+              <span>Forms</span>
+            </a>
+
+            <a class="nav__subitem" href="uploads.html" data-page="uploads">
+              <i class="bi bi-upload"></i>
+              <span>Uploads</span>
+            </a>
+
+            <a class="nav__subitem" href="calendar.html" data-page="calendar">
+              <i class="bi bi-calendar-event"></i>
+              <span>Calendar</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- UI GROUP -->
+        <div class="nav__group" data-group="ui">
+          <div class="nav__item nav__toggle" data-toggle="ui">
+            <i class="bi bi-layers nav__icon"></i>
+            <span class="nav__label">UI Components</span>
+            <i class="bi bi-chevron-right nav__arrow"></i>
+          </div>
+
+          <div class="nav__submenu" id="ui">
+            <a class="nav__subitem" href="components.html" data-page="components">
+              <i class="bi bi-puzzle"></i>
+              <span>Components</span>
+            </a>
+
+            <a class="nav__subitem" href="icons.html" data-page="icons">
+              <i class="bi bi-stars"></i>
+              <span>Icons</span>
+            </a>
+
+            <a class="nav__subitem" href="charts.html" data-page="charts">
+              <i class="bi bi-bar-chart"></i>
+              <span>Charts</span>
+            </a>
+
+            <a class="nav__subitem" href="widgets.html" data-page="widgets">
+              <i class="bi bi-grid-3x3-gap"></i>
+              <span>Widgets</span>
+            </a>
+
+            <a class="nav__subitem" href="modals.html" data-page="modals">
+              <i class="bi bi-folder"></i>
+              <span>Modal</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- PAGES -->
+        <a class="nav__item" href="profile.html" data-page="profile">
+          <i class="bi bi-person-badge nav__icon"></i>
+          <span class="nav__label">Profile</span>
+        </a>
+
+        <a class="nav__item" href="settings.html" data-page="settings">
+          <i class="bi bi-gear nav__icon"></i>
+          <span class="nav__label">Settings</span>
+        </a>
+
+        <a class="nav__item" href="blank.html" data-page="blank">
+          <i class="bi bi-file-earmark nav__icon"></i>
+          <span class="nav__label">Blank Page</span>
+        </a>
+
+        <a class="nav__item" href="404.html" data-page="404">
+          <i class="bi bi-exclamation-circle nav__icon"></i>
+          <span class="nav__label">404 Page</span>
+        </a>
+
+        <!-- AUTH -->
+        <a class="nav__item" href="login.html" data-page="login">
+          <i class="bi bi-box-arrow-in-right nav__icon"></i>
+          <span class="nav__label">Login</span>
+        </a>
+
+      </nav>
+
+      <!-- FOOTER -->
+      <div class="sidebar__footer">
+        <div class="user">
+          <div class="user__avatar">JP</div>
+          <div class="user__meta">
+            <div class="user__name">June</div>
+            <div class="user__status">
+              <span class="dot"></span> Online
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+    <main class="main">
+      <header class="topbar" id="topbar">
+        <div class="topbar__left">
+          <button class="btn-icon topbar__burger" id="btnSidebar" aria-label="Toggle Sidebar">☰</button>
+          <button class="btn-icon" id="btnCollapse" aria-label="Collapse Sidebar" title="Collapse Sidebar">⫶</button>
+
+          <div class="topbar__links">
+            <a href="#" class="topbar__link">Home</a>
+            <a href="#" class="topbar__link">Contact</a>
+          </div>
+        </div>
+
+        <div class="topbar__right">
+          <button class="btn-icon" id="themeBtn" type="button" title="Theme">
+            <i class="bi bi-palette"></i>
+          </button>
+
+          <div class="dd" id="ddNotif">
+            <button class="btn-icon dd__btn" type="button" aria-haspopup="true" aria-expanded="false">
+              <i class="bi bi-bell"></i>
+              <span class="dd__dot">3</span>
+            </button>
+            <div class="dd__menu" role="menu" aria-label="Notifications">
+              <div class="dd__head">Notifications</div>
+              <a class="dd__item" href="#"><i class="bi bi-info-circle"></i>
+                <div>
+                  <div class="dd__title">System update</div>
+                  <div class="dd__meta">2 mins ago</div>
+                </div>
+              </a>
+              <a class="dd__item" href="#"><i class="bi bi-person-plus"></i>
+                <div>
+                  <div class="dd__title">New user registered</div>
+                  <div class="dd__meta">15 mins ago</div>
+                </div>
+              </a>
+              <a class="dd__item" href="#"><i class="bi bi-check2-circle"></i>
+                <div>
+                  <div class="dd__title">Backup complete</div>
+                  <div class="dd__meta">1 hour ago</div>
+                </div>
+              </a>
+              <a class="dd__footer" href="#">View all</a>
+            </div>
+          </div>
+
+          <div class="dd" id="ddProfile">
+            <button class="btn-icon dd__btn" type="button" aria-haspopup="true" aria-expanded="false">
+              <i class="bi bi-person-circle"></i>
+            </button>
+            <div class="dd__menu" role="menu" aria-label="Profile">
+              <div class="dd__head">Account</div>
+              <a class="dd__item" href="profile.html"><i class="bi bi-person"></i>
+                <div class="dd__title">Profile</div>
+              </a>
+              <a class="dd__item" href="settings.html"><i class="bi bi-gear"></i>
+                <div class="dd__title">Settings</div>
+              </a>
+              <a class="dd__item" href="activity-log.html"><i class="bi bi-clock-history"></i>
+                <div class="dd__title">Activity Logs</div>
+              </a>
+              <a class="dd__item dd__danger" href="login.html"><i class="bi bi-box-arrow-right"></i>
+                <div class="dd__title">Logout</div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <section class="content">
+        <div class="content__head">
+          <h1 class="page-title">Settings</h1>
+          <div class="breadcrumb">Home / Settings</div>
+        </div>
+
+        <div class="grid two">
+          <!-- LEFT: Preferences -->
+          <div class="card">
+            <div class="card__header">
+              <h3>Preferences</h3>
+              <div class="muted">Saved locally</div>
+            </div>
+
+            <div class="form">
+              <div class="pill">
+                <i class="bi bi-info-circle"></i>
+                <div>
+                  <div style="font-weight:900;">Note</div>
+                  <div class="muted">These settings are stored in your browser (localStorage).</div>
+                </div>
+              </div>
+
+              <div class="divider"></div>
+
+              <div class="setting-grid two">
+                <div class="form__row">
+                  <label>Theme</label>
+                  <select class="select" id="setTheme">
+                    <option value="theme-default">Default</option>
+                    <option value="theme-blue">Blue Corporate</option>
+                    <option value="theme-softblue">Soft Blue</option>
+                    <option value="theme-dark">Dark</option>
+                    <option value="theme-purple">Purple</option>
+                    <option value="theme-blueorange">Blue + Orange</option>
+                  </select>
+                  <div class="muted">Changes apply instantly.</div>
+                </div>
+
+                <div class="form__row">
+                  <label>Font Size</label>
+                  <select class="select" id="setFont">
+                    <option value="font-md">Normal</option>
+                    <option value="font-sm">Small</option>
+                    <option value="font-lg">Large</option>
+                  </select>
+                  <div class="muted">Affects whole UI.</div>
+                </div>
+              </div>
+
+              <div class="divider"></div>
+
+              <div class="setting-grid two">
+                <div class="form__row">
+                  <label>Primary Accent</label>
+                  <div class="color-row">
+                    <span class="color-dot" id="accentDot" aria-hidden="true"></span>
+                    <input type="color" id="setAccent" value="#5b8cff"
+                      style="height:42px;width:72px;border:1px solid rgba(0,0,0,.14);border-radius:12px;">
+                    <span class="muted" id="accentHex">#5b8cff</span>
+                  </div>
+                  <div class="muted">Used by primary buttons (if CSS uses --accent).</div>
+                </div>
+
+                <div class="form__row">
+                  <label>Animations</label>
+                  <select class="select" id="setMotion">
+                    <option value="on">On</option>
+                    <option value="off">Reduce Motion</option>
+                  </select>
+                  <div class="muted">Helpful for slow PCs.</div>
+                </div>
+              </div>
+
+              <div class="divider"></div>
+
+              <label class="switch">
+                <input type="checkbox" id="setCompactSidebar">
+                <span class="switch__ui"></span>
+                <span class="switch__label">Compact sidebar (collapsed on desktop)</span>
+              </label>
+
+              <label class="switch">
+                <input type="checkbox" id="setStickyTopbar" checked>
+                <span class="switch__ui"></span>
+                <span class="switch__label">Sticky topbar</span>
+              </label>
+
+              <label class="switch">
+                <input type="checkbox" id="setCardShadow" checked>
+                <span class="switch__ui"></span>
+                <span class="switch__label">Card shadow</span>
+              </label>
+
+              <div class="divider"></div>
+
+              <!-- Live Preview -->
+              <div class="preview">
+                <div style="display:flex;justify-content:space-between;gap:10px;align-items:center">
+                  <div style="font-weight:900"><i class="bi bi-eye"></i> Live Preview</div>
+                  <span class="muted" style="font-size:12px">Preview follows your choices</span>
+                </div>
+
+                <div class="row">
+                  <button class="btn-primary" type="button"><i class="bi bi-check2"></i> Primary</button>
+                  <button class="btn-ghost" type="button"><i class="bi bi-sliders"></i> Ghost</button>
+                  <span class="chip chip--info">Chip</span>
+                </div>
+
+                <div class="pill">
+                  <i class="bi bi-info-circle"></i>
+                  <span>Example notification pill.</span>
+                </div>
+              </div>
+
+              <div class="divider"></div>
+
+              <div class="form__actions">
+                <button class="btn-primary" type="button" id="btnSaveSettings">
+                  <i class="bi bi-save"></i> Save
+                </button>
+                <button class="btn-ghost" type="button" id="btnResetSettings">
+                  Reset
+                </button>
+              </div>
+
+              <div class="form__msg" id="settingsMsg" aria-live="polite"></div>
+
+              <div class="divider"></div>
+
+              <!-- Danger zone -->
+              <div class="warn">
+                <i class="bi bi-exclamation-triangle"></i>
+                <div>
+                  <div style="font-weight:900;">Danger zone</div>
+                  <div class="muted">This will clear saved settings in this browser only.</div>
+                  <div style="margin-top:10px">
+                    <button class="btn-sm btn-delete" type="button" id="btnClearLocal">
+                      <i class="bi bi-trash"></i> Clear Local Settings
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- RIGHT: Account -->
+          <div class="card">
+            <div class="card__header">
+              <h3>Account</h3>
+              <div class="muted">Profile preferences</div>
+            </div>
+
+            <div class="form">
+              <div class="form__row">
+                <label>Display Name</label>
+                <input type="text" id="setName" placeholder="e.g. June Bernard Tayopon">
+              </div>
+
+              <div class="form__row">
+                <label>Email</label>
+                <input type="email" id="setEmail" placeholder="admin@email.com">
+              </div>
+
+              <div class="form__row">
+                <label>Role</label>
+                <select id="setRole" class="select">
+                  <option>Administrator</option>
+                  <option>Moderator</option>
+                  <option>Staff</option>
+                </select>
+              </div>
+
+              <div class="form__row">
+                <label>Bio</label>
+                <textarea id="setBio" rows="4" placeholder="Short description..."></textarea>
+              </div>
+
+              <div class="divider"></div>
+
+              <div class="form__actions">
+                <button class="btn-primary" type="button" id="btnSaveProfile">
+                  <i class="bi bi-person-check"></i> Save Profile
+                </button>
+                <button class="btn-ghost" type="button" id="btnFillDemo">
+                  <i class="bi bi-magic"></i> Fill Demo
+                </button>
+              </div>
+
+              <div class="form__msg" id="profileMsg" aria-live="polite"></div>
+
+              <div class="divider"></div>
+
+              <div class="pill">
+                <i class="bi bi-shield-check"></i>
+                <span><b>Tip:</b> Later we can connect this to backend with validation + prepared statements.</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <footer class="footer">
+        <span>© 2026 Admin Template</span>
+        <span class="muted">v1.0</span>
+      </footer>
+    </main>
+
+  </div>
+
+  <div id="themePanel" class="theme-panel">
+    <h4>Appearance</h4>
+
+    <button class="theme-option" data-theme="theme-default">🟧 Blue + Orange</button>
+    <button class="theme-option" data-theme="theme-blue">🔷 Modern Blue</button>
+    <button class="theme-option" data-theme="theme-softblue">🌊 Soft Blue</button>
+    <button class="theme-option" data-theme="theme-dark">🌑 Dark Elegant</button>
+    <button class="theme-option" data-theme="theme-purple">🟣 Purple-Blue</button>
+    <button class="theme-option" data-theme="theme-blueviolet">🔵 Default Blue-Violet</button>
+  </div>
+
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/theme.js"></script>
+
+  <script>
+    // =========================
+    // SETTINGS STORAGE (local)
+    // =========================
+    const KEY_UI = "mis_ui_settings_v1";
+    const KEY_PROFILE = "mis_profile_v1";
+
+    const $ = (id) => document.getElementById(id);
+
+    const ui = {
+      theme: $("setTheme"),
+      font: $("setFont"),
+      accent: $("setAccent"),
+      accentHex: $("accentHex"),
+      accentDot: $("accentDot"),
+      motion: $("setMotion"),
+      compact: $("setCompactSidebar"),
+      sticky: $("setStickyTopbar"),
+      shadow: $("setCardShadow"),
+      msg: $("settingsMsg"),
+      btnSave: $("btnSaveSettings"),
+      btnReset: $("btnResetSettings"),
+      btnClear: $("btnClearLocal"),
+      topbar: $("topbar"),
+    };
+
+    const prof = {
+      name: $("setName"),
+      email: $("setEmail"),
+      role: $("setRole"),
+      bio: $("setBio"),
+      msg: $("profileMsg"),
+      btnSave: $("btnSaveProfile"),
+      btnDemo: $("btnFillDemo"),
+      sideName: $("sideName"),
+      sideAvatar: $("sideAvatar"),
+    };
+
+    function safeParse(json, fallback) {
+      try { return JSON.parse(json) ?? fallback; } catch { return fallback; }
+    }
+
+    function setMsg(el, text, ok = true) {
+      el.textContent = text;
+      el.style.color = ok ? "" : "var(--danger, #ff5a5a)";
+    }
+
+    // Apply UI settings to DOM
+    function applyUI(s) {
+      // theme class
+      document.body.classList.remove(
+        "theme-default", "theme-blue", "theme-softblue", "theme-dark", "theme-purple", "theme-blueorange"
+      );
+      document.body.classList.add(s.theme || "theme-default");
+
+      // font class
+      document.body.classList.remove("font-sm", "font-md", "font-lg");
+      document.body.classList.add(s.font || "font-md");
+
+      // accent variable
+      const accent = s.accent || "#5b8cff";
+      document.documentElement.style.setProperty("--accent", accent);
+
+      // motion
+      if ((s.motion || "on") === "off") {
+        document.documentElement.style.setProperty("--motion", "0");
+        document.body.classList.add("reduce-motion");
+      } else {
+        document.documentElement.style.removeProperty("--motion");
+        document.body.classList.remove("reduce-motion");
+      }
+
+      // compact sidebar
+      document.body.classList.toggle("sidebar-compact", !!s.compact);
+
+      // sticky topbar
+      ui.topbar.classList.toggle("is-sticky", !!s.sticky);
+
+      // card shadow
+      document.body.classList.toggle("no-card-shadow", !s.shadow);
+
+      // sync controls
+      ui.theme.value = s.theme || "theme-default";
+      ui.font.value = s.font || "font-md";
+      ui.accent.value = accent;
+      ui.accentHex.textContent = accent.toLowerCase();
+      ui.accentDot.style.background = accent;
+      ui.motion.value = s.motion || "on";
+      ui.compact.checked = !!s.compact;
+      ui.sticky.checked = !!s.sticky;
+      ui.shadow.checked = !!s.shadow;
+    }
+
+    function readUI() {
+      return {
+        theme: ui.theme.value,
+        font: ui.font.value,
+        accent: ui.accent.value,
+        motion: ui.motion.value,
+        compact: ui.compact.checked,
+        sticky: ui.sticky.checked,
+        shadow: ui.shadow.checked
+      };
+    }
+
+    function loadUI() {
+      const saved = safeParse(localStorage.getItem(KEY_UI), null);
+      return saved || {
+        theme: document.body.classList.contains("theme-dark") ? "theme-dark" : "theme-default",
+        font: "font-md",
+        accent: "#5b8cff",
+        motion: "on",
+        compact: false,
+        sticky: true,
+        shadow: true
+      };
+    }
+
+    function saveUI(s) {
+      localStorage.setItem(KEY_UI, JSON.stringify(s));
+    }
+
+    // Profile
+    function applyProfile(p) {
+      prof.name.value = p.name || "";
+      prof.email.value = p.email || "";
+      prof.role.value = p.role || "Administrator";
+      prof.bio.value = p.bio || "";
+
+      // Sidebar preview
+      const dn = (p.name || "June").trim();
+      prof.sideName.textContent = dn || "June";
+      const initials = dn
+        ? dn.split(/\s+/).slice(0, 2).map(x => x[0]?.toUpperCase() || "").join("")
+        : "JP";
+      prof.sideAvatar.textContent = initials || "JP";
+    }
+
+    function readProfile() {
+      return {
+        name: prof.name.value.trim(),
+        email: prof.email.value.trim(),
+        role: prof.role.value,
+        bio: prof.bio.value.trim()
+      };
+    }
+
+    function loadProfile() {
+      return safeParse(localStorage.getItem(KEY_PROFILE), {
+        name: "June Bernard Tayopon",
+        email: "admin@email.com",
+        role: "Administrator",
+        bio: "MIS Template admin account."
+      });
+    }
+
+    function saveProfile(p) {
+      localStorage.setItem(KEY_PROFILE, JSON.stringify(p));
+    }
+
+    // Live change handlers
+    function bindLive() {
+      const live = () => {
+        const s = readUI();
+        ui.accentHex.textContent = (s.accent || "").toLowerCase();
+        ui.accentDot.style.background = s.accent || "#5b8cff";
+        applyUI(s);
+      };
+      ["change", "input"].forEach(evt => {
+        ui.theme.addEventListener(evt, live);
+        ui.font.addEventListener(evt, live);
+        ui.accent.addEventListener(evt, live);
+        ui.motion.addEventListener(evt, live);
+        ui.compact.addEventListener(evt, live);
+        ui.sticky.addEventListener(evt, live);
+        ui.shadow.addEventListener(evt, live);
+      });
+    }
+
+    // Actions
+    ui.btnSave.addEventListener("click", () => {
+      const s = readUI();
+      saveUI(s);
+      setMsg(ui.msg, "Settings saved.");
+      setTimeout(() => setMsg(ui.msg, ""), 1400);
+    });
+
+    ui.btnReset.addEventListener("click", () => {
+      const def = {
+        theme: "theme-default",
+        font: "font-md",
+        accent: "#5b8cff",
+        motion: "on",
+        compact: false,
+        sticky: true,
+        shadow: true
+      };
+      applyUI(def);
+      saveUI(def);
+      setMsg(ui.msg, "Reset to defaults.");
+      setTimeout(() => setMsg(ui.msg, ""), 1400);
+    });
+
+    ui.btnClear.addEventListener("click", () => {
+      localStorage.removeItem(KEY_UI);
+      localStorage.removeItem(KEY_PROFILE);
+      const defUI = loadUI(); // will return defaults
+      const defP = loadProfile(); // default fallback
+      applyUI(defUI);
+      applyProfile(defP);
+      setMsg(ui.msg, "Local settings cleared.", false);
+      setTimeout(() => setMsg(ui.msg, ""), 1600);
+      setMsg(prof.msg, "");
+    });
+
+    prof.btnSave.addEventListener("click", () => {
+      const p = readProfile();
+
+      // basic validation (client-side)
+      if (p.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p.email)) {
+        setMsg(prof.msg, "Invalid email format.", false);
+        return;
+      }
+
+      saveProfile(p);
+      applyProfile(p);
+      setMsg(prof.msg, "Profile saved.");
+      setTimeout(() => setMsg(prof.msg, ""), 1400);
+    });
+
+    prof.btnDemo.addEventListener("click", () => {
+      const demo = {
+        name: "June Bernard Tayopon",
+        email: "admin@email.com",
+        role: "Administrator",
+        bio: "Managing MIS Template settings and UI preferences."
+      };
+      applyProfile(demo);
+      saveProfile(demo);
+      setMsg(prof.msg, "Demo filled and saved.");
+      setTimeout(() => setMsg(prof.msg, ""), 1400);
+    });
+
+    // Init
+    (function init() {
+      const s = loadUI();
+      applyUI(s);
+
+      const p = loadProfile();
+      applyProfile(p);
+
+      bindLive();
+    })();
+  </script>
+
+</body>
+
+</html>

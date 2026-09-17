@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login • MIS TEMPLATE</title>
+
+  <link rel="stylesheet" href="assets/css/login.css">
+</head>
+
+<body>
+
+  <div class="auth">
+    <div class="auth-card">
+
+      <div class="auth-head">
+        <div class="auth-logo">A</div>
+        <div class="auth-title">MIS TEMPLATE</div>
+        <div class="auth-sub">Sign in to your account</div>
+      </div>
+
+      <div class="auth-body">
+        <!-- ready for errors -->
+        <div class="notice" id="loginNotice">Invalid email or password.</div>
+
+        <form id="loginForm" autocomplete="off">
+          <div class="field">
+            <label for="email">Email</label>
+            <div class="input">
+              <input id="email" type="email" placeholder="you@example.com" required>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="password">Password</label>
+            <div class="input">
+              <input id="password" type="password" placeholder="••••••••" required>
+              <button class="toggle-pass" type="button" id="togglePass">SHOW</button>
+            </div>
+          </div>
+
+          <div class="row">
+            <label class="check">
+              <input type="checkbox" id="remember">
+              Remember me
+            </label>
+            <a href="#">Forgot password?</a>
+          </div>
+
+          <button class="btn-primary" type="submit">Sign In</button>
+        </form>
+      </div>
+
+      <div class="auth-footer">
+        Don't have an account?
+        <a href="register.html">Create one</a>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Show/Hide password
+    const pass = document.getElementById('password');
+    const btn = document.getElementById('togglePass');
+    btn.addEventListener('click', () => {
+      const isHidden = pass.type === 'password';
+      pass.type = isHidden ? 'text' : 'password';
+      btn.textContent = isHidden ? 'HIDE' : 'SHOW';
+    });
+
+    // Demo submit (remove kapag may backend ka na)
+    document.getElementById('loginForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      // example: show error
+      // document.getElementById('loginNotice').classList.add('show');
+
+      alert('Demo only: connect this to your backend login.');
+    });
+  </script>
+
+</body>
+
+</html>

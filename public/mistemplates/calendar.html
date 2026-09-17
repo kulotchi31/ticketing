@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Template • Calendar</title>
+
+  <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="assets/css/bootstrap-icons.min.css">
+</head>
+
+<body class="theme-default">
+
+  <div class="overlay" id="overlay" aria-hidden="true"></div>
+
+  <!-- data-page should match page -->
+  <div class="app" data-page="calendar">
+
+    <aside class="sidebar" id="sidebar">
+
+      <!-- BRAND -->
+      <div class="sidebar__brand">
+        <div class="brand__logo">A</div>
+        <div class="brand__text">
+          <div class="brand__title">Admin Panel</div>
+          <div class="brand__sub">v1.0</div>
+        </div>
+      </div>
+
+      <!-- SEARCH -->
+      <div class="sidebar__search">
+        <input type="text" placeholder="Search...">
+      </div>
+
+      <nav class="sidebar__nav">
+
+        <!-- DASHBOARD -->
+        <a class="nav__item" href="index.html" data-page="dashboard">
+          <i class="bi bi-speedometer2 nav__icon"></i>
+          <span class="nav__label">Dashboard</span>
+        </a>
+
+        <!-- MANAGEMENT GROUP -->
+        <div class="nav__group" data-group="management">
+          <!-- open: para bukas na yung submenu like your screenshot -->
+          <div class="nav__item nav__toggle" data-toggle="management">
+            <i class="bi bi-people nav__icon"></i>
+            <span class="nav__label">Management</span>
+            <i class="bi bi-chevron-right nav__arrow"></i>
+          </div>
+
+          <div class="nav__submenu" id="management">
+            <a class="nav__subitem" href="users.html" data-page="users">
+              <i class="bi bi-person"></i>
+              <span>Users</span>
+            </a>
+
+            <a class="nav__subitem" href="roles.html" data-page="roles">
+              <i class="bi bi-shield-lock"></i>
+              <span>Roles</span>
+            </a>
+
+            <a class="nav__subitem" href="activity-log.html" data-page="activity-log">
+              <i class="bi bi-clock-history"></i>
+              <span>Activity Logs</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- DATA GROUP -->
+        <div class="nav__group" data-group="data">
+          <div class="nav__item nav__toggle" data-toggle="data">
+            <i class="bi bi-database nav__icon"></i>
+            <span class="nav__label">Data</span>
+            <i class="bi bi-chevron-right nav__arrow"></i>
+          </div>
+
+          <div class="nav__submenu" id="data">
+            <a class="nav__subitem" href="tables.html" data-page="tables">
+              <i class="bi bi-table"></i>
+              <span>Tables</span>
+            </a>
+
+            <a class="nav__subitem" href="forms.html" data-page="forms">
+              <i class="bi bi-file-text"></i>
+              <span>Forms</span>
+            </a>
+
+            <a class="nav__subitem" href="uploads.html" data-page="uploads">
+              <i class="bi bi-upload"></i>
+              <span>Uploads</span>
+            </a>
+
+            <a class="nav__subitem active" href="calendar.html" data-page="calendar">
+              <i class="bi bi-calendar-event"></i>
+              <span>Calendar</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- UI GROUP -->
+        <div class="nav__group" data-group="ui">
+          <div class="nav__item nav__toggle" data-toggle="ui">
+            <i class="bi bi-layers nav__icon"></i>
+            <span class="nav__label">UI Components</span>
+            <i class="bi bi-chevron-right nav__arrow"></i>
+          </div>
+
+          <div class="nav__submenu" id="ui">
+            <a class="nav__subitem" href="components.html" data-page="components">
+              <i class="bi bi-puzzle"></i>
+              <span>Components</span>
+            </a>
+
+            <a class="nav__subitem" href="icons.html" data-page="icons">
+              <i class="bi bi-stars"></i>
+              <span>Icons</span>
+            </a>
+
+            <a class="nav__subitem" href="charts.html" data-page="charts">
+              <i class="bi bi-bar-chart"></i>
+              <span>Charts</span>
+            </a>
+
+            <a class="nav__subitem" href="widgets.html" data-page="widgets">
+              <i class="bi bi-grid-3x3-gap"></i>
+              <span>Widgets</span>
+            </a>
+
+            <a class="nav__subitem" href="modals.html" data-page="modals">
+              <i class="bi bi-folder"></i>
+              <span>Modal</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- PAGES -->
+        <a class="nav__item" href="profile.html" data-page="profile">
+          <i class="bi bi-person-badge nav__icon"></i>
+          <span class="nav__label">Profile</span>
+        </a>
+
+        <a class="nav__item" href="settings.html" data-page="settings">
+          <i class="bi bi-gear nav__icon"></i>
+          <span class="nav__label">Settings</span>
+        </a>
+
+        <a class="nav__item" href="blank.html" data-page="blank">
+          <i class="bi bi-file-earmark nav__icon"></i>
+          <span class="nav__label">Blank Page</span>
+        </a>
+
+        <a class="nav__item" href="404.html" data-page="404">
+          <i class="bi bi-exclamation-circle nav__icon"></i>
+          <span class="nav__label">404 Page</span>
+        </a>
+
+        <!-- AUTH -->
+        <a class="nav__item" href="login.html" data-page="login">
+          <i class="bi bi-box-arrow-in-right nav__icon"></i>
+          <span class="nav__label">Login</span>
+        </a>
+
+      </nav>
+
+      <!-- FOOTER -->
+      <div class="sidebar__footer">
+        <div class="user">
+          <div class="user__avatar">JP</div>
+          <div class="user__meta">
+            <div class="user__name">June</div>
+            <div class="user__status">
+              <span class="dot"></span> Online
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar__left">
+          <button class="btn-icon topbar__burger" id="btnSidebar" aria-label="Toggle Sidebar">☰</button>
+          <button class="btn-icon" id="btnCollapse" aria-label="Collapse Sidebar" title="Collapse Sidebar">⫶</button>
+
+          <div class="topbar__links">
+            <a href="#" class="topbar__link">Home</a>
+            <a href="#" class="topbar__link">Contact</a>
+          </div>
+        </div>
+
+        <div class="topbar__right">
+          <button class="btn-icon" id="themeBtn" type="button" title="Theme">
+            <i class="bi bi-palette"></i>
+          </button>
+
+          <!-- Notifications -->
+          <div class="dd" id="ddNotif">
+            <button class="btn-icon dd__btn" type="button" aria-haspopup="true" aria-expanded="false">
+              <i class="bi bi-bell"></i>
+              <span class="dd__dot">3</span>
+            </button>
+
+            <div class="dd__menu" role="menu" aria-label="Notifications">
+              <div class="dd__head">Notifications</div>
+
+              <a class="dd__item" href="#">
+                <i class="bi bi-info-circle"></i>
+                <div>
+                  <div class="dd__title">System update</div>
+                  <div class="dd__meta">2 mins ago</div>
+                </div>
+              </a>
+
+              <a class="dd__item" href="#">
+                <i class="bi bi-person-plus"></i>
+                <div>
+                  <div class="dd__title">New user registered</div>
+                  <div class="dd__meta">15 mins ago</div>
+                </div>
+              </a>
+
+              <a class="dd__item" href="#">
+                <i class="bi bi-check2-circle"></i>
+                <div>
+                  <div class="dd__title">Backup complete</div>
+                  <div class="dd__meta">1 hour ago</div>
+                </div>
+              </a>
+
+              <a class="dd__footer" href="#">View all</a>
+            </div>
+          </div>
+
+          <!-- Profile -->
+          <div class="dd" id="ddProfile">
+            <button class="btn-icon dd__btn" type="button" aria-haspopup="true" aria-expanded="false">
+              <i class="bi bi-person-circle"></i>
+            </button>
+
+            <div class="dd__menu" role="menu" aria-label="Profile">
+              <div class="dd__head">Account</div>
+
+              <a class="dd__item" href="profile.html">
+                <i class="bi bi-person"></i>
+                <div class="dd__title">Profile</div>
+              </a>
+
+              <a class="dd__item" href="settings.html">
+                <i class="bi bi-gear"></i>
+                <div class="dd__title">Settings</div>
+              </a>
+
+              <a class="dd__item" href="activity-log.html">
+                <i class="bi bi-clock-history"></i>
+                <div class="dd__title">Activity Logs</div>
+              </a>
+
+              <a class="dd__item dd__danger" href="login.html">
+                <i class="bi bi-box-arrow-right"></i>
+                <div class="dd__title">Logout</div>
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </header>
+
+      <section class="content">
+        <div class="content__head">
+          <h1 class="page-title">Calendar</h1>
+          <div class="breadcrumb">Home / Data / Calendar</div>
+        </div>
+
+        <div class="grid two">
+          <!-- Calendar -->
+          <div class="card">
+            <div class="card__header">
+              <h3>Monthly Calendar</h3>
+              <div class="cal__nav">
+                <button class="btn-ghost" type="button" id="calPrev"><i class="bi bi-chevron-left"></i></button>
+                <div class="cal__title" id="calTitle">Month Year</div>
+                <button class="btn-ghost" type="button" id="calNext"><i class="bi bi-chevron-right"></i></button>
+              </div>
+            </div>
+
+            <div class="pad">
+              <div class="cal__grid" id="calGrid"></div>
+            </div>
+          </div>
+
+          <!-- Events -->
+          <div class="card">
+            <div class="card__header">
+              <h3>Events</h3>
+              <div class="muted" id="calSelected">Select a day</div>
+            </div>
+
+            <div class="pad">
+              <div class="event-form">
+                <input type="text" id="eventTitle" placeholder="Event title..." autocomplete="off">
+                <button class="btn-primary" type="button" id="addEventBtn">
+                  <i class="bi bi-plus-lg"></i> Add
+                </button>
+              </div>
+
+              <div class="divider"></div>
+
+              <div class="event-list" id="eventList">
+                <div class="muted">No events yet.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <span>© 2026 Admin Template</span>
+        <span class="muted">v1.0</span>
+      </footer>
+    </main>
+
+  </div>
+
+  <div id="themePanel" class="theme-panel">
+    <h4>Appearance</h4>
+
+    <button class="theme-option" data-theme="theme-default">🟧 Blue + Orange</button>
+    <button class="theme-option" data-theme="theme-blue">🔷 Modern Blue</button>
+    <button class="theme-option" data-theme="theme-softblue">🌊 Soft Blue</button>
+    <button class="theme-option" data-theme="theme-dark">🌑 Dark Elegant</button>
+    <button class="theme-option" data-theme="theme-purple">🟣 Purple-Blue</button>
+    <button class="theme-option" data-theme="theme-blueviolet">🔵 Default Blue-Violet</button>
+  </div>
+
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/theme.js"></script>
+</body>
+
+</html>

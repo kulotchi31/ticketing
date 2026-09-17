@@ -1,0 +1,864 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Template • Reports</title>
+  <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="assets/css/bootstrap-icons.min.css">
+</head>
+
+<body class="theme-default">
+  <div class="overlay" id="overlay" aria-hidden="true"></div>
+
+  <div class="app" data-page="reports">
+
+    <aside class="sidebar" id="sidebar">
+
+      <!-- BRAND -->
+      <div class="sidebar__brand">
+        <div class="brand__logo">A</div>
+        <div class="brand__text">
+          <div class="brand__title">Admin Panel</div>
+          <div class="brand__sub">v1.0</div>
+        </div>
+      </div>
+
+      <!-- SEARCH -->
+      <div class="sidebar__search">
+        <input type="text" placeholder="Search...">
+      </div>
+
+      <nav class="sidebar__nav">
+
+        <!-- DASHBOARD -->
+        <a class="nav__item" href="index.html" data-page="dashboard">
+          <i class="bi bi-speedometer2 nav__icon"></i>
+          <span class="nav__label">Dashboard</span>
+        </a>
+
+        <!-- MANAGEMENT GROUP -->
+        <div class="nav__group" data-group="management">
+          <!-- open: para bukas na yung submenu like your screenshot -->
+          <div class="nav__item nav__toggle" data-toggle="management">
+            <i class="bi bi-people nav__icon"></i>
+            <span class="nav__label">Management</span>
+            <i class="bi bi-chevron-right nav__arrow"></i>
+          </div>
+
+          <div class="nav__submenu" id="management">
+            <a class="nav__subitem" href="users.html" data-page="users">
+              <i class="bi bi-person"></i>
+              <span>Users</span>
+            </a>
+
+            <a class="nav__subitem" href="roles.html" data-page="roles">
+              <i class="bi bi-shield-lock"></i>
+              <span>Roles</span>
+            </a>
+
+            <a class="nav__subitem" href="activity-log.html" data-page="activity-log">
+              <i class="bi bi-clock-history"></i>
+              <span>Activity Logs</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- DATA GROUP -->
+        <div class="nav__group" data-group="data">
+          <div class="nav__item nav__toggle" data-toggle="data">
+            <i class="bi bi-database nav__icon"></i>
+            <span class="nav__label">Data</span>
+            <i class="bi bi-chevron-right nav__arrow"></i>
+          </div>
+
+          <div class="nav__submenu" id="data">
+            <a class="nav__subitem" href="tables.html" data-page="tables">
+              <i class="bi bi-table"></i>
+              <span>Tables</span>
+            </a>
+
+            <a class="nav__subitem" href="forms.html" data-page="forms">
+              <i class="bi bi-file-text"></i>
+              <span>Forms</span>
+            </a>
+
+            <a class="nav__subitem" href="uploads.html" data-page="uploads">
+              <i class="bi bi-upload"></i>
+              <span>Uploads</span>
+            </a>
+
+            <a class="nav__subitem" href="calendar.html" data-page="calendar">
+              <i class="bi bi-calendar-event"></i>
+              <span>Calendar</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- UI GROUP -->
+        <div class="nav__group" data-group="ui">
+          <div class="nav__item nav__toggle" data-toggle="ui">
+            <i class="bi bi-layers nav__icon"></i>
+            <span class="nav__label">UI Components</span>
+            <i class="bi bi-chevron-right nav__arrow"></i>
+          </div>
+
+          <div class="nav__submenu" id="ui">
+            <a class="nav__subitem" href="components.html" data-page="components">
+              <i class="bi bi-puzzle"></i>
+              <span>Components</span>
+            </a>
+
+            <a class="nav__subitem" href="icons.html" data-page="icons">
+              <i class="bi bi-stars"></i>
+              <span>Icons</span>
+            </a>
+
+            <a class="nav__subitem" href="charts.html" data-page="charts">
+              <i class="bi bi-bar-chart"></i>
+              <span>Charts</span>
+            </a>
+
+            <a class="nav__subitem" href="widgets.html" data-page="widgets">
+              <i class="bi bi-grid-3x3-gap"></i>
+              <span>Widgets</span>
+            </a>
+
+            <a class="nav__subitem" href="modals.html" data-page="modals">
+              <i class="bi bi-folder"></i>
+              <span>Modal</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- PAGES -->
+        <a class="nav__item" href="profile.html" data-page="profile">
+          <i class="bi bi-person-badge nav__icon"></i>
+          <span class="nav__label">Profile</span>
+        </a>
+
+        <a class="nav__item" href="settings.html" data-page="settings">
+          <i class="bi bi-gear nav__icon"></i>
+          <span class="nav__label">Settings</span>
+        </a>
+
+        <a class="nav__item" href="blank.html" data-page="blank">
+          <i class="bi bi-file-earmark nav__icon"></i>
+          <span class="nav__label">Blank Page</span>
+        </a>
+
+        <a class="nav__item" href="404.html" data-page="404">
+          <i class="bi bi-exclamation-circle nav__icon"></i>
+          <span class="nav__label">404 Page</span>
+        </a>
+
+        <!-- AUTH -->
+        <a class="nav__item" href="login.html" data-page="login">
+          <i class="bi bi-box-arrow-in-right nav__icon"></i>
+          <span class="nav__label">Login</span>
+        </a>
+
+      </nav>
+
+      <!-- FOOTER -->
+      <div class="sidebar__footer">
+        <div class="user">
+          <div class="user__avatar">JP</div>
+          <div class="user__meta">
+            <div class="user__name">June</div>
+            <div class="user__status">
+              <span class="dot"></span> Online
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar__left">
+          <button class="btn-icon topbar__burger" id="btnSidebar" aria-label="Toggle Sidebar">☰</button>
+          <button class="btn-icon" id="btnCollapse" aria-label="Collapse Sidebar" title="Collapse Sidebar">⫶</button>
+
+          <div class="topbar__links">
+            <a href="#" class="topbar__link">Home</a>
+            <a href="#" class="topbar__link">Contact</a>
+          </div>
+        </div>
+
+        <div class="topbar__right">
+          <button class="btn-icon" id="themeBtn" type="button" title="Theme">
+            <i class="bi bi-palette"></i>
+          </button>
+
+          <div class="dd" id="ddNotif">
+            <button class="btn-icon dd__btn" type="button" aria-haspopup="true" aria-expanded="false">
+              <i class="bi bi-bell"></i>
+              <span class="dd__dot">3</span>
+            </button>
+
+            <div class="dd__menu" role="menu" aria-label="Notifications">
+              <div class="dd__head">Notifications</div>
+
+              <a class="dd__item" href="#">
+                <i class="bi bi-info-circle"></i>
+                <div>
+                  <div class="dd__title">System update</div>
+                  <div class="dd__meta">2 mins ago</div>
+                </div>
+              </a>
+
+              <a class="dd__item" href="#">
+                <i class="bi bi-person-plus"></i>
+                <div>
+                  <div class="dd__title">New user registered</div>
+                  <div class="dd__meta">15 mins ago</div>
+                </div>
+              </a>
+
+              <a class="dd__item" href="#">
+                <i class="bi bi-check2-circle"></i>
+                <div>
+                  <div class="dd__title">Backup complete</div>
+                  <div class="dd__meta">1 hour ago</div>
+                </div>
+              </a>
+
+              <a class="dd__footer" href="#">View all</a>
+            </div>
+          </div>
+
+          <div class="dd" id="ddProfile">
+            <button class="btn-icon dd__btn" type="button" aria-haspopup="true" aria-expanded="false">
+              <i class="bi bi-person-circle"></i>
+            </button>
+
+            <div class="dd__menu" role="menu" aria-label="Profile">
+              <div class="dd__head">Account</div>
+
+              <a class="dd__item" href="profile.html">
+                <i class="bi bi-person"></i>
+                <div class="dd__title">Profile</div>
+              </a>
+
+              <a class="dd__item" href="settings.html">
+                <i class="bi bi-gear"></i>
+                <div class="dd__title">Settings</div>
+              </a>
+
+              <a class="dd__item" href="activity-log.html">
+                <i class="bi bi-clock-history"></i>
+                <div class="dd__title">Activity Logs</div>
+              </a>
+
+              <a class="dd__item dd__danger" href="login.html">
+                <i class="bi bi-box-arrow-right"></i>
+                <div class="dd__title">Logout</div>
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </header>
+
+      <section class="content">
+        <div class="content__head">
+          <h1 class="page-title">Reports</h1>
+          <div class="breadcrumb">Home / Reports</div>
+        </div>
+
+        <!-- KPI -->
+        <div class="grid kpis">
+          <div class="card kpi">
+            <div class="kpi__icon"><i class="bi bi-file-earmark-bar-graph"></i></div>
+            <div class="kpi__meta">
+              <div class="kpi__label">Total Reports</div>
+              <div class="kpi__value" id="kTotal">0</div>
+              <div class="kpi__sub">All time</div>
+            </div>
+          </div>
+
+          <div class="card kpi">
+            <div class="kpi__icon"><i class="bi bi-check2-circle"></i></div>
+            <div class="kpi__meta">
+              <div class="kpi__label">Completed</div>
+              <div class="kpi__value" id="kDone">0</div>
+              <div class="kpi__sub">Filtered result</div>
+            </div>
+          </div>
+
+          <div class="card kpi">
+            <div class="kpi__icon"><i class="bi bi-hourglass-split"></i></div>
+            <div class="kpi__meta">
+              <div class="kpi__label">Pending</div>
+              <div class="kpi__value" id="kPending">0</div>
+              <div class="kpi__sub">Filtered result</div>
+            </div>
+          </div>
+
+          <div class="card kpi">
+            <div class="kpi__icon"><i class="bi bi-cash-coin"></i></div>
+            <div class="kpi__meta">
+              <div class="kpi__label">Total Amount</div>
+              <div class="kpi__value" id="kAmount">₱ 0</div>
+              <div class="kpi__sub">Filtered result</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid two">
+
+          <!-- Filters -->
+          <div class="card">
+            <div class="card__header">
+              <h3>Report Filters</h3>
+              <div class="muted">Search + date range + type</div>
+            </div>
+
+            <div class="pad">
+              <div class="form">
+                <div class="grid two" style="gap:12px">
+                  <div class="form__row">
+                    <label>Search</label>
+                    <input type="text" id="q" placeholder="Search title / user / status..." autocomplete="off">
+                  </div>
+
+                  <div class="form__row">
+                    <label>Status</label>
+                    <select id="status">
+                      <option value="all">All</option>
+                      <option value="Completed">Completed</option>
+                      <option value="Pending">Pending</option>
+                      <option value="Failed">Failed</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="grid two" style="gap:12px">
+                  <div class="form__row">
+                    <label>From</label>
+                    <input type="date" id="from">
+                  </div>
+
+                  <div class="form__row">
+                    <label>To</label>
+                    <input type="date" id="to">
+                  </div>
+                </div>
+
+                <div class="grid two" style="gap:12px">
+                  <div class="form__row">
+                    <label>Type</label>
+                    <select id="type">
+                      <option value="all">All</option>
+                      <option value="Sales">Sales</option>
+                      <option value="Inventory">Inventory</option>
+                      <option value="Users">Users</option>
+                      <option value="Audit">Audit</option>
+                    </select>
+                  </div>
+
+                  <div class="form__row">
+                    <label>Sort</label>
+                    <select id="sort">
+                      <option value="date_desc">Newest</option>
+                      <option value="date_asc">Oldest</option>
+                      <option value="amount_desc">Amount (High)</option>
+                      <option value="amount_asc">Amount (Low)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form__actions">
+                  <button class="btn-primary" type="button" id="btnApply">
+                    <i class="bi bi-funnel"></i> Apply
+                  </button>
+                  <button class="btn-ghost" type="button" id="btnReset">Reset</button>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="row" style="gap:10px;flex-wrap:wrap">
+                  <button class="btn-sm btn-edit" type="button" id="btnCSV">
+                    <i class="bi bi-filetype-csv"></i> Export CSV
+                  </button>
+                  <button class="btn-sm btn-edit" type="button" id="btnPrint">
+                    <i class="bi bi-printer"></i> Print
+                  </button>
+                  <span class="muted" id="filterHint">Tip: click a row to preview.</span>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Summary panel -->
+          <div class="card">
+            <div class="card__header">
+              <h3>Summary</h3>
+              <div class="muted">Quick breakdown</div>
+            </div>
+
+            <div class="pad">
+              <div class="list" id="summaryList">
+                <div class="list__item">
+                  <i class="bi bi-bar-chart"></i>
+                  <div>
+                    <div class="list__title">Top Type</div>
+                    <div class="list__meta" id="sTopType">—</div>
+                  </div>
+                </div>
+
+                <div class="list__item">
+                  <i class="bi bi-person"></i>
+                  <div>
+                    <div class="list__title">Most Active User</div>
+                    <div class="list__meta" id="sTopUser">—</div>
+                  </div>
+                </div>
+
+                <div class="list__item">
+                  <i class="bi bi-clock-history"></i>
+                  <div>
+                    <div class="list__title">Latest Report</div>
+                    <div class="list__meta" id="sLatest">—</div>
+                  </div>
+                </div>
+
+                <div class="list__item">
+                  <i class="bi bi-shield-check"></i>
+                  <div>
+                    <div class="list__title">Status Health</div>
+                    <div class="list__meta" id="sHealth">—</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="divider"></div>
+
+              <div class="pill">
+                <i class="bi bi-info-circle"></i>
+                <span>Connect this to backend later. For now, demo dataset + filtering.</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Table -->
+        <div class="card">
+          <div class="card__header">
+            <h3>Report List</h3>
+            <div class="card__tools">
+              <div class="muted" id="tblInfo">Showing 0–0 of 0</div>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table--v1" id="tbl">
+              <thead>
+                <tr>
+                  <th style="width:150px;">Date</th>
+                  <th style="width:140px;">Type</th>
+                  <th>Title</th>
+                  <th style="width:140px;">User</th>
+                  <th style="width:130px;">Status</th>
+                  <th style="width:140px; text-align:right;">Amount</th>
+                </tr>
+              </thead>
+              <tbody id="tb"></tbody>
+            </table>
+          </div>
+
+          <div class="table__footer">
+            <div class="muted" id="pagerInfo">Page 1</div>
+            <div class="pager" id="pager"></div>
+          </div>
+        </div>
+
+        <div class="toast" id="toast">Copied!</div>
+
+        <!-- Preview Modal -->
+        <div class="modal" id="reportModal" aria-hidden="true">
+          <div class="modal__backdrop" data-close="1"></div>
+          <div class="modal__card" role="dialog" aria-modal="true">
+            <div class="modal__head">
+              <div class="modal__title"><i class="bi bi-file-earmark-text"></i> Report Preview</div>
+              <button class="btn-icon" type="button" data-close="1"><i class="bi bi-x-lg"></i></button>
+            </div>
+
+            <div class="modal__body">
+              <div class="muted" id="mMeta" style="margin-bottom:10px;"></div>
+
+              <div class="table-responsive">
+                <table class="table table--v3">
+                  <tbody>
+                    <tr>
+                      <td class="muted" style="width:160px;"><strong>ID</strong></td>
+                      <td id="mId">—</td>
+                    </tr>
+                    <tr>
+                      <td class="muted"><strong>Type</strong></td>
+                      <td id="mType">—</td>
+                    </tr>
+                    <tr>
+                      <td class="muted"><strong>Title</strong></td>
+                      <td id="mTitle">—</td>
+                    </tr>
+                    <tr>
+                      <td class="muted"><strong>User</strong></td>
+                      <td id="mUser">—</td>
+                    </tr>
+                    <tr>
+                      <td class="muted"><strong>Status</strong></td>
+                      <td id="mStatus">—</td>
+                    </tr>
+                    <tr>
+                      <td class="muted"><strong>Amount</strong></td>
+                      <td id="mAmount">—</td>
+                    </tr>
+                    <tr>
+                      <td class="muted"><strong>Notes</strong></td>
+                      <td id="mNotes">—</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="divider"></div>
+
+              <div class="row" style="gap:10px;flex-wrap:wrap">
+                <button class="btn-primary" type="button" id="btnCopyId">
+                  <i class="bi bi-clipboard"></i> Copy ID
+                </button>
+                <button class="btn-ghost" type="button" data-close="1">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <footer class="footer">
+        <span>© 2026 Admin Template</span>
+        <span class="muted">v1.0</span>
+      </footer>
+    </main>
+
+  </div>
+
+  <div id="themePanel" class="theme-panel">
+    <h4>Appearance</h4>
+
+    <button class="theme-option" data-theme="theme-default">🟧 Blue + Orange</button>
+    <button class="theme-option" data-theme="theme-blue">🔷 Modern Blue</button>
+    <button class="theme-option" data-theme="theme-softblue">🌊 Soft Blue</button>
+    <button class="theme-option" data-theme="theme-dark">🌑 Dark Elegant</button>
+    <button class="theme-option" data-theme="theme-purple">🟣 Purple-Blue</button>
+    <button class="theme-option" data-theme="theme-blueviolet">🔵 Default Blue-Violet</button>
+  </div>
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/theme.js"></script>
+
+  <script>
+    // =========================
+    // DEMO DATA
+    // =========================
+    const reports = [
+      { id: "RPT-0001", date: "2026-02-20 10:14", type: "Sales", title: "Daily Sales Summary", user: "Admin", status: "Completed", amount: 128450, notes: "Generated from POS totals." },
+      { id: "RPT-0002", date: "2026-02-20 11:02", type: "Audit", title: "Role Changes Audit", user: "Admin", status: "Completed", amount: 0, notes: "Permissions updated." },
+      { id: "RPT-0003", date: "2026-02-19 16:05", type: "Users", title: "New Registrations", user: "Viewer", status: "Pending", amount: 0, notes: "Awaiting admin approval." },
+      { id: "RPT-0004", date: "2026-02-19 17:41", type: "Inventory", title: "Stock Movement", user: "Encoder", status: "Completed", amount: 0, notes: "Includes inbound/outbound logs." },
+      { id: "RPT-0005", date: "2026-02-18 09:12", type: "Audit", title: "Upload Access Review", user: "Admin", status: "Failed", amount: 0, notes: "Missing file permissions." },
+      { id: "RPT-0006", date: "2026-02-18 08:01", type: "Inventory", title: "Low Stock Alerts", user: "Staff", status: "Completed", amount: 0, notes: "Threshold: 10 units." },
+      { id: "RPT-0007", date: "2026-02-17 14:22", type: "Sales", title: "Weekly Revenue", user: "Staff", status: "Completed", amount: 540230, notes: "Week 7 totals." },
+      { id: "RPT-0008", date: "2026-02-16 09:45", type: "Users", title: "Inactive Accounts", user: "Admin", status: "Pending", amount: 0, notes: "Proposed deactivation list." },
+      { id: "RPT-0009", date: "2026-02-15 18:10", type: "Sales", title: "Refund Summary", user: "Encoder", status: "Completed", amount: 12450, notes: "Refund reasons included." },
+      { id: "RPT-0010", date: "2026-02-14 10:00", type: "Audit", title: "Login Attempts", user: "Admin", status: "Completed", amount: 0, notes: "Includes IP addresses." },
+      { id: "RPT-0011", date: "2026-02-13 12:05", type: "Inventory", title: "Supplier Deliveries", user: "Staff", status: "Completed", amount: 0, notes: "PO references attached." },
+      { id: "RPT-0012", date: "2026-02-12 15:30", type: "Sales", title: "Top Products", user: "Viewer", status: "Completed", amount: 0, notes: "Top 20 items." },
+    ];
+
+    // =========================
+    // HELPERS
+    // =========================
+    const peso = (n) => "₱ " + (Number(n || 0)).toLocaleString("en-PH", { maximumFractionDigits: 0 });
+    const toDateOnly = (s) => (s || "").slice(0, 10);
+    const parseDT = (s) => new Date((s || "").replace(" ", "T"));
+
+    function chipForStatus(status) {
+      if (status === "Completed") return '<span class="chip chip--success">Completed</span>';
+      if (status === "Pending") return '<span class="chip chip--purple">Pending</span>';
+      return '<span class="chip chip--danger">Failed</span>';
+    }
+
+    // =========================
+    // FILTERS + RENDER
+    // =========================
+    const els = {
+      q: document.getElementById("q"),
+      status: document.getElementById("status"),
+      from: document.getElementById("from"),
+      to: document.getElementById("to"),
+      type: document.getElementById("type"),
+      sort: document.getElementById("sort"),
+      btnApply: document.getElementById("btnApply"),
+      btnReset: document.getElementById("btnReset"),
+      tb: document.getElementById("tb"),
+      tblInfo: document.getElementById("tblInfo"),
+      pager: document.getElementById("pager"),
+      pagerInfo: document.getElementById("pagerInfo"),
+      kTotal: document.getElementById("kTotal"),
+      kDone: document.getElementById("kDone"),
+      kPending: document.getElementById("kPending"),
+      kAmount: document.getElementById("kAmount"),
+      sTopType: document.getElementById("sTopType"),
+      sTopUser: document.getElementById("sTopUser"),
+      sLatest: document.getElementById("sLatest"),
+      sHealth: document.getElementById("sHealth"),
+      btnCSV: document.getElementById("btnCSV"),
+      btnPrint: document.getElementById("btnPrint"),
+    };
+
+    const PAGE_SIZE = 6;
+    let page = 1;
+    let filtered = [...reports];
+
+    function applyFilters() {
+      const q = (els.q.value || "").trim().toLowerCase();
+      const st = els.status.value;
+      const tp = els.type.value;
+      const from = els.from.value ? new Date(els.from.value + "T00:00:00") : null;
+      const to = els.to.value ? new Date(els.to.value + "T23:59:59") : null;
+
+      filtered = reports.filter(r => {
+        const txt = (r.title + " " + r.user + " " + r.status + " " + r.type + " " + r.id).toLowerCase();
+        if (q && !txt.includes(q)) return false;
+        if (st !== "all" && r.status !== st) return false;
+        if (tp !== "all" && r.type !== tp) return false;
+
+        const d = parseDT(r.date);
+        if (from && d < from) return false;
+        if (to && d > to) return false;
+        return true;
+      });
+
+      // sorting
+      const s = els.sort.value;
+      filtered.sort((a, b) => {
+        if (s === "date_desc") return parseDT(b.date) - parseDT(a.date);
+        if (s === "date_asc") return parseDT(a.date) - parseDT(b.date);
+        if (s === "amount_desc") return (b.amount || 0) - (a.amount || 0);
+        if (s === "amount_asc") return (a.amount || 0) - (b.amount || 0);
+        return 0;
+      });
+
+      page = 1;
+      renderAll();
+    }
+
+    function resetFilters() {
+      els.q.value = "";
+      els.status.value = "all";
+      els.type.value = "all";
+      els.sort.value = "date_desc";
+      els.from.value = "";
+      els.to.value = "";
+      page = 1;
+      filtered = [...reports];
+      renderAll();
+    }
+
+    function renderKPIs() {
+      els.kTotal.textContent = reports.length;
+
+      const done = filtered.filter(r => r.status === "Completed").length;
+      const pending = filtered.filter(r => r.status === "Pending").length;
+      const totalAmount = filtered.reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
+
+      els.kDone.textContent = done;
+      els.kPending.textContent = pending;
+      els.kAmount.textContent = peso(totalAmount);
+
+      // summary
+      const countBy = (arr, keyFn) => {
+        const m = new Map();
+        arr.forEach(x => {
+          const k = keyFn(x);
+          m.set(k, (m.get(k) || 0) + 1);
+        });
+        return m;
+      };
+
+      const byType = countBy(filtered, r => r.type);
+      const topType = [...byType.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] || "—";
+      els.sTopType.textContent = topType;
+
+      const byUser = countBy(filtered, r => r.user);
+      const topUser = [...byUser.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] || "—";
+      els.sTopUser.textContent = topUser;
+
+      const latest = filtered.slice().sort((a, b) => parseDT(b.date) - parseDT(a.date))[0];
+      els.sLatest.textContent = latest ? `${latest.id} • ${latest.date}` : "—";
+
+      const failed = filtered.filter(r => r.status === "Failed").length;
+      if (filtered.length === 0) els.sHealth.textContent = "—";
+      else if (failed === 0) els.sHealth.textContent = "Good (0 failed)";
+      else els.sHealth.textContent = `Needs attention (${failed} failed)`;
+    }
+
+    function renderTable() {
+      const total = filtered.length;
+      const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+      if (page > totalPages) page = totalPages;
+
+      const start = (page - 1) * PAGE_SIZE;
+      const end = Math.min(start + PAGE_SIZE, total);
+      const slice = filtered.slice(start, end);
+
+      els.tb.innerHTML = slice.map(r => `
+        <tr class="row-click" data-id="${r.id}" style="cursor:pointer">
+          <td>${r.date}</td>
+          <td><span class="chip chip--info">${r.type}</span></td>
+          <td><strong>${r.title}</strong><div class="muted" style="font-size:12px">${r.id}</div></td>
+          <td>${r.user}</td>
+          <td>${chipForStatus(r.status)}</td>
+          <td style="text-align:right">${peso(r.amount)}</td>
+        </tr>
+      `).join("") || `<tr><td colspan="6" class="muted" style="padding:18px">No results.</td></tr>`;
+
+      els.tblInfo.textContent = `Showing ${total ? (start + 1) : 0}–${end} of ${total}`;
+      els.pagerInfo.textContent = `Page ${page} / ${totalPages}`;
+
+      // pager buttons
+      els.pager.innerHTML = "";
+      const mkBtn = (label, disabled, onClick) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "btn-ghost";
+        b.style.padding = "8px 10px";
+        b.disabled = disabled;
+        b.textContent = label;
+        b.addEventListener("click", onClick);
+        return b;
+      };
+      els.pager.appendChild(mkBtn("Prev", page <= 1, () => { page--; renderTable(); }));
+      els.pager.appendChild(mkBtn("Next", page >= totalPages, () => { page++; renderTable(); }));
+
+      // row click -> preview
+      document.querySelectorAll("#tb .row-click").forEach(tr => {
+        tr.addEventListener("click", () => openPreview(tr.dataset.id));
+      });
+    }
+
+    function renderAll() {
+      renderKPIs();
+      renderTable();
+    }
+
+    // =========================
+    // MODAL
+    // =========================
+    function openModal(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.add("open");
+      el.setAttribute("aria-hidden", "false");
+    }
+    function closeModal(el) {
+      el.classList.remove("open");
+      el.setAttribute("aria-hidden", "true");
+    }
+    document.querySelectorAll('.modal [data-close="1"]').forEach(btn => {
+      btn.addEventListener("click", () => {
+        const m = btn.closest(".modal");
+        if (m) closeModal(m);
+      });
+    });
+    document.querySelectorAll('.modal').forEach(m => {
+      m.addEventListener("click", (e) => {
+        if (e.target && e.target.classList.contains("modal__backdrop")) {
+          closeModal(m);
+        }
+      });
+    });
+
+    function openPreview(id) {
+      const r = reports.find(x => x.id === id);
+      if (!r) return;
+
+      document.getElementById("mMeta").textContent = `Created: ${r.date}`;
+      document.getElementById("mId").textContent = r.id;
+      document.getElementById("mType").textContent = r.type;
+      document.getElementById("mTitle").textContent = r.title;
+      document.getElementById("mUser").textContent = r.user;
+      document.getElementById("mStatus").innerHTML = chipForStatus(r.status);
+      document.getElementById("mAmount").textContent = peso(r.amount);
+      document.getElementById("mNotes").textContent = r.notes || "—";
+
+      // copy
+      document.getElementById("btnCopyId").onclick = async () => {
+        try {
+          await navigator.clipboard.writeText(r.id);
+          const t = document.getElementById("toast");
+          if (t) {
+            t.textContent = "Copied: " + r.id;
+            t.classList.add("show");
+            setTimeout(() => t.classList.remove("show"), 1200);
+          }
+        } catch (e) {
+          alert("Copy failed.");
+        }
+      };
+
+      openModal("reportModal");
+    }
+
+    // =========================
+    // EXPORT CSV (client-side)
+    // =========================
+    function exportCSV() {
+      const rows = [
+        ["ID", "Date", "Type", "Title", "User", "Status", "Amount"],
+        ...filtered.map(r => [r.id, r.date, r.type, r.title, r.user, r.status, r.amount])
+      ];
+      const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "reports.csv";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    // =========================
+    // WIRE UP
+    // =========================
+    els.btnApply.addEventListener("click", applyFilters);
+    els.btnReset.addEventListener("click", resetFilters);
+
+    // instant filtering (optional nice UX)
+    ["input", "change"].forEach(evt => {
+      els.q.addEventListener(evt, applyFilters);
+      els.status.addEventListener(evt, applyFilters);
+      els.type.addEventListener(evt, applyFilters);
+      els.sort.addEventListener(evt, applyFilters);
+      els.from.addEventListener(evt, applyFilters);
+      els.to.addEventListener(evt, applyFilters);
+    });
+
+    els.btnCSV.addEventListener("click", exportCSV);
+    els.btnPrint.addEventListener("click", () => window.print());
+
+    // initial
+    resetFilters();
+  </script>
+
+</body>
+
+</html>
