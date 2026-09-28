@@ -200,10 +200,10 @@ class TicketController extends Controller
 
             'assign_to' => 'nullable|exists:users,id',
 
-            'status' => [
-                'required',
-                'in:For Approval,Accepted,Working,Pending Done',
-            ],
+            // 'status' => [
+            //     'required',
+            //     'in:For Approval,Accepted,Working,Pending Done',
+            // ],
 
             'classification' => [
                 'nullable',
@@ -227,7 +227,7 @@ class TicketController extends Controller
             'fk_category_id' => $request->fk_category_id,
             'created_by' => $request->created_by,
             'assign_to' => $request->assign_to,
-            'status' => $request->status,
+            // 'status' => $request->status,
             'classification' => $request->classification,
             'is_walk_in' => $request->is_walk_in,
         ]);
