@@ -1343,7 +1343,7 @@
                 },
 
                 {
-                    data: "category.request_type.rt_name",
+                    data: "requested_by",
                     defaultContent: "-"
                 },
 

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('ticket_table', function (Blueprint $table) {
             $table->bigIncrements('ticket_id');
             $table->timestamps();
-            $table->string('ticket_number')->collation('utf8mb4_unicode_ci');
+            $table->string('ticket_number')->collation('utf8mb4_unicode_ci')->nullable();
             $table->string('remarks');
             $table->string('acknowledge_by')->nullable();
             $table->string('requested_by')->nullable();
@@ -27,13 +27,16 @@ return new class extends Migration
             $table->enum('status', [
                 'For Approval',
                 'Accepted',
-                'Working',
-                'Pending Done',
+                'Work In Progress',
+                'Pending',
+                'Completed',
+                'Aknowledged',
             ])->default('For Approval');
 
             $table->enum('classification', [
                 'High',
                 'Medium',
+                'Low',
             
             ])->nullable();
 

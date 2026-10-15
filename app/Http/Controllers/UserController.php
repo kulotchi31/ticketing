@@ -123,7 +123,7 @@ class UserController extends Controller
 
             'type' => $request->type,
 
-            'fk_department_id' => $request->fk_department_id,
+            'fk_department_id' => $request->department_id,
 
             'is_active' => $request->is_active,
 
@@ -278,7 +278,11 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $user = User::findOrFail($id);
+
+        $user->delete();
+
+        return response()->json(true);
     }
 
     public function getUsers(Request $request)

@@ -11,7 +11,12 @@ use App\Http\Controllers\RequestTypeController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\WorkerController;
+use App\Http\Controllers\StaffController;
+use App\Http\Controllers\worker\TicketController as TicketWorker;
+use App\Http\Controllers\staff\TicketController as TicketStaff;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\staff\ChatAssistantController;
+use App\Http\Controllers\provider\ServiceProviderController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -20,9 +25,7 @@ Route::get('/', function () {
 Route::get('login', [AuthenticatedSessionController::class, 'create'])
         ->name('login')->middleware("guest");
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -80,7 +83,58 @@ Route::middleware(['auth','user'])->prefix('user')->group(function () {
 Route::middleware(['auth','worker'])->prefix('worker')->group(function () {
 
         Route::resource('worker', WorkerController::class);
+
+        Route::resource('worker-ticket', TicketWorker::class);
+
+        Route::get('/ticket-accepted', [TicketWorker::class, 'getAcceptedTicket'])
+        ->name('worker-accepted-ticket');
+        Route::get('/ticket-pending', [TicketWorker::class, 'showPending'])
+        ->name('worker-pending');
+          Route::get('/ticket-wip', [TicketWorker::class, 'showWip'])
+        ->name('worker-wip');
+        Route::get('/get-pending-ticket', [TicketWorker::class, 'getPendingTicket'])
+        ->name('worker-pending-ticket');
+          Route::get('/get-wip-ticket', [TicketWorker::class, 'getWipTicket'])
+        ->name('worker-wip-ticket');
+
 });
+
+
+Route::middleware(['auth','staff'])->prefix('staff')->group(function () {
+
+
+
+       Route::get('/ticket/create-data', [TicketStaff::class, 'createData'])
+        ->name('staff-ticket.createData');
+
+
+        Route::get('/staff-get-ticket', [TicketStaff::class, 'getTicket'])
+        ->name('staff.ticket');
+
+
+        Route::resource('staff', StaffController::class);
+        Route::resource('ticket-staff', TicketStaff::class);
+
+
+          Route::get('/chat-assistant', [ChatAssistantController::class, 'index'])
+        ->name('staff.chat-assistant');
+
+
+
+          Route::post('/chat-assistant/chat', [ChatAssistantController::class, 'chat'])
+        ->name('staff.chat-assistant.chat');
+
+        
+});
+
+
+
+Route::middleware(['auth','service_provider'])->prefix('provider')->group(function () {
+
+        Route::resource('service-provider', ServiceProviderController::class);
+});
+
+
 
 
 require __DIR__.'/auth.php';

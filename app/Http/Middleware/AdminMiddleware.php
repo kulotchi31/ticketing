@@ -24,10 +24,22 @@ class AdminMiddleware
                 return redirect(route('user.index'));
         }
 
-          if (Auth::check() && Auth::user()->type=='woker') 
+          if (Auth::check() && Auth::user()->type=='worker') 
         { 
                 return redirect(route('worker.index'));
         }
+
+         if (Auth::check() && Auth::user()->type=='staff') 
+        { 
+                return redirect(route('staff.index'));
+        }
+
+        if (Auth::check() && Auth::user()->type=='service-provider') 
+        { 
+                return redirect(route('service_provider.index'));
+        }
+
+
 
 
 

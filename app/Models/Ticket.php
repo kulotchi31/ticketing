@@ -33,6 +33,8 @@ class Ticket extends Model
         'requested_by',
         'approved_by',
         'estimated_time',
+        'pending_remarks',
+        'action_taken'
     ];
 
     protected $casts = [

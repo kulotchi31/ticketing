@@ -818,10 +818,17 @@
                                  <option value="worker">
                                     Worker
                                 </option>
+                                 <option value="staff">
+                                    Staff
+                                </option>
+                                  <option value="service_provider">
+                                    Service Provider
+                                </option>
+
 
                             </select>
 
-                            <!-- PROVIDER / STAFF: WORKER ONLY -->
+                            <!-- PROVIDER / STAFF: WORKER OR SERVICE PROVIDER -->
                             <div
                                 class="mt-3"
                                 id="provider_container"
@@ -1222,13 +1229,21 @@
                                     User
                                 </option>
 
-                                 <option value="worker">
+                                <option value="worker">
                                     Worker
+                                </option>
+
+                                <option value="staff">
+                                    Staff
+                                </option>
+
+                                <option value="service_provider">
+                                    Service Provider
                                 </option>
 
                             </select>
 
-                            <!-- PROVIDER / STAFF: WORKER ONLY -->
+                            <!-- PROVIDER / STAFF: WORKER OR SERVICE PROVIDER -->
                             <div
                                 class="mt-3"
                                 id="edit_provider_container"
@@ -1346,7 +1361,7 @@
         function toggleAddProvider() {
             const type = $('#type').val();
 
-            if (type === 'worker') {
+            if (type === 'worker' || type === 'service_provider') {
                 $('#provider_container').show();
                 $('#fk_provider_id').prop('required', true);
             } else {
@@ -1366,7 +1381,7 @@
         function toggleEditProvider() {
             const type = $('#edit_type').val();
 
-            if (type === 'worker') {
+            if (type === 'worker' || type === 'service_provider') {
                 $('#edit_provider_container').show();
                 $('#edit_fk_provider_id').prop('required', true);
             } else {
@@ -1932,9 +1947,12 @@
         );
 
 
+        // Workers and service providers are not assigned to a department.
         formData.append(
             'department_id',
-            $('#department_id').val()
+            (['worker', 'service_provider'].includes($('#type').val()))
+                ? ''
+                : ($('#department_id').val() || '')
         );
 
 
@@ -1945,7 +1963,7 @@
 
         formData.append(
             'fk_provider_id',
-            $('#type').val() === 'worker'
+            (['worker', 'service_provider'].includes($('#type').val()))
                 ? ($('#fk_provider_id').val() || '')
                 : ''
         );
@@ -2217,18 +2235,19 @@
 
                                     else {
 
+                // Keep Campus visible for non-admin users.
+                                        $('#edit_campus_container').show();
 
-                // Show Campus
-                                        $('#edit_campus_container')
-                                        .show();
-
-
-                // Show Department
-                                        $('#edit_department_container')
-                                        .show();
-
+                // Workers and service providers do not use a department.
+                                        if (['worker', 'service_provider'].includes(user.type)) {
+                                            $('#edit_department_container').hide();
+                                            $('#edit_department_id').val('').prop('disabled', true);
+                                        } else {
+                                            $('#edit_department_container').show();
+                                        }
 
                                         if (
+                                            !['worker', 'service_provider'].includes(user.type) &&
                                             user.department &&
                                             user.department.campus_id
                                             ) {
@@ -2292,7 +2311,7 @@
 
 
                     var route =
-                        "{{ route('user.destroy', ':id') }}";
+                        "{{ route('users.destroy', ':id') }}";
 
 
                     route =
@@ -2444,74 +2463,27 @@
 
                 if (type === 'admin') {
 
+                    // Administrators do not use campus or department.
+                    $('#campus_container, #department_container').hide();
+                    $('#campus_id').val('').prop('required', false).removeClass('is-invalid');
+                    $('#department_id').val('').prop('disabled', true).prop('required', false).removeClass('is-invalid');
+                    $('#campus_error, #department_error').hide().html('');
 
-                    // Hide Campus and Department
-                    $('#campus_container').hide();
+                } else if (['worker', 'service_provider'].includes(type)) {
 
-                    $('#department_container').hide();
-
-
-                    // Clear values
-                    $('#campus_id').val('');
-
-                    $('#department_id')
-
-                    .val('')
-
-                    .prop(
-                        'disabled',
-                        true
-                        );
-
-
-                    // Remove validation errors
-                    $('#campus_id')
-                    .removeClass('is-invalid');
-
-                    $('#department_id')
-                    .removeClass('is-invalid');
-
-
-                    $('#campus_error')
-                    .hide()
-                    .html('');
-
-                    $('#department_error')
-                    .hide()
-                    .html('');
-
-
-                    // Remove required attribute
-                    $('#campus_id')
-                    .prop(
-                        'required',
-                        false
-                        );
-
-                    $('#department_id')
-                    .prop(
-                        'required',
-                        false
-                        );
-
-                }
-
-
-                else {
-
-
-                    // Show Campus and Department
+                    // Workers and service providers do not use a department.
                     $('#campus_container').show();
+                    $('#department_container').hide();
+                    $('#department_id').val('').prop('disabled', true).prop('required', false).removeClass('is-invalid');
+                    $('#department_error').hide().html('');
+                    $('#campus_id').prop('required', true);
 
-                    $('#department_container').show();
+                } else {
 
-
-                    // Make Campus required
-                    $('#campus_id')
-                    .prop(
-                        'required',
-                        true
-                        );
+                    // Regular users use both campus and department.
+                    $('#campus_container, #department_container').show();
+                    $('#campus_id').prop('required', true);
+                    $('#department_id').prop('required', false);
 
                 }
 
@@ -2535,49 +2507,24 @@ $('#edit_type').on(
 
         if (type === 'admin') {
 
-
-            // Hide Campus
-            $('#edit_campus_container').hide();
-
-
-            // Hide Department
-            $('#edit_department_container').hide();
-
-
-            // Clear Campus
+            // Administrators do not use campus or department.
+            $('#edit_campus_container, #edit_department_container').hide();
             $('#edit_campus_id').val('');
+            $('#edit_department_id').val('').prop('disabled', true);
 
+        } else if (['worker', 'service_provider'].includes(type)) {
 
-            // Clear Department
-            $('#edit_department_id')
-
-                .val('')
-
-                .prop(
-                    'disabled',
-                    true
-                );
-
-
-        }
-
-        else {
-
-
-            // Show Campus
+            // Workers and service providers do not use a department.
             $('#edit_campus_container').show();
+            $('#edit_department_container').hide();
+            $('#edit_department_id').val('').prop('disabled', true);
+            $('#edit_campus_id').prop('disabled', false);
 
+        } else {
 
-            // Show Department
-            $('#edit_department_container').show();
-
-
-            // Enable campus selection
-            $('#edit_campus_id')
-                .prop(
-                    'disabled',
-                    false
-                );
+            // Regular users use campus and department.
+            $('#edit_campus_container, #edit_department_container').show();
+            $('#edit_campus_id').prop('disabled', false);
 
         }
 
@@ -2651,20 +2598,16 @@ $('#edit_type').on(
         |--------------------------------------------------------------------------
         */
 
-        if (userType === 'admin') {
+        if (['admin', 'worker', 'service_provider'].includes(userType)) {
+
+            // These user types are not assigned to a department.
+            formData.append('department_id', '');
+
+        } else {
 
             formData.append(
                 'department_id',
-                ''
-            );
-
-        }
-
-        else {
-
-            formData.append(
-                'department_id',
-                $('#edit_department_id').val()
+                $('#edit_department_id').val() || ''
             );
 
         }
@@ -2672,7 +2615,7 @@ $('#edit_type').on(
 
         formData.append(
             'fk_provider_id',
-            userType === 'worker'
+            (['worker', 'service_provider'].includes(userType))
                 ? ($('#edit_fk_provider_id').val() || '')
                 : ''
         );

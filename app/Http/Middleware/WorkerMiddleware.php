@@ -27,6 +27,19 @@ class WorkerMiddleware
                 return redirect(route('user.index'));
         }
 
+         if (Auth::check() && Auth::user()->type=='staff') 
+        { 
+                return redirect(route('staff.index'));
+        }
+
+           if (Auth::check() && Auth::user()->type=='service-provider') 
+        { 
+                return redirect(route('service_provider.index'));
+        }
+
+
+
+
         return $next($request);
     }
 }

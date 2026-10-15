@@ -6,6 +6,8 @@ use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\UserMiddleware;
 use App\Http\Middleware\WorkerMiddleware;
+use App\Http\Middleware\StaffMiddleware;
+use App\Http\Middleware\ServiceProviderMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -28,6 +30,8 @@ return Application::configure(basePath: dirname(__DIR__))
                     'admin' => route('admin.index'),
                     'user' => route('user.index'),
                     'worker' => route('worker.index'),
+                    'staff' => route('staff.index'),
+                    'service_provider' =>route('service-provider.index'),
 
 
 
@@ -44,6 +48,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => AdminMiddleware::class,
             'worker' => WorkerMiddleware::class,
             'user' => UserMiddleware::class,
+            'staff' => StaffMiddleware::class,
+            'service_provider' => ServiceProviderMiddleware::class,
             'nocache' => \App\Http\Middleware\NoCache::class,
           ]);
     })

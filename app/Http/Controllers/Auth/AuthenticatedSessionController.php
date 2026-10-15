@@ -55,7 +55,20 @@ class AuthenticatedSessionController extends Controller
             return redirect()->route('user.index');
         }
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        if ($user->type === 'staff') {
+            return redirect()->route('staff.index');
+        }
+
+        if ($user->type === 'worker') {
+            return redirect()->route('worker.index');
+        }
+
+
+        if ($user->type === 'service_provider') {
+            return redirect()->route('service-provider.index');
+        }
+
+        return redirect()->intended(route('logout', absolute: false));
     }
 
     /**
