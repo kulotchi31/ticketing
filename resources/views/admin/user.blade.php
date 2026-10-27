@@ -1853,7 +1853,7 @@
 
                                 if (
                                     selectedDepartmentId &&
-                                    department.id == selectedDepartmentId
+                                    department.department_id == selectedDepartmentId
                                 ) {
 
                                     selected = 'selected';
@@ -1947,12 +1947,10 @@
         );
 
 
-        // Workers and service providers are not assigned to a department.
+        // Every non-admin user can be assigned to a department.
         formData.append(
             'department_id',
-            (['worker', 'service_provider'].includes($('#type').val()))
-                ? ''
-                : ($('#department_id').val() || '')
+            ($('#type').val() === 'admin') ? '' : ($('#department_id').val() || '')
         );
 
 
@@ -1973,12 +1971,18 @@
             'password',
             $('#password').val()
         );
-
+        
 
         formData.append(
             'is_active',
             $('#is_active').val()
         );
+
+        formData.append(
+            'fk_campus_id',
+            $('#campus_id').val()
+        );
+
 
 
         $.ajax({
@@ -2235,44 +2239,29 @@
 
                                     else {
 
-                // Keep Campus visible for non-admin users.
-                                        $('#edit_campus_container').show();
+             
+                                        $('#edit_campus_container, #edit_department_container').show();
+                                        $('#edit_campus_id').prop('disabled', false);
 
-                // Workers and service providers do not use a department.
-                                        if (['worker', 'service_provider'].includes(user.type)) {
-                                            $('#edit_department_container').hide();
-                                            $('#edit_department_id').val('').prop('disabled', true);
-                                        } else {
-                                            $('#edit_department_container').show();
+                                        var campusId = null;
+
+                                        if (user.department && user.department.fk_campus_id) {
+                                            campusId = user.department.fk_campus_id;
+                                        } else if (user.fk_campus_id) {
+                                            campusId = user.fk_campus_id;
                                         }
 
-                                        if (
-                                            !['worker', 'service_provider'].includes(user.type) &&
-                                            user.department &&
-                                            user.department.campus_id
-                                            ) {
+                                        if (campusId) {
+                                            $('#edit_campus_id').val(campusId);
+                                            loadEditDepartments(campusId,user.fk_department_id);
 
 
-                                            var campusId =
-                                        user.department.campus_id;
-
-
-                                        $('#edit_campus_id')
-                                        .val(campusId);
-
-
-                                        loadEditDepartments(
-
-                                            campusId,
-
-                                            user.department_id
-
-                                            );
-
+                                        } else {
+                                            $('#edit_department_id')
+                                                .html('<option value="">Select Campus First</option>')
+                                                .prop('disabled', true);
+                                        }
                                     }
-
-                                }
-
 
                                 bootstrap.Modal
 
@@ -2469,22 +2458,11 @@
                     $('#department_id').val('').prop('disabled', true).prop('required', false).removeClass('is-invalid');
                     $('#campus_error, #department_error').hide().html('');
 
-                } else if (['worker', 'service_provider'].includes(type)) {
-
-                    // Workers and service providers do not use a department.
-                    $('#campus_container').show();
-                    $('#department_container').hide();
-                    $('#department_id').val('').prop('disabled', true).prop('required', false).removeClass('is-invalid');
-                    $('#department_error').hide().html('');
-                    $('#campus_id').prop('required', true);
-
                 } else {
-
-                    // Regular users use both campus and department.
+                    // Every non-admin user can have a campus and department.
                     $('#campus_container, #department_container').show();
                     $('#campus_id').prop('required', true);
-                    $('#department_id').prop('required', false);
-
+                    $('#department_id').prop('disabled', false).prop('required', false);
                 }
 
             }
@@ -2512,20 +2490,11 @@ $('#edit_type').on(
             $('#edit_campus_id').val('');
             $('#edit_department_id').val('').prop('disabled', true);
 
-        } else if (['worker', 'service_provider'].includes(type)) {
-
-            // Workers and service providers do not use a department.
-            $('#edit_campus_container').show();
-            $('#edit_department_container').hide();
-            $('#edit_department_id').val('').prop('disabled', true);
-            $('#edit_campus_id').prop('disabled', false);
-
         } else {
-
-            // Regular users use campus and department.
+            // Every non-admin user can have a campus and department.
             $('#edit_campus_container, #edit_department_container').show();
+            $('#edit_department_id').prop('disabled', false);
             $('#edit_campus_id').prop('disabled', false);
-
         }
 
     }
@@ -2598,13 +2567,14 @@ $('#edit_type').on(
         |--------------------------------------------------------------------------
         */
 
-        if (['admin', 'worker', 'service_provider'].includes(userType)) {
+        if (userType === 'admin') {
 
-            // These user types are not assigned to a department.
+            // Administrators are not assigned to a department.
             formData.append('department_id', '');
 
         } else {
 
+            // Every non-admin user can be assigned to a department.
             formData.append(
                 'department_id',
                 $('#edit_department_id').val() || ''

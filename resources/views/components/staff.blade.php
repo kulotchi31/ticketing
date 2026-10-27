@@ -185,7 +185,7 @@
                         <i class="bi bi-kanban nav__icon"></i>
 
                         <span class="nav__label">
-                            Tickets
+                           Service Request
                         </span>
 
                         <i class="bi bi-chevron-right nav__arrow"></i>

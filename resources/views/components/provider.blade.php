@@ -1,15 +1,15 @@
 @php
 
     $currentPage = match (true) {
-        request()->routeIs('servicer-provider.index') => 'dashboard',
-        request()->routeIs('ticket-staff.*') => 'ticket',
+        request()->routeIs('service-provider.index') => 'dashboard',
+        request()->routeIs('ticket-provider.*') => 'ticket',
         request()->routeIs('department.*') => 'department',
         request()->routeIs('users.*') => 'users',
         default => 'dashboard',
     };
 
     $ticketActive = request()->routeIs(
-        'ticket-staff.*',
+        'ticket-provider.*',
         'worker-pending',
         'worker-wip',
         'campus.*',
@@ -168,7 +168,7 @@
                         <i class="bi bi-kanban nav__icon"></i>
 
                         <span class="nav__label">
-                            Tickets
+                           Service Request
                         </span>
 
                         <i class="bi bi-chevron-right nav__arrow"></i>
@@ -185,8 +185,8 @@
 
                         <!-- APPROVED TICKETS -->
                         <a
-                            href="{{ route('ticket-staff.index') }}"
-                            class="nav__subitem {{ request()->routeIs('ticket-staff.*') ? 'active' : '' }}"
+                            href="{{ route('ticket-provider.index') }}"
+                            class="nav__subitem {{ request()->routeIs('ticket-provider.*') ? 'active' : '' }}"
                             data-page="ticket"
                         >
 

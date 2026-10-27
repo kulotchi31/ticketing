@@ -1,5 +1,4 @@
 <?php
-
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
@@ -14,9 +13,13 @@ use App\Http\Controllers\WorkerController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\worker\TicketController as TicketWorker;
 use App\Http\Controllers\staff\TicketController as TicketStaff;
+use App\Http\Controllers\provider\TicketController as TicketProvider;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\staff\ChatAssistantController;
 use App\Http\Controllers\provider\ServiceProviderController;
+
+
+
 
 Route::get('/', function () {
     return view('auth.login');
@@ -102,20 +105,18 @@ Route::middleware(['auth','worker'])->prefix('worker')->group(function () {
 
 Route::middleware(['auth','staff'])->prefix('staff')->group(function () {
 
+        Route::resource('staff', StaffController::class);
+        Route::resource('ticket-staff', TicketStaff::class);
 
 
-       Route::get('/ticket/create-data', [TicketStaff::class, 'createData'])
+
+
+        Route::get('/ticket/create-data', [TicketStaff::class, 'createData'])
         ->name('staff-ticket.createData');
 
 
         Route::get('/staff-get-ticket', [TicketStaff::class, 'getTicket'])
         ->name('staff.ticket');
-
-
-        Route::resource('staff', StaffController::class);
-        Route::resource('ticket-staff', TicketStaff::class);
-
-
           Route::get('/chat-assistant', [ChatAssistantController::class, 'index'])
         ->name('staff.chat-assistant');
 
@@ -131,7 +132,13 @@ Route::middleware(['auth','staff'])->prefix('staff')->group(function () {
 
 Route::middleware(['auth','service_provider'])->prefix('provider')->group(function () {
 
+        Route::resource('ticket-provider', TicketProvider::class);
         Route::resource('service-provider', ServiceProviderController::class);
+
+
+
+        Route::get('/provider-get-ticket', [TicketProvider::class, 'getTicket'])
+        ->name('provider.ticket');
 });
 
 
