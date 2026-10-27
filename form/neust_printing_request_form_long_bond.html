@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NEUST Printing Request Form</title>
+  <style>
+    :root {
+      --ink: #171717;
+      --blue: #b9e7f5;
+      --yellow: #ffeb00;
+      --line: #222;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      background: #e9edf0;
+    }
+
+    .toolbar {
+      max-width: 900px;
+      margin: 18px auto;
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .toolbar button {
+      border: 0;
+      border-radius: 5px;
+      padding: 10px 15px;
+      background: #123f61;
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .toolbar button.secondary {
+      background: #fff;
+      color: #123f61;
+      border: 1px solid #123f61;
+    }
+
+    /* Exact requested print dimensions */
+    .sheet {
+      width: 8.27in;
+      min-height: 11.69in;
+      margin: 0 auto 24px;
+      padding: .28in .42in .28in;
+      background: #fff;
+      box-shadow: 0 3px 18px #0002;
+      font-size: 8pt;
+      line-height: 1.12;
+    }
+
+    .masthead {
+      display: grid;
+      /* Narrow the header row so both logos sit closer to the school name */
+      width: 80%;
+      margin: 0 auto;
+      grid-template-columns: 0.60in 1fr 0.60in;
+      column-gap: 0;
+      align-items: center;
+      text-align: center;
+    }
+
+    .masthead .seal:first-child {
+      justify-self: end;
+      margin-right: -0.06in;
+    }
+
+    .masthead .seal:last-child {
+      justify-self: start;
+      margin-left: -0.06in;
+    }
+
+    .seal {
+      width: 0.60in;
+      height: 0.60in;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .seal img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .republic {
+      font-size: 6.5pt;
+      margin-bottom: 1px;
+    }
+
+    .school {
+      font-weight: 800;
+      font-size: 8pt;
+      letter-spacing: .05px;
+      line-height: 1.15;
+    }
+
+    .campus {
+      font-size: 6.5pt;
+      margin-top: 1px;
+    }
+
+    .unit {
+      text-align: center;
+      font-weight: 700;
+      font-size: 8pt;
+      margin-top: .07in;
+      line-height: 1.25;
+    }
+
+    .form-title {
+      text-align: center;
+      background: var(--blue);
+      font-weight: 800;
+      font-size: 8pt;
+      padding: 2px 0;
+      margin-top: .05in;
+      border: 1px solid #d1eaf1;
+    }
+
+    .section {
+      border: 1px solid var(--line);
+      margin-top: .045in;
+    }
+
+    .section-head {
+      background: var(--yellow);
+      text-align: center;
+      font-weight: 800;
+      font-size: 8pt;
+      padding: 2px 1px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .hint {
+      font-size: 6pt;
+      font-style: italic;
+      font-weight: 400;
+      display: block;
+      margin-top: 1px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr;
+      min-height: .17in;
+      border-bottom: 1px solid #555;
+    }
+
+    .row:last-child {
+      border-bottom: 0;
+    }
+
+    .field {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 1px 2px;
+      min-width: 0;
+    }
+
+    .field .label {
+      white-space: nowrap;
+    }
+
+    .blank {
+      flex: 1;
+      min-width: 0;
+      min-height: 7px;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .split>div:first-child {
+      border-right: 1px solid #555;
+    }
+
+    .document-heading {
+      text-align: center;
+      padding: 2px 0;
+      border-bottom: 1px solid #555;
+      font-size: 7pt;
+    }
+
+    .numbered {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .numbered .field {
+      min-height: .15in;
+      border-bottom: 1px solid #555;
+    }
+
+    .numbered .field:nth-child(odd) {
+      border-right: 1px solid #555;
+    }
+
+    .numbered .field:nth-last-child(-n+2) {
+      border-bottom: 0;
+    }
+
+    .purpose {
+      min-height: .22in;
+      border-top: 1px solid #555;
+    }
+
+    .copies {
+      min-height: .17in;
+      border-top: 1px solid #555;
+    }
+
+    .options {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 3px 6px;
+      padding: 1px 2px;
+      border-top: 1px solid #555;
+      min-height: .16in;
+    }
+
+    .option {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      white-space: nowrap;
+    }
+
+    .check {
+      width: 6px;
+      height: 6px;
+      border: 1px solid #333;
+      display: inline-block;
+      flex: 0 0 auto;
+    }
+
+    .remarks {
+      min-height: .43in;
+      border-top: 1px solid #555;
+      padding: 2px;
+    }
+
+    .signature-line {
+      height: .32in;
+      border-top: 1px solid #555;
+      position: relative;
+    }
+
+    .signature-line span {
+      position: absolute;
+      left: 4px;
+      bottom: 2px;
+      font-size: 6pt;
+      font-style: italic;
+    }
+
+    .admin .section-head {
+      background: var(--yellow);
+    }
+
+    .admin .row {
+      min-height: .15in;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px;
+      border-top: 1px solid #555;
+    }
+
+    .cutline {
+      margin: .06in 0 .035in;
+      border-top: 1px dashed #333;
+      text-align: left;
+      height: .08in;
+      position: relative;
+    }
+
+    .cutline span {
+      position: relative;
+      top: -5px;
+      background: #fff;
+      padding-right: 3px;
+      font-size: 8pt;
+    }
+
+    .claim .section-head {
+      background: var(--blue);
+      font-size: 8pt;
+    }
+
+    .claim .row {
+      min-height: .16in;
+    }
+
+    .claim .split {
+      border-bottom: 1px solid #555;
+    }
+
+    .claim .split:last-child {
+      border-bottom: 0;
+    }
+
+    .claim .split>div {
+      padding: 1px 2px;
+      min-height: .16in;
+    }
+
+    .claim .split .label {
+      font-weight: 700;
+    }
+
+    .claim-signatures {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .16in;
+      margin: .11in 0 0;
+    }
+
+    .sign-block {
+      text-align: center;
+      font-size: 6pt;
+      font-style: italic;
+    }
+
+    .sign-rule {
+      border-top: 1px solid #555;
+      height: .12in;
+      margin-top: .18in;
+    }
+
+    .date-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: .1in;
+      gap: 3px;
+    }
+
+    .date-rule {
+      flex: 1;
+      border-bottom: 1px solid #555;
+      height: 8px;
+    }
+
+    .footer {
+      font-size: 6pt;
+      line-height: 1.25;
+      margin-top: .27in;
+    }
+
+    [contenteditable="true"]:focus {
+      outline: 1px dashed #2584bd;
+      background: #f4fbff;
+    }
+
+    @page {
+      size: 8.5in 13in;
+      margin: 0;
+    }
+
+    @media print {
+
+      html,
+      body {
+        width: 8.5in;
+        height: 13in;
+        background: #fff;
+      }
+
+      .toolbar {
+        display: none !important;
+      }
+
+      .sheet {
+        width: 8.5in;
+        min-height: 13in;
+        height: 13in;
+        margin: 0;
+        box-shadow: none;
+        page-break-after: avoid;
+        overflow: hidden;
+        padding: .28in .42in .28in;
+      }
+
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+    }
+
+    @media screen and (max-width:420px) {
+      .sheet {
+        margin: 0 auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="toolbar">
+    <button onclick="window.print()">Print form</button>
+    <button class="secondary" onclick="document.designMode = document.designMode === 'on' ? 'off' : 'on'">Toggle edit
+      mode</button>
+  </div>
+  <main class="sheet">
+    <header>
+      <div class="masthead">
+        <div class="seal">
+          <img src="neust.png" alt="NEUST Logo">
+        </div>
+        <div>
+          <div class="republic">Republic of the Philippines</div>
+          <div class="school">NUEVA ECIJA UNIVERSITY OF SCIENCE AND TECHNOLOGY</div>
+          <div class="campus">Cabanatuan City, Nueva Ecija</div>
+        </div>
+        <div class="seal">
+          <img src="abmgs.png" alt="ABMGS Logo">
+        </div>
+      </div>
+      <div class="unit">AUXILIARY-BUILDING MAINTENANCE AND GENERAL SERVICES<br>PRINTING UNIT</div>
+      <div class="form-title">PRINTING REQUEST FORM</div>
+    </header>
+
+    <section class="section">
+      <div class="section-head">REQUEST DETAILS<span class="hint">(To be filled out by requesting personnel)</span>
+      </div>
+      <div class="row">
+        <div class="field"><span class="label">Date of Request:</span><span class="blank"></span></div>
+      </div>
+      <div class="row">
+        <div class="field"><span class="label">Office/Department:</span><span class="blank"></span></div>
+      </div>
+      <div class="row">
+        <div class="field"><span class="label">Name of Requesting Personnel:</span><span class="blank"></span></div>
+      </div>
+      <div class="row">
+        <div class="field"><span class="label">Position/Designation:</span><span class="blank"></span></div>
+      </div>
+      <div class="row">
+        <div class="field"><span class="label">Contact Number:</span><span class="blank"></span></div>
+      </div>
+      <div class="document-heading">Title/Description of Document to be Printed:</div>
+      <div class="numbered">
+        <div class="field">1. <span class="blank"></span></div>
+        <div class="field">4. <span class="blank"></span></div>
+        <div class="field">2. <span class="blank"></span></div>
+        <div class="field">5. <span class="blank"></span></div>
+        <div class="field">3. <span class="blank"></span></div>
+        <div class="field">6. <span class="blank"></span></div>
+        <div class="field"> </div>
+        <div class="field">7. <span class="blank"></span></div>
+        <div class="field"> </div>
+        <div class="field">8. <span class="blank"></span></div>
+        <div class="field"> </div>
+        <div class="field">9. <span class="blank"></span></div>
+      </div>
+      <div class="field purpose"><span class="label">Purpose:</span><span class="blank"></span></div>
+      <div class="field copies"><span class="label">No. of Copies:</span><span class="blank"></span></div>
+      <div class="options"><span class="label">Type of Printing:</span><span class="option"><i class="check"></i>
+          RISO</span><span class="option"><i class="check"></i> Photocopy (Black &amp; White)</span><span
+          class="option"><i class="check"></i> Photocopy (Colored)</span></div>
+      <div class="options"><span class="label">Paper Size:</span><span class="option"><i class="check"></i>
+          A4</span><span class="option"><i class="check"></i> Letter</span><span class="option"><i class="check"></i>
+          Legal</span><span class="option"><i class="check"></i> Others: __________</span></div>
+      <div class="options"><span class="label">Printing Format:</span><span class="option"><i class="check"></i>
+          Single-sided</span><span class="option"><i class="check"></i> Double-sided</span></div>
+      <div class="row">
+        <div class="field"><span class="label">Date Needed:</span><span class="blank"></span></div>
+      </div>
+      <div class="remarks"><span class="label">Remarks:</span></div>
+      <div class="signature-line"><span>Signature of Requesting Personnel</span></div>
+    </section>
+
+    <section class="section admin">
+      <div class="section-head">FOR PRINTING UNIT USE ONLY</div>
+      <div class="row">
+        <div class="field"><span class="label">Control no.:</span><span class="blank"></span></div>
+      </div>
+      <div class="row">
+        <div class="field"><span class="label">Date Received:</span><span class="blank"></span></div>
+      </div>
+      <div class="row">
+        <div class="field"><span class="label">Processed By:</span><span class="blank"></span></div>
+      </div>
+      <div class="row">
+        <div class="field"><span class="label">Date Completed:</span><span class="blank"></span></div>
+      </div>
+      <div class="status"><span class="label">Status:</span><span class="option"><i class="check"></i>
+          Completed</span><span class="option"><i class="check"></i> Pending</span><span class="option"><i
+            class="check"></i> Cancelled</span></div>
+      <div class="remarks"><span class="label">Remarks:</span></div>
+    </section>
+
+    <div class="cutline"><span>✂</span></div>
+
+    <section class="section claim">
+      <div class="section-head">CLAIM STUB<span class="hint">(To be filled out by Printing Unit personnel)</span></div>
+      <div class="split">
+        <div class="field"><span class="label">Control No.:</span><span class="blank"></span></div>
+        <div class="field"><span class="label">Release Date:</span><span class="blank"></span></div>
+      </div>
+      <div class="row">
+        <div class="field"><span class="label">Name of Requesting Personnel:</span><span class="blank"></span></div>
+      </div>
+      <div class="row">
+        <div class="field"><span class="label">Office/Department:</span><span class="blank"></span></div>
+      </div>
+      <div class="row">
+        <div class="field"><span class="label">Title of Document:</span><span class="blank"></span></div>
+      </div>
+      <div class="row">
+        <div class="field"><span class="label">No. of Copies:</span><span class="blank"></span></div>
+      </div>
+    </section>
+
+    <div class="claim-signatures">
+      <div class="sign-block">Received by:<div class="sign-rule"></div>Name and Signature of Printing Personnel
+        <div class="date-line"><span>Date Received:</span><span class="date-rule"></span></div>
+      </div>
+      <div class="sign-block">Claimed by:<div class="sign-rule"></div>Name and Signature of Requesting Personnel
+        <div class="date-line"><span>Date Claimed:</span><span class="date-rule"></span></div>
+      </div>
+    </div>
+    <footer class="footer">NEUST-ABG-P005.F001<br>Rev. 00 (06.15.2026)</footer>
+  </main>
+  <script>
+    // Enable in-place editing by clicking the "Toggle edit mode" control.
+    document.querySelectorAll('.sheet .field, .sheet .remarks, .sheet .document-heading, .sheet .section-head, .sheet .footer').forEach(el => {
+      el.setAttribute('contenteditable', 'true');
+      el.setAttribute('spellcheck', 'false');
+    });
+  </script>
+</body>
+
+</html>

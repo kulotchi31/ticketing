@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>NEUST Service Order Slip</title>
+    <style>
+        :root {
+            --ink: #111;
+            --yellow: #ffd900;
+            --blue: #b9e7f5;
+            --grid: #333
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            color: var(--ink)
+        }
+
+        body {
+            background: #e9edf0
+        }
+
+        .toolbar {
+            width: min(5.83in, calc(100% - 20px));
+            margin: 14px auto;
+            display: flex;
+            justify-content: flex-end;
+            gap: 7px
+        }
+
+        button {
+            border: 0;
+            border-radius: 4px;
+            padding: 8px 12px;
+            background: #123f61;
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer
+        }
+
+        button.secondary {
+            background: #fff;
+            color: #123f61;
+            border: 1px solid #123f61
+        }
+
+        .sheet {
+            width: 5.83in;
+            height: 8.27in;
+            margin: 0 auto 20px;
+            padding: .19in .22in .18in;
+            background: #fff;
+            box-shadow: 0 3px 18px #0002;
+            position: relative;
+            overflow: hidden;
+            font-size: 6.1pt;
+            line-height: 1.05
+        }
+
+        .masthead {
+            display: grid;
+            /* Narrow the header row so both logos sit closer to the school name */
+            width: 90%;
+            margin: 0 auto;
+            grid-template-columns: 0.60in 1fr 0.60in;
+            column-gap: 0;
+            align-items: center;
+            text-align: center;
+        }
+
+        .masthead .seal:first-child {
+            justify-self: end;
+            margin-right: -0.06in;
+        }
+
+        .masthead .seal:last-child {
+            justify-self: start;
+            margin-left: -0.06in;
+        }
+
+        .seal {
+            width: 0.60in;
+            height: 0.60in;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .seal img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .republic {
+            font-size: 5.3pt;
+            margin-bottom: 1px
+        }
+
+        .school {
+            font-size: 7.1pt;
+            font-weight: 800;
+            line-height: 1.08
+        }
+
+        .campus {
+            font-size: 5.1pt;
+            margin-top: 1px
+        }
+
+        .unit {
+            text-align: center;
+            font-size: 6.2pt;
+            font-weight: 800;
+            line-height: 1.12;
+            margin-top: .055in
+        }
+
+        .title {
+            margin-top: .045in;
+            text-align: center;
+            background: var(--blue);
+            border: 1px solid #9ed9e9;
+            font-size: 8pt;
+            font-weight: 800;
+            padding: 2px
+        }
+
+        .top-row {
+            display: flex;
+            align-items: center;
+            min-height: .18in;
+            border: 1px solid #333;
+            border-top: 0;
+            padding: 1px 3px;
+            gap: 3px
+        }
+
+        .label {
+            white-space: nowrap
+        }
+
+        .line {
+            height: .11in;
+            flex: 1;
+            min-width: 0
+        }
+
+        .section {
+            border: 1px solid #222;
+            margin-top: .025in
+        }
+
+        .band {
+            background: var(--yellow);
+            border-bottom: 1px solid #222;
+            text-align: center;
+            font-size: 6.5pt;
+            font-weight: 800;
+            padding: 2px
+        }
+
+        .hint {
+            display: block;
+            font-size: 5pt;
+            font-style: italic;
+            font-weight: 400;
+            margin-top: 1px
+        }
+
+        .row {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            min-height: .19in;
+            padding: 1px 3px;
+            border-bottom: 1px solid #555
+        }
+
+        .row:last-child {
+            border-bottom: 0
+        }
+
+        .split {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            border-bottom: 1px solid #555
+        }
+
+        .split>div {
+            display: flex;
+            align-items: center;
+            min-height: .19in;
+            padding: 1px 3px;
+            gap: 3px
+        }
+
+        .split>div:first-child {
+            border-right: 1px solid #555
+        }
+
+        .scope-title {
+            text-align: center;
+            font-weight: 800;
+            padding: 2px;
+            border-bottom: 1px solid #555
+        }
+
+        .check-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2px 4px;
+            padding: 3px 5px;
+            border-bottom: 1px solid #555
+        }
+
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap
+        }
+
+        .check {
+            width: 9px;
+            height: 9px;
+            border: 1px solid #222;
+            display: inline-block;
+            flex: 0 0 auto
+        }
+
+        .purpose {
+            height: .5in;
+            padding: 3px;
+            border-bottom: 1px solid #555;
+            font-weight: 700;
+            font-style: italic
+        }
+
+        .approvals {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: .12in;
+            padding: 3px 3px 2px
+        }
+
+        .approval {
+            text-align: center;
+            font-size: 5.5pt;
+            font-style: italic
+        }
+
+        .approval-line {
+            height: .17in;
+            border-bottom: 1px solid #444;
+            margin: 0 5px 2px
+        }
+
+        .approval-caption {
+            font-size: 5pt
+        }
+
+        .preinspection .row {
+            min-height: .18in
+        }
+
+        .findings {
+            height: .27in;
+            padding: 3px;
+            border-bottom: 1px solid #555
+        }
+
+        .materials {
+            padding: 2px 3px 3px;
+            border-bottom: 1px solid #555
+        }
+
+        .materials-title {
+            font-weight: 700;
+            margin-bottom: 2px
+        }
+
+        .material-lines {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0 8px
+        }
+
+        .material-lines div {
+            height: .15in;
+            border-bottom: 1px solid #888
+        }
+
+        .recommendation {
+            height: .23in;
+            padding: 3px;
+            border-bottom: 1px solid #555;
+            font-weight: 700
+        }
+
+        .inspected {
+            padding: 3px;
+            font-style: italic
+        }
+
+        .tech-sign {
+            width: 43%;
+            margin: .02in auto 0;
+            text-align: center;
+            border-top: 1px solid #555;
+            padding-top: 2px;
+            font-size: 5pt;
+            font-style: italic
+        }
+
+        .completion-grid {
+            display: grid;
+            grid-template-columns: .85fr 1.25fr 2.8fr
+        }
+
+        .statuses {
+            border-right: 1px solid #555
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            padding: 2px;
+            min-height: .16in;
+            border-bottom: 1px solid #555;
+            font-weight: 700
+        }
+
+        .status:last-child {
+            border-bottom: 0
+        }
+
+        .remarks {
+            border-right: 1px solid #555;
+            padding: 3px;
+            min-height: .46in
+        }
+
+        .satisfaction {
+            padding: 2px 3px
+        }
+
+        .satisfaction-top {
+            font-size: 5.2pt;
+            font-weight: 700;
+            border-bottom: 1px solid #555;
+            padding-bottom: 2px
+        }
+
+        .choices {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 2px
+        }
+
+        .comment {
+            font-style: italic;
+            margin-top: 3px
+        }
+
+        .signatures {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: .22in;
+            margin-top: .07in
+        }
+
+        .sign-block {
+            font-size: 5.3pt;
+            font-style: italic
+        }
+
+        .sign-heading {
+            font-weight: 700;
+            margin-bottom: 2px
+        }
+
+        .sign-line {
+            height: .19in;
+            border-bottom: 1px solid #555;
+            margin: 0 5px 2px
+        }
+
+        .sign-caption {
+            text-align: center;
+            font-size: 4.8pt
+        }
+
+        .date-row {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            margin-top: 3px
+        }
+
+        .date-row .line {
+            border-bottom: 1px solid #555;
+            height: .12in
+        }
+
+        .footer {
+            position: absolute;
+            left: .22in;
+            bottom: .16in;
+            font-size: 4.8pt;
+            line-height: 1.2
+        }
+
+        [contenteditable=true]:focus {
+            outline: 1px dashed #2584bd;
+            background: #f4fbff
+        }
+
+        @page {
+            size: A5 portrait;
+            margin: 0
+        }
+
+        @media print {
+
+            html,
+            body {
+                width: 148mm;
+                height: 210mm;
+                margin: 0;
+                padding: 0;
+                background: #fff
+            }
+
+            .toolbar {
+                display: none !important
+            }
+
+            .sheet {
+                width: 148mm;
+                height: 210mm;
+                margin: 0;
+                padding: 4.8mm 5.5mm;
+                box-shadow: none;
+                overflow: hidden;
+                page-break-after: avoid
+            }
+
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important
+            }
+        }
+
+        @media screen and (max-width:600px) {
+            .sheet {
+                width: 100%;
+                height: auto;
+                min-height: 8.27in;
+                padding: 14px
+            }
+
+            .footer {
+                position: static;
+                margin-top: 30px
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="toolbar"><button onclick="window.print()">Print form</button><button class="secondary"
+            onclick="toggleEdit()">Toggle edit mode</button></div>
+    <main class="sheet" id="sheet">
+        <header>
+            <div class="masthead">
+                <div class="seal">
+                    <img src="neust.png" alt="NEUST Logo">
+                </div>
+                <div>
+                    <div class="republic">Republic of the Philippines</div>
+                    <div class="school">NUEVA ECIJA UNIVERSITY OF SCIENCE AND TECHNOLOGY</div>
+                    <div class="campus">Cabanatuan City, Nueva Ecija</div>
+                </div>
+                <div class="seal"><img src="abmgs.png" alt="NEUST Secondary Logo"></div>
+            </div>
+            <div class="unit">AUXILIARY-BUILDING MAINTENANCE AND GENERAL SERVICES</div>
+            <div class="title">SERVICE ORDER SLIP</div>
+        </header>
+        <div class="top-row"><span class="label"><b>Service Order No.:</b></span><span class="line"></span></div>
+
+        <section class="section">
+            <div class="band">REQUEST DETAILS<span class="hint">(To be filled out by requesting personnel)</span></div>
+            <div class="split">
+                <div><span class="label">Date of Request:</span><span class="line"></span></div>
+                <div><span class="label">Campus:</span><span class="line"></span></div>
+            </div>
+            <div class="row"><span class="label">Office/Department:</span><span class="line"></span></div>
+            <div class="row"><span class="label">Name of Requesting Personnel:</span><span class="line"></span></div>
+            <div class="split">
+                <div><span class="label">Position/Designation:</span><span class="line"></span></div>
+                <div><span class="label">Contact Number:</span><span class="line"></span></div>
+            </div>
+            <div class="scope-title">SCOPE OF WORK</div>
+            <div class="check-grid">
+                <span class="check-item"><i class="check"></i> ELECTRICAL</span><span class="check-item"><i
+                        class="check"></i> PLUMBING</span><span class="check-item"><i class="check"></i> IRON
+                    WORKS</span><span class="check-item"><i class="check"></i> CLEANING/SANITATION</span>
+                <span class="check-item"><i class="check"></i> CARPENTRY</span><span class="check-item"><i
+                        class="check"></i> PAINTING</span><span class="check-item"><i class="check"></i> AIR
+                    CONDITIONING</span><span class="check-item"><i class="check"></i> OTHERS</span>
+            </div>
+            <div class="purpose">DETAILS/PURPOSE:</div>
+            <div class="approvals">
+                <div class="approval"><b>Requested by:</b>
+                    <div class="approval-line"></div>
+                    <div class="approval-caption">Signature of Requesting Personnel</div>
+                </div>
+                <div class="approval"><b>Approved by:</b>
+                    <div class="approval-line"></div>
+                    <div class="approval-caption">Director, ABMGS/Authorized Personnel</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section preinspection">
+            <div class="band">PRE-INSPECTION AND REPAIR DETAILS<span class="hint">(To be filled out by ABMGS
+                    Personnel)</span></div>
+            <div class="split">
+                <div><span class="label">Inspection Date:</span><span class="line"></span></div>
+                <div><span class="label">Mode of Repair:</span><span class="line"></span></div>
+            </div>
+            <div class="findings"><b>Findings:</b></div>
+            <div class="materials">
+                <div class="materials-title">Materials Needed:</div>
+                <div class="material-lines">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+            <div class="recommendation">Recommendation:</div>
+            <div class="inspected">Inspected by:<div class="tech-sign">Name and Signature of Assigned Technician</div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="band">SERVICE ORDER COMPLETION</div>
+            <div class="completion-grid">
+                <div class="statuses">
+                    <div class="status"><i class="check"></i> COMPLETED</div>
+                    <div class="status"><i class="check"></i> PENDING</div>
+                    <div class="status"><i class="check"></i> CANCELLED</div>
+                </div>
+                <div class="remarks">Remarks:</div>
+                <div class="satisfaction">
+                    <div class="satisfaction-top">Client Satisfactory:
+                        <div class="choices"><span class="check-item"><i class="check"></i> VERY SATISFIED</span><span
+                                class="check-item"><i class="check"></i> SATISFIED</span><span class="check-item"><i
+                                    class="check"></i> UNSATISFIED</span></div>
+                    </div>
+                    <div class="comment">Comments:</div>
+                </div>
+            </div>
+        </section>
+
+        <div class="signatures">
+            <div class="sign-block">
+                <div class="sign-heading">Serviced by:</div>
+                <div class="sign-line"></div>
+                <div class="sign-caption">Name and Signature of Assigned Technician</div>
+                <div class="date-row"><span>Date:</span><span class="line"></span></div>
+            </div>
+            <div class="sign-block">
+                <div class="sign-heading">Certified by:</div>
+                <div class="sign-line"></div>
+                <div class="sign-caption">Name and Signature of Requesting Personnel</div>
+                <div class="date-row"><span>Date:</span><span class="line"></span></div>
+            </div>
+        </div>
+        <footer class="footer">NEUST-ABG-P007.F001<br>Rev. 00 (06.15.2026)</footer>
+    </main>
+    <script>
+        let editing = false;
+        function toggleEdit() { editing = !editing; document.querySelectorAll('#sheet .top-row,#sheet .row,#sheet .split>div,#sheet .scope-title,#sheet .check-item,#sheet .purpose,#sheet .approval,#sheet .band,#sheet .findings,#sheet .materials-title,#sheet .material-lines div,#sheet .recommendation,#sheet .inspected,#sheet .tech-sign,#sheet .status,#sheet .remarks,#sheet .satisfaction,#sheet .sign-block,#sheet .footer').forEach(el => { el.contentEditable = editing ? 'true' : 'false'; el.spellcheck = false; }); }
+    </script>
+</body>
+
+</html>
