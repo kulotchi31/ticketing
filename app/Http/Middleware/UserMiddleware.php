@@ -31,9 +31,9 @@ class UserMiddleware
                 return redirect(route('staff.index'));
         }
 
-           if (Auth::check() && Auth::user()->type=='service-provider') 
+           if (Auth::check() && Auth::user()->type=='service_provider') 
         { 
-                return redirect(route('service_provider.index'));
+                return redirect(route('service-provider.index'));
         }
 
 

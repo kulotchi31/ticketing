@@ -206,7 +206,7 @@ class UserController extends Controller
 
                     'type' => [
                         'required',
-                        'in:admin,user,worker'
+                        'in:admin,user,worker,staff,service_provider'
                     ],
 
                     'department_id' => [
