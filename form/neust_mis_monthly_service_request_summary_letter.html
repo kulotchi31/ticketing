@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>NEUST MIS Service Request Monthly Summary</title>
+    <style>
+        :root {
+            --ink: #111;
+            --border: #222
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Times New Roman", Times, serif;
+            color: var(--ink)
+        }
+
+        body {
+            background: #e9edf0
+        }
+
+        .toolbar {
+            width: min(8.5in, calc(100% - 24px));
+            margin: 14px auto;
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            font-family: Arial, sans-serif
+        }
+
+        button {
+            border: 0;
+            border-radius: 4px;
+            padding: 9px 14px;
+            background: #123f61;
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer
+        }
+
+        button.secondary {
+            background: #fff;
+            color: #123f61;
+            border: 1px solid #123f61
+        }
+
+        .paper {
+            width: 8.5in;
+            height: 11in;
+            margin: 0 auto 24px;
+            padding: .34in .25in .25in;
+            background: #fff;
+            box-shadow: 0 3px 18px #0002;
+            overflow: hidden;
+            position: relative;
+            font-size: 9pt
+        }
+
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.15in;
+            /* pagitan ng logo at text */
+            width: 100%;
+        }
+
+        .logo {
+            width: 0.75in;
+            height: 0.58in;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            float: none;
+            background: transparent;
+            flex-shrink: 0;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .header-text {
+            width: auto;
+            display: block;
+            margin: 0;
+            text-align: center;
+            background: transparent;
+        }
+
+        .republic {
+            font-size: 9pt;
+            line-height: 1.05
+        }
+
+        .school {
+            font-size: 11pt;
+            font-weight: bold;
+            line-height: 1.1;
+            white-space: nowrap
+        }
+
+        .location {
+            font-size: 9pt;
+            margin-top: 2px
+        }
+
+        .department {
+            text-align: center;
+            font-size: 10pt;
+            margin-top: .22in;
+            line-height: 1.25
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 10pt;
+            margin-top: 2px
+        }
+
+        .month {
+            text-align: center;
+            margin-top: 4px;
+            font-size: 10pt
+        }
+
+        .month-line {
+            display: inline-block;
+            width: 1.5in;
+            border-bottom: 1px solid #222;
+            height: 10px;
+            vertical-align: bottom
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            table-layout: fixed
+        }
+
+        .main-table {
+            margin-top: .09in;
+            font-size: 8.5pt
+        }
+
+        .main-table th,
+        .main-table td {
+            border: 1px solid var(--border)
+        }
+
+        .main-table th {
+            height: .42in;
+            text-align: center;
+            vertical-align: middle;
+            font-weight: bold;
+            padding: 2px
+        }
+
+        .main-table td {
+            height: .190in;
+            padding: 1px 3px
+        }
+
+        .action-table {
+            margin-top: .20in;
+            font-size: 8.5pt
+        }
+
+        .action-table th,
+        .action-table td {
+            border: 1px solid var(--border);
+            padding: 2px 3px
+        }
+
+        .action-table th {
+            height: .42in;
+            text-align: center;
+            vertical-align: middle
+        }
+
+        .action-table td {
+            height: .24in
+        }
+
+        .footer {
+            position: absolute;
+            left: .27in;
+            bottom: .25in;
+            font-size: 7pt;
+            line-height: 1.2
+        }
+
+        [contenteditable=true]:focus {
+            outline: 1px dashed #2584bd;
+            background: #f4fbff
+        }
+
+
+        @page {
+            size: Letter portrait;
+            margin: 0;
+        }
+
+        @media print {
+
+            html,
+            body {
+                width: 8.5in;
+                height: 11in;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: #fff;
+            }
+
+            .paper {
+                width: 8.5in;
+                height: 11in;
+                margin: 0 !important;
+                padding: .12in .25in .25in !important;
+                box-shadow: none;
+                overflow: hidden;
+                page-break-after: avoid;
+            }
+
+            .toolbar {
+                display: none !important;
+            }
+
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+
+
+        @media screen and (max-width:700px) {
+            .paper {
+                width: 100%;
+                height: auto;
+                min-height: 11in
+            }
+
+            .school {
+                white-space: normal;
+                font-size: 10pt
+            }
+
+            .footer {
+                position: static;
+                margin-top: .3in
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="toolbar"><button onclick="window.print()">Print form</button></div>
+    <main class="paper" id="paper">
+        <header>
+            <div class="header">
+                <div class="logo"><img src="neust.png" alt="NEUST Logo"></div>
+                <div class="header-text">
+                    <div class="republic">Republic of the Philippines</div>
+                    <div class="school">NUEVA ECIJA UNIVERSITY OF SCIENCE AND TECHNOLOGY</div>
+                    <div class="location">Nueva Ecija, Philippines</div>
+                </div>
+            </div>
+            <div class="department">MANAGEMENT INFORMATION SYSTEM</div>
+            <div class="subtitle">Monthly Summary of MIS Service Request</div>
+            <div class="month">For the month of <span class="month-line" contenteditable="true"></span></div>
+        </header>
+        <table class="main-table">
+            <colgroup>
+                <col style="width:18%">
+                <col style="width:18%">
+                <col style="width:18%">
+                <col style="width:18%">
+                <col style="width:9%">
+                <col style="width:19%">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>MISSR NO.</th>
+                    <th>REQUESTED</th>
+                    <th>APPROVED</th>
+                    <th>WORK ASSIGNED<br>TO</th>
+                    <th>DATE<br>GIVEN</th>
+                    <th>DATE ACQUIRED</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="action-table">
+            <colgroup>
+                <col style="width:18%">
+                <col style="width:28%">
+                <col style="width:27%">
+                <col style="width:18%">
+                <col style="width:9%">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>ACTION</th>
+                    <th>BY: (EMPLOYEE NAME)</th>
+                    <th>POSITION/DESIGNATION</th>
+                    <th>SIGNATURE</th>
+                    <th>DATE</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td contenteditable="true">PREPARED</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td contenteditable="true">VERIFIED</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+        <footer class="footer">NEUST-MIS-F011<br>Rev. 00 (09.12.18)</footer>
+    </main>
+    <script>
+        let editing = false;
+        function toggleEdit() { editing = !editing; document.querySelectorAll('#paper td,#paper th,#paper .department,#paper .subtitle,#paper .month,#paper .footer').forEach(el => { el.contentEditable = editing ? 'true' : 'false'; el.spellcheck = false; }); }
+    </script>
+</body>
+
+</html>
