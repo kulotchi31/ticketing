@@ -79,7 +79,7 @@
                             class="toggle-pass"
                             type="button"
                             id="togglePass">
-                            SHOW
+                         
                         </button>
                     </div>
 

@@ -23,6 +23,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>NEUST Ticketing System</title>
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
   <link rel="stylesheet" href="/mistemplates/assets/css/app.css">
   <link rel="stylesheet" href="/mistemplates/assets/css/bootstrap-icons.min.css">
 
