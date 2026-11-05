@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>NEUST MIS Service Request Form</title>
+    <style>
+        :root {
+            --navy: #004b83;
+            --gold: #ffc400;
+            --ink: #111
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            color: var(--ink)
+        }
+
+        body {
+            background: #e8edf1
+        }
+
+        .toolbar {
+            width: min(11in, calc(100% - 24px));
+            margin: 14px auto;
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px
+        }
+
+        button {
+            border: 0;
+            border-radius: 4px;
+            padding: 9px 14px;
+            background: #123f61;
+            color: white;
+            font-weight: bold;
+            cursor: pointer
+        }
+
+        .secondary {
+            background: white;
+            color: #123f61;
+            border: 1px solid #123f61
+        }
+
+        .sheet {
+            width: 8.5in;
+            height: 11in;
+            margin: 0 auto 20px;
+            padding: .18in;
+            background: white;
+            box-shadow: 0 3px 18px #0002;
+            overflow: hidden
+        }
+
+        .forms {
+            height: 100%;
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: .2in;
+            position: relative
+        }
+
+        .forms:after {
+            content: '✂';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 0 4px;
+            font-size: 9pt
+        }
+
+        .form {
+            height: 100%;
+            min-width: 0;
+            border: 1px solid #222;
+            position: relative;
+            overflow: hidden;
+            font-size: 6.6pt;
+            line-height: 1.05
+        }
+
+        .masthead {
+            height: .7in;
+            background-color: #003366;
+            color: white;
+            display: grid;
+            grid-template-columns: .68in 1fr .55in;
+            gap: .04in;
+            align-items: center;
+            padding: .035in .04in;
+            text-align: center
+        }
+
+        .logo {
+            width: .63in;
+            height: .63in;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block
+        }
+
+        .logo.right {
+            width: .48in;
+            height: .48in;
+            justify-self: center;
+            opacity: .85
+        }
+
+        .header-text {
+            min-width: 0;
+            text-align: left
+        }
+
+        .republic {
+            font-family: "Calibri", Arial, sans-serif;
+            font-size: 11pt;
+            font-weight: bold;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+            margin-bottom: 2px
+        }
+
+        .school {
+            font-family: "Tw Cen MT Condensed Extra Bold", "Tw Cen MT", sans-serif;
+            font-size: 17pt;
+            font-weight: 800;
+            line-height: 1.08;
+            color: #ffb000
+        }
+
+        .system-band {
+            height: .29in;
+            background: var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            text-align: left;
+            padding-left: .12in;
+            font-family: 'Times New Roman', serif;
+            font-size: 12pt;
+            font-variant: small-caps;
+            font-weight: bold
+        }
+
+        .form-title {
+            height: .2in;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 7.2pt;
+            border-bottom: 1px solid #222
+        }
+
+        .top-fields {
+            display: grid;
+            grid-template-columns: 1.45fr .85fr;
+            border-bottom: 1px solid #222
+        }
+
+        .field {
+            display: flex;
+            align-items: center;
+            min-width: 0;
+            min-height: .22in;
+            border-bottom: 1px solid #555;
+            padding: 2px 3px;
+            gap: 3px
+        }
+
+        .field .label {
+            white-space: nowrap
+        }
+
+        .blank {
+            height: .12in;
+            flex: 1;
+            min-width: 0
+        }
+
+        .top-fields .field:nth-child(odd) {
+            border-right: 1px solid #222
+        }
+
+        .full-field {
+            display: flex;
+            align-items: flex-start;
+            min-height: .22in;
+            padding: 2px 3px;
+            border-bottom: 1px solid #555;
+            gap: 3px
+        }
+
+        .full-field .label {
+            white-space: nowrap
+        }
+
+        .kind {
+            height: .28in
+        }
+
+        .remarks {
+            height: 1.3in;
+            border-bottom: 1px solid #222;
+            padding: 3px
+        }
+
+        .estimated {
+            height: .23in;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #222;
+            padding: 2px 3px;
+            gap: 3px
+        }
+
+        .priority {
+            height: .24in;
+            display: grid;
+            grid-template-columns: 1.2fr .28fr .9fr .28fr .9fr .28fr .65fr;
+            align-items: center;
+            border-bottom: 1px solid #222
+        }
+
+        .priority>div {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-right: 1px solid #555
+        }
+
+        .priority>div:first-child {
+            justify-content: flex-start;
+            padding-left: 3px
+        }
+
+        .priority>div:last-child {
+            border-right: 0
+        }
+
+        .box {
+            width: 10px;
+            height: 10px;
+            border: 1px solid #111;
+            display: inline-block
+        }
+
+        .approval-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed
+        }
+
+        .approval-table th,
+        .approval-table td {
+            border: 1px solid #222;
+            padding: 2px 3px
+        }
+
+        .approval-table th {
+            height: .22in;
+            text-align: center;
+            font-size: 6.3pt
+        }
+
+        .approval-table td {
+            height: .23in
+        }
+
+        .action {
+            width: 19%
+        }
+
+        .name {
+            width: 28%
+        }
+
+        .designation {
+            width: 27%
+        }
+
+        .signature {
+            width: 18%
+        }
+
+        .date {
+            width: 8%
+        }
+
+        .footer {
+            position: absolute;
+            bottom: .035in;
+            left: .04in;
+            font-size: 4.7pt;
+            color: #333
+        }
+
+        [contenteditable=true]:focus {
+            outline: 1px dashed #2584bd;
+            background: #f4fbff
+        }
+
+        @page {
+            size: Letter portrait;
+            margin: 0
+        }
+
+        @media print {
+
+            html,
+            body {
+                width: 8.5in;
+                height: 11in;
+                margin: 0;
+                padding: 0;
+                background: white
+            }
+
+            .toolbar {
+                display: none !important
+            }
+
+            .sheet {
+                width: 8.5in;
+                height: 11in;
+                margin: 0;
+                padding: .18in;
+                box-shadow: none;
+                overflow: hidden;
+                page-break-after: avoid
+            }
+
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important
+            }
+        }
+
+        @media screen and (max-width:800px) {
+            .sheet {
+                width: 100%;
+                height: auto;
+                min-height: 11in;
+                padding: 8px
+            }
+
+            .forms {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto;
+                height: auto
+            }
+
+            .forms:after {
+                display: none
+            }
+
+            .form {
+                height: 5.1in;
+                margin-bottom: 12px
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="toolbar"><button onclick="window.print()">Print form</button></div>
+    <main class="sheet">
+        <div class="forms">
+            <article class="form">
+                <header>
+                    <div class="masthead">
+                        <div class="logo"><img src="neust.png" alt="NEUST Logo"></div>
+                        <div class="header-text">
+                            <div class="republic">Republic of the Philippines</div>
+                            <div class="school">NUEVA ECIJA UNIVERSITY OF SCIENCE AND TECHNOLOGY</div>
+                        </div>
+                        <div class="logo right"><img src="mis.png" alt="NEUST Secondary Logo"></div>
+                    </div>
+                    <div class="system-band">Management Information System</div>
+                    <div class="form-title">SERVICE REQUEST FORM</div>
+                </header>
+                <div class="top-fields">
+                    <div class="field"><span class="label">DEPARTMENT</span><span class="blank"></span></div>
+                    <div class="field"><span class="label">CTRL NO.</span><span class="blank"></span></div>
+                    <div class="field"><span class="label">REQUESTED BY:</span><span class="blank"></span></div>
+                    <div class="field"><span class="label">CAMPUS:</span><span class="blank"></span></div>
+                </div>
+                <div class="full-field kind"><span class="label">KIND OF REQUEST</span><span class="blank"></span></div>
+                <div class="remarks"><b>REMARKS:</b></div>
+                <div class="estimated"><span>ESTIMATED TIME:</span><span class="blank"></span></div>
+                <div class="priority">
+                    <div>PRIORITY</div>
+                    <div><i class="box"></i></div>
+                    <div>HIGH</div>
+                    <div><i class="box"></i></div>
+                    <div>MEDIUM</div>
+                    <div><i class="box"></i></div>
+                    <div>LOW</div>
+                </div>
+                <table class="approval-table">
+                    <colgroup>
+                        <col class="action">
+                        <col class="name">
+                        <col class="designation">
+                        <col class="signature">
+                        <col class="date">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>BY: (EMPLOYEE NAME)</th>
+                            <th>DESIGNATION</th>
+                            <th>SIGNATURE</th>
+                            <th>DATE</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>APPROVED</td>
+                            <td>KATHLEEN ANNE R. ESBIETO</td>
+                            <td>Asst. Director, MIS</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>WORK ASSIGNED TO</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>ACKNOWLEDGED</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <footer class="footer">NEUST-MIS-F001</footer>
+            </article>
+            <article class="form">
+                <header>
+                    <div class="masthead">
+                        <div class="logo"><img src="neust.png" alt="NEUST Logo"></div>
+                        <div class="header-text">
+                            <div class="republic">Republic of the Philippines</div>
+                            <div class="school">NUEVA ECIJA UNIVERSITY OF SCIENCE AND TECHNOLOGY</div>
+                        </div>
+                        <div class="logo right"><img src="mis.png" alt="NEUST Secondary Logo"></div>
+                    </div>
+                    <div class="system-band">Management Information System</div>
+                    <div class="form-title">SERVICE REQUEST FORM</div>
+                </header>
+                <div class="top-fields">
+                    <div class="field"><span class="label">DEPARTMENT</span><span class="blank"></span></div>
+                    <div class="field"><span class="label">CTRL NO.</span><span class="blank"></span></div>
+                    <div class="field"><span class="label">REQUESTED BY:</span><span class="blank"></span></div>
+                    <div class="field"><span class="label">CAMPUS:</span><span class="blank"></span></div>
+                </div>
+                <div class="full-field kind"><span class="label">KIND OF REQUEST</span><span class="blank"></span></div>
+                <div class="remarks"><b>REMARKS:</b></div>
+                <div class="estimated"><span>ESTIMATED TIME:</span><span class="blank"></span></div>
+                <div class="priority">
+                    <div>PRIORITY</div>
+                    <div><i class="box"></i></div>
+                    <div>HIGH</div>
+                    <div><i class="box"></i></div>
+                    <div>MEDIUM</div>
+                    <div><i class="box"></i></div>
+                    <div>LOW</div>
+                </div>
+                <table class="approval-table">
+                    <colgroup>
+                        <col class="action">
+                        <col class="name">
+                        <col class="designation">
+                        <col class="signature">
+                        <col class="date">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>BY: (EMPLOYEE NAME)</th>
+                            <th>DESIGNATION</th>
+                            <th>SIGNATURE</th>
+                            <th>DATE</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>APPROVED</td>
+                            <td>KATHLEEN ANNE R. ESBIETO</td>
+                            <td>Asst. Director, MIS</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>WORK ASSIGNED TO</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>ACKNOWLEDGED</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <footer class="footer">NEUST-MIS-F001</footer>
+            </article>
+        </div>
+    </main>
+    <script>let editing = false; function toggleEdit() { editing = !editing; document.querySelectorAll('.form .field,.form .full-field,.form .remarks,.form .estimated,.form .priority,.form td,.form th,.form .system-band,.form .form-title,.form .footer').forEach(el => { el.contentEditable = editing ? 'true' : 'false'; el.spellcheck = false; }); }</script>
+</body>
+
+</html>
