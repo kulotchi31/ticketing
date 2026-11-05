@@ -452,10 +452,6 @@
                                 Select status
                             </option>
 
-                            <option value="Pending">
-                                Pending
-                            </option>
-
                             <option value="Work In Progress">
                                 Work In Progress
                             </option>

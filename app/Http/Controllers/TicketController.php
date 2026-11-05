@@ -9,11 +9,13 @@ use App\Models\User;
 use App\Models\Campus;
 use App\Models\RequestType;
 use App\Models\Provider;
-use Rule;
-
+use App\Models\AuditLogs;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class TicketController extends Controller
 {
@@ -47,32 +49,27 @@ class TicketController extends Controller
     /**
      * Return data needed by the Add/Edit Ticket modal.
      */
-  public function createData()
-{
+    public function createData()
+    {
+        $users = User::select(
+            'id',
+            'name',
+            'fk_provider_id'
+        )
+        ->where('type', 'worker')
+        ->whereNotNull('fk_provider_id')
+        ->orderBy('name')
+        ->get();
 
-    $users = User::select(
-        'id',
-        'name',
-        'fk_provider_id'
-    )
-    ->where('type', 'worker')
-    ->whereNotNull('fk_provider_id')
-    ->orderBy('name')
-    ->get();
-
-    return response()->json([
-        'campuses' => Campus::orderBy('campus_name')->get(),
-
-        'departments' => Department::orderBy('department_name')->get(),
-
-        'providers' => Provider::orderBy('provider_name')->get(),
-
-        'request_types' => RequestType::orderBy('rt_name')->get(),
-
-        'categories' => Category::orderBy('category_name')->get(),
-        'users' => $users,
-    ]);
-}
+        return response()->json([
+            'campuses' => Campus::orderBy('campus_name')->get(),
+            'departments' => Department::orderBy('department_name')->get(),
+            'providers' => Provider::orderBy('provider_name')->get(),
+            'request_types' => RequestType::orderBy('rt_name')->get(),
+            'categories' => Category::orderBy('category_name')->get(),
+            'users' => $users,
+        ]);
+    }
 
     /**
      * Store a newly created ticket.
@@ -119,20 +116,57 @@ class TicketController extends Controller
             ], 422);
         }
 
-        Ticket::create([
-            'ticket_number' => $request->ticket_number,
-            'remarks' => $request->remarks,
-            'fk_department_id' => $request->fk_department_id,
-            'fk_category_id' => $request->fk_category_id,
-            'created_by' => $request->created_by,
-            'assign_to' => $request->assign_to,
-            'status' => "Accepted",
-            'is_walk_in' => "Yes",
-            'classification' => $request->classification,
-            'is_walk_in' => $request->is_walk_in,
-        ]);
+        try {
 
-        return response()->json(true);
+            DB::beginTransaction();
+
+            // CREATE TICKET
+            $ticket = Ticket::create([
+                'ticket_number' => $request->ticket_number,
+                'remarks' => $request->remarks,
+                'fk_department_id' => $request->fk_department_id,
+                'fk_category_id' => $request->fk_category_id,
+                'created_by' => $request->created_by,
+                'assign_to' => $request->assign_to,
+                'status' => 'Accepted',
+                'is_walk_in' => $request->is_walk_in,
+                'classification' => $request->classification,
+            ]);
+
+            // CREATE AUDIT LOG
+            AuditLogs::create([
+                'fk_user_id' => Auth::id(),
+                'target_id' => $ticket->ticket_id,
+                'action_type' => 'Create Ticket',
+                'payload' => [
+                    'ticket_number' => $ticket->ticket_number,
+                    'remarks' => $ticket->remarks,
+                    'fk_department_id' => $ticket->fk_department_id,
+                    'fk_category_id' => $ticket->fk_category_id,
+                    'created_by' => $ticket->created_by,
+                    'assign_to' => $ticket->assign_to,
+                    'status' => $ticket->status,
+                    'classification' => $ticket->classification,
+                    'is_walk_in' => $ticket->is_walk_in,
+                ],
+                'transaction_date' => now(),
+            ]);
+
+            DB::commit();
+
+            return response()->json(true);
+
+        } catch (\Throwable $e) {
+
+            DB::rollBack();
+
+            Log::error('Ticket creation failed: ' . $e->getMessage());
+
+            return response()->json([
+                'error' => 'Unable to create ticket.',
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -201,11 +235,6 @@ class TicketController extends Controller
 
             'assign_to' => 'nullable|exists:users,id',
 
-            // 'status' => [
-            //     'required',
-            //     'in:For Approval,Accepted,Working,Pending Done',
-            // ],
-
             'classification' => [
                 'nullable',
                 'in:High,Medium',
@@ -221,19 +250,73 @@ class TicketController extends Controller
             ], 422);
         }
 
-        $ticket->update([
-            'ticket_number' => $request->ticket_number,
-            'remarks' => $request->remarks,
-            'fk_department_id' => $request->fk_department_id,
-            'fk_category_id' => $request->fk_category_id,
-            'created_by' => $request->created_by,
-            'assign_to' => $request->assign_to,
-            // 'status' => $request->status,
-            'classification' => $request->classification,
-            'is_walk_in' => $request->is_walk_in,
-        ]);
+        try {
 
-        return response()->json(true);
+            DB::beginTransaction();
+
+            // CAPTURE OLD DATA BEFORE UPDATE
+            $oldData = [
+                'ticket_number' => $ticket->ticket_number,
+                'remarks' => $ticket->remarks,
+                'fk_department_id' => $ticket->fk_department_id,
+                'fk_category_id' => $ticket->fk_category_id,
+                'created_by' => $ticket->created_by,
+                'assign_to' => $ticket->assign_to,
+                'status' => $ticket->status,
+                'classification' => $ticket->classification,
+                'is_walk_in' => $ticket->is_walk_in,
+            ];
+
+            // UPDATE TICKET
+            $ticket->update([
+                'ticket_number' => $request->ticket_number,
+                'remarks' => $request->remarks,
+                'fk_department_id' => $request->fk_department_id,
+                'fk_category_id' => $request->fk_category_id,
+                'created_by' => $request->created_by,
+                'assign_to' => $request->assign_to,
+                // 'status' => $request->status,
+                'classification' => $request->classification,
+                'is_walk_in' => $request->is_walk_in,
+            ]);
+
+            // CREATE AUDIT LOG
+            AuditLogs::create([
+                'fk_user_id' => Auth::id(),
+                'target_id' => $ticket->ticket_id,
+                'action_type' => 'Update Ticket',
+                'payload' => [
+                    'old' => $oldData,
+                    'new' => [
+                        'ticket_number' => $ticket->ticket_number,
+                        'remarks' => $ticket->remarks,
+                        'fk_department_id' => $ticket->fk_department_id,
+                        'fk_category_id' => $ticket->fk_category_id,
+                        'created_by' => $ticket->created_by,
+                        'assign_to' => $ticket->assign_to,
+                        'status' => $ticket->status,
+                        'classification' => $ticket->classification,
+                        'is_walk_in' => $ticket->is_walk_in,
+                    ]
+                ],
+                'transaction_date' => now(),
+            ]);
+
+            DB::commit();
+
+            return response()->json(true);
+
+        } catch (\Throwable $e) {
+
+            DB::rollBack();
+
+            Log::error('Ticket update failed: ' . $e->getMessage());
+
+            return response()->json([
+                'error' => 'Unable to update ticket.',
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -241,10 +324,55 @@ class TicketController extends Controller
      */
     public function destroy(string $id)
     {
-        $ticket = Ticket::findOrFail($id);
+        try {
 
-        $ticket->delete();
+            DB::beginTransaction();
 
-        return response()->json(1);
+            $ticket = Ticket::findOrFail($id);
+
+            // CAPTURE TICKET DATA BEFORE DELETION
+            $oldData = [
+                'ticket_number' => $ticket->ticket_number,
+                'remarks' => $ticket->remarks,
+                'fk_department_id' => $ticket->fk_department_id,
+                'fk_category_id' => $ticket->fk_category_id,
+                'created_by' => $ticket->created_by,
+                'assign_to' => $ticket->assign_to,
+                'status' => $ticket->status,
+                'classification' => $ticket->classification,
+                'is_walk_in' => $ticket->is_walk_in,
+            ];
+
+            $ticketId = $ticket->ticket_id;
+
+            // DELETE TICKET
+            $ticket->delete();
+
+            // CREATE AUDIT LOG
+            AuditLogs::create([
+                'fk_user_id' => Auth::id(),
+                'target_id' => $ticketId,
+                'action_type' => 'Delete Ticket',
+                'payload' => [
+                    'deleted_ticket' => $oldData
+                ],
+                'transaction_date' => now(),
+            ]);
+
+            DB::commit();
+
+            return response()->json(1);
+
+        } catch (\Throwable $e) {
+
+            DB::rollBack();
+
+            Log::error('Ticket deletion failed: ' . $e->getMessage());
+
+            return response()->json([
+                'error' => 'Unable to delete ticket.',
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 }

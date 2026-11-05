@@ -72,9 +72,8 @@
         border: 1px solid #e9edf3;
         border-radius: 16px;
         overflow: hidden;
-        box-shadow:
-            0 1px 2px rgba(16, 24, 40, .02),
-            0 8px 24px rgba(16, 24, 40, .04);
+        box-shadow: 0 1px 2px rgba(16, 24, 40, .02),
+                    0 8px 24px rgba(16, 24, 40, .04);
     }
 
     .ticket-toolbar {
@@ -164,26 +163,6 @@
         border-bottom: none !important;
     }
 
-    .ticket-number {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        font-weight: 700;
-        color: #1f2937;
-    }
-
-    .ticket-avatar {
-        width: 34px;
-        height: 34px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 9px;
-        background: #eff6ff;
-        color: #2563eb;
-        font-size: 15px;
-    }
-
     .ticket-badge {
         display: inline-flex;
         align-items: center;
@@ -194,47 +173,10 @@
         white-space: nowrap;
     }
 
-    .badge-walkin {
-        background: #f3e8ff;
-        color: #7e22ce;
-    }
-
-    .badge-appointment {
-        background: #f1f5f9;
-        color: #64748b;
-    }
-
     .action-buttons {
         display: flex;
         justify-content: flex-end;
         gap: 7px;
-    }
-
-    .action-btn {
-        width: 34px;
-        height: 34px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 8px;
-        border: 1px solid #e5e7eb;
-        background: #ffffff;
-        color: #64748b;
-        font-size: 14px;
-        cursor: pointer;
-        transition: all .18s ease;
-    }
-
-    .action-btn.edit:hover {
-        color: #2563eb;
-        border-color: #bfdbfe;
-        background: #eff6ff;
-    }
-
-    .action-btn.delete:hover {
-        color: #dc2626;
-        border-color: #fecaca;
-        background: #fef2f2;
     }
 
     .dataTables_wrapper {
@@ -317,19 +259,25 @@
 
 <div class="ticket-page">
 
-    <!-- PAGE HEADER -->
+    {{-- PAGE HEADER --}}
     <div class="ticket-header">
+
         <div class="ticket-header-left">
+
             <div class="ticket-header-icon">
                 <i class="bi bi-ticket-perforated"></i>
             </div>
 
             <div>
-                <h4 class="ticket-title">University Service Request</h4>
+                <h4 class="ticket-title">
+                    University Service Request
+                </h4>
+
                 <p class="ticket-subtitle">
                     Submit and track your university service requests
                 </p>
             </div>
+
         </div>
 
         <button
@@ -340,15 +288,17 @@
 
             <i class="bi bi-plus-lg"></i>
             Add Request
+
         </button>
+
     </div>
 
 
-    <!-- MAIN CARD -->
+    {{-- TICKET DIRECTORY --}}
     <div class="ticket-card">
 
-        <!-- TOOLBAR -->
         <div class="ticket-toolbar">
+
             <div>
                 <div class="ticket-toolbar-title">
                     Ticket Directory
@@ -367,12 +317,13 @@
                     id="ticketSearch"
                     placeholder="Search tickets...">
             </div>
+
         </div>
 
-
-        <!-- TABLE -->
         <div class="table-responsive">
+
             <table id="ticketTable" class="ticket-table">
+
                 <thead>
                     <tr>
                         <th>Classification</th>
@@ -382,21 +333,24 @@
                         <th>Category</th>
                         <th>Assigned To</th>
                         <th>Status</th>
-                        <th class="text-end">Actions</th>
+                        <th class="text-end">Action</th>
                     </tr>
                 </thead>
 
                 <tbody></tbody>
+
             </table>
+
         </div>
 
     </div>
+
 </div>
 
 
-<!-- =====================================
+{{-- =========================================
      ADD TICKET MODAL
-====================================== -->
+========================================= --}}
 
 <div
     class="modal fade"
@@ -406,9 +360,11 @@
     aria-hidden="true">
 
     <div class="modal-dialog modal-dialog-centered modal-lg">
+
         <div class="modal-content">
 
             <div class="modal-header">
+
                 <h5 class="modal-title" id="addTicketModalLabel">
                     <i class="bi bi-ticket-perforated me-2"></i>
                     Add Ticket
@@ -418,9 +374,10 @@
                     type="button"
                     class="btn-close"
                     data-bs-dismiss="modal"
-                    aria-label="Close"></button>
-            </div>
+                    aria-label="Close">
+                </button>
 
+            </div>
 
             <form
                 id="addForm"
@@ -430,10 +387,12 @@
                 @csrf
 
                 <div class="modal-body">
+
                     <div class="row">
 
-                                                                                                      <!-- REQUESTED BY -->
+                        {{-- REQUESTED BY --}}
                         <div class="col-md-6 mb-3">
+
                             <label for="requested_by" class="form-label">
                                 Requested By
                             </label>
@@ -448,13 +407,15 @@
 
                             <div
                                 id="requested_by_error"
-                                class="invalid-feedback"></div>
+                                class="invalid-feedback">
+                            </div>
+
                         </div>
 
 
-
-                        <!-- SERVICE PROVIDER -->
+                        {{-- SERVICE PROVIDER --}}
                         <div class="col-md-6 mb-3">
+
                             <label for="fk_provider_id" class="form-label">
                                 Service Provider
                             </label>
@@ -468,16 +429,20 @@
                                 <option value="">
                                     Select service provider
                                 </option>
+
                             </select>
 
                             <div
                                 id="fk_provider_id_error"
-                                class="invalid-feedback"></div>
+                                class="invalid-feedback">
+                            </div>
+
                         </div>
 
 
-                        <!-- REQUEST TYPE -->
+                        {{-- REQUEST TYPE --}}
                         <div class="col-md-6 mb-3">
+
                             <label for="fk_request_type_id" class="form-label">
                                 Request Type
                             </label>
@@ -492,16 +457,20 @@
                                 <option value="">
                                     Select service provider first
                                 </option>
+
                             </select>
 
                             <div
                                 id="fk_request_type_id_error"
-                                class="invalid-feedback"></div>
+                                class="invalid-feedback">
+                            </div>
+
                         </div>
 
 
-                        <!-- CATEGORY -->
+                        {{-- CATEGORY --}}
                         <div class="col-md-6 mb-3">
+
                             <label for="fk_category_id" class="form-label">
                                 Category
                             </label>
@@ -516,16 +485,20 @@
                                 <option value="">
                                     Select request type first
                                 </option>
+
                             </select>
 
                             <div
                                 id="fk_category_id_error"
-                                class="invalid-feedback"></div>
+                                class="invalid-feedback">
+                            </div>
+
                         </div>
 
 
-                                                <!-- REMARKS -->
+                        {{-- REMARKS --}}
                         <div class="col-12 mb-3">
+
                             <label for="remarks" class="form-label">
                                 Remarks
                             </label>
@@ -540,19 +513,21 @@
 
                             <div
                                 id="remarks_error"
-                                class="invalid-feedback"></div>
+                                class="invalid-feedback">
+                            </div>
+
                         </div>
 
                     </div>
+
                 </div>
 
-
                 <div class="modal-footer">
+
                     <button
                         type="button"
                         class="btn btn-light"
                         data-bs-dismiss="modal">
-
                         Cancel
                     </button>
 
@@ -563,1032 +538,986 @@
 
                         <i class="bi bi-save me-1"></i>
                         Save Ticket
+
                     </button>
+
                 </div>
 
             </form>
+
         </div>
+
     </div>
+
 </div>
 
 
-<!-- =====================================
-     EDIT TICKET MODAL
-====================================== -->
+{{-- =========================================
+     APPROVE AND ASSIGN WORKER MODAL
+========================================= --}}
 
 <div
     class="modal fade"
-    id="editTicketModal"
+    id="assignWorkerModal"
     tabindex="-1"
-    aria-labelledby="editTicketModalLabel"
+    aria-labelledby="assignWorkerModalLabel"
     aria-hidden="true">
 
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered">
+
         <div class="modal-content">
 
             <div class="modal-header">
-                <h5 class="modal-title" id="editTicketModalLabel">
-                    <i class="bi bi-pencil-square me-2"></i>
-                    Edit Ticket
+
+                <h5 class="modal-title" id="assignWorkerModalLabel">
+                    <i class="bi bi-person-check me-2"></i>
+                    Approve & Assign Worker
                 </h5>
 
                 <button
                     type="button"
                     class="btn-close"
                     data-bs-dismiss="modal"
-                    aria-label="Close"></button>
+                    aria-label="Close">
+                </button>
+
             </div>
 
-
-            <form
-                id="updateForm"
-                action="javascript:void(0);"
-                method="POST">
+            <form id="assignWorkerForm">
 
                 @csrf
 
                 <input
                     type="hidden"
-                    id="edit_ticket_id"
+                    id="assign_ticket_id"
                     name="ticket_id">
 
                 <div class="modal-body">
-                    <div class="row">
 
-                                                                                                <!-- REQUESTED BY -->
-                        <div class="col-md-6 mb-3">
-                            <label for="edit_requested_by" class="form-label">
-                                Requested By
-                            </label>
-                            <input
-                                type="text"
-                                class="form-control"
-                                id="edit_requested_by"
-                                name="requested_by"
-                                placeholder="Enter requester name"
-                                required>
-                            <div
-                                id="edit_requested_by_error"
-                                class="invalid-feedback"></div>
-                        </div>
+                    <p class="text-muted small">
+                        Select an active worker assigned to the same
+                        service provider and campus as this ticket.
+                        Only matching workers will appear.
+                    </p>
 
-                        <!-- SERVICE PROVIDER -->
-                        <div class="col-md-6 mb-3">
-                            <label for="edit_fk_provider_id" class="form-label">
-                                Service Provider
-                            </label>
+                    <div class="mb-3">
 
-                            <select
-                                class="form-select"
-                                id="edit_fk_provider_id"
-                                name="fk_provider_id"
-                                required>
+                        <label for="assign_to" class="form-label">
+                            Assign Worker
+                        </label>
 
-                                <option value="">
-                                    Select service provider
-                                </option>
-                            </select>
+                        <select
+                            class="form-select"
+                            id="assign_to"
+                            name="assign_to"
+                            required>
 
-                            <div
-                                id="edit_fk_provider_id_error"
-                                class="invalid-feedback"></div>
-                        </div>
+                            <option value="">
+                                Select worker
+                            </option>
 
+                        </select>
 
-                        <!-- REQUEST TYPE -->
-                        <div class="col-md-6 mb-3">
-                            <label for="edit_fk_request_type_id" class="form-label">
-                                Request Type
-                            </label>
-
-                            <select
-                                class="form-select"
-                                id="edit_fk_request_type_id"
-                                name="fk_request_type_id"
-                                required
-                                disabled>
-
-                                <option value="">
-                                    Select service provider first
-                                </option>
-                            </select>
-
-                            <div
-                                id="edit_fk_request_type_id_error"
-                                class="invalid-feedback"></div>
-                        </div>
-
-
-                        <!-- CATEGORY -->
-                        <div class="col-md-6 mb-3">
-                            <label for="edit_fk_category_id" class="form-label">
-                                Category
-                            </label>
-
-                            <select
-                                class="form-select"
-                                id="edit_fk_category_id"
-                                name="fk_category_id"
-                                required
-                                disabled>
-
-                                <option value="">
-                                    Select request type first
-                                </option>
-                            </select>
-
-                            <div
-                                id="edit_fk_category_id_error"
-                                class="invalid-feedback"></div>
-                        </div>
-
-
-                                                <!-- REMARKS -->
-                        <div class="col-12 mb-3">
-                            <label for="edit_remarks" class="form-label">
-                                Remarks
-                            </label>
-
-                            <textarea
-                                class="form-control"
-                                id="edit_remarks"
-                                name="remarks"
-                                rows="3"
-                                required></textarea>
-
-                            <div
-                                id="edit_remarks_error"
-                                class="invalid-feedback"></div>
+                        <div
+                            id="assign_to_error"
+                            class="invalid-feedback">
                         </div>
 
                     </div>
+
                 </div>
 
-
                 <div class="modal-footer">
+
                     <button
                         type="button"
                         class="btn btn-light"
                         data-bs-dismiss="modal">
-
                         Cancel
                     </button>
 
                     <button
                         type="submit"
                         class="btn btn-primary"
-                        id="btnUpdateTicket">
+                        id="btnApproveAssign">
 
-                        <i class="bi bi-check-lg me-1"></i>
-                        Update Ticket
+                        <i class="bi bi-check-circle me-1"></i>
+                        Approve & Assign
+
                     </button>
+
                 </div>
 
             </form>
+
         </div>
+
     </div>
+
 </div>
 
 
 @push('scripts')
+
 <script>
-    $(document).ready(function () {
+$(document).ready(function () {
 
-        let campuses = [];
-        let departments = [];
-        let providers = [];
-        let requestTypes = [];
-        let categories = [];
-        let users = [];
+    /*
+    |--------------------------------------------------------------------------
+    | GLOBAL DATA
+    |--------------------------------------------------------------------------
+    */
 
+    let providers = [];
+    let requestTypes = [];
+    let categories = [];
+    let users = [];
 
-        /*
-        |--------------------------------------------------------------------------
-        | LOAD FORM DATA
-        |--------------------------------------------------------------------------
-        */
 
-        function loadFormData() {
-            $.ajax({
-                url: "{{ route('staff-ticket.createData') }}",
-                method: "GET",
+    /*
+    |--------------------------------------------------------------------------
+    | LOAD FORM DATA
+    |--------------------------------------------------------------------------
+    */
 
-                success: function (data) {
-                    campuses = data.campuses || [];
-                    departments = data.departments || [];
-                    providers = data.providers || [];
-                    requestTypes = data.request_types || [];
-                    categories = data.categories || [];
-                    users = data.users || [];
+    function loadFormData() {
 
-                    populateCampuses();
-                    populateProviders();
-                    populateAssignTo(
-                '',
-                '',
-                'edit_assign_to'
-            );
-                },
+        $.ajax({
 
-                error: function (xhr) {
-                    console.error(
-                        'Failed to load ticket form data:',
-                        xhr.responseText
-                    );
-                }
-            });
-        }
+            url: "{{ route('provider.createData') }}",
+            method: "GET",
 
+            success: function (data) {
 
-        /*
-        |--------------------------------------------------------------------------
-        | POPULATE CAMPUSES
-        |--------------------------------------------------------------------------
-        */
+                providers = data.providers || [];
+                requestTypes = data.request_types || [];
+                categories = data.categories || [];
+                users = data.users || [];
 
-        function populateCampuses() {
-            let options = `
-                <option value="">Select campus</option>
-            `;
+                populateProviders();
 
-            campuses.forEach(function (campus) {
-                options += `
-                    <option value="${campus.campus_id}">
-                        ${campus.campus_name}
-                    </option>
-                `;
-            });
+                console.log('Loaded form data:', data);
 
-            $('#fk_campus_id, #edit_fk_campus_id').html(options);
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | POPULATE DEPARTMENTS BY CAMPUS
-        |--------------------------------------------------------------------------
-        */
-
-        function populateDepartments(campusId, targetId, selectedId = '') {
-            let options = `
-                <option value="">Select department</option>
-            `;
-
-            if (!campusId) {
-                $('#' + targetId)
-                    .html('<option value="">Select campus first</option>')
-                    .prop('disabled', true);
-
-                return;
-            }
-
-            let filteredDepartments = departments.filter(function (department) {
-                return String(department.fk_campus_id) === String(campusId);
-            });
-
-            if (filteredDepartments.length === 0) {
-                options = `
-                    <option value="">No departments available</option>
-                `;
-            } else {
-                filteredDepartments.forEach(function (department) {
-                    options += `
-                        <option
-                            value="${department.department_id}"
-                            ${String(department.department_id) === String(selectedId) ? 'selected' : ''}>
-                            ${department.department_name}
-                        </option>
-                    `;
-                });
-            }
-
-            $('#' + targetId)
-                .html(options)
-                .prop('disabled', false);
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | POPULATE PROVIDERS
-        |--------------------------------------------------------------------------
-        */
-
-        function populateProviders(selectedId = '') {
-            let options = `
-                <option value="">Select service provider</option>
-            `;
-
-            providers.forEach(function (provider) {
-                options += `
-                    <option
-                        value="${provider.provider_id}"
-                        ${String(provider.provider_id) === String(selectedId) ? 'selected' : ''}>
-                        ${provider.provider_name}
-                    </option>
-                `;
-            });
-
-            $('#fk_provider_id, #edit_fk_provider_id').html(options);
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | POPULATE REQUEST TYPES BY PROVIDER
-        |--------------------------------------------------------------------------
-        */
-
-        function populateRequestTypes(
-            providerId,
-            targetId,
-            selectedId = ''
-        ) {
-            let options = `
-                <option value="">Select request type</option>
-            `;
-
-            if (!providerId) {
-                $('#' + targetId)
-                    .html('<option value="">Select service provider first</option>')
-                    .prop('disabled', true);
-
-                return;
-            }
-
-            let filteredRequestTypes = requestTypes.filter(function (requestType) {
-                return String(requestType.fk_provider_id) === String(providerId);
-            });
-
-            if (filteredRequestTypes.length === 0) {
-                options = `
-                    <option value="">No request types available</option>
-                `;
-            } else {
-                filteredRequestTypes.forEach(function (requestType) {
-                    options += `
-                        <option
-                            value="${requestType.request_type_id}"
-                            ${String(requestType.request_type_id) === String(selectedId) ? 'selected' : ''}>
-                            ${requestType.rt_name}
-                        </option>
-                    `;
-                });
-            }
-
-            $('#' + targetId)
-                .html(options)
-                .prop('disabled', false);
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | POPULATE CATEGORIES BY REQUEST TYPE
-        |--------------------------------------------------------------------------
-        */
-
-        function populateCategories(
-            requestTypeId,
-            targetId,
-            selectedId = ''
-        ) {
-            let options = `
-                <option value="">Select category</option>
-            `;
-
-            if (!requestTypeId) {
-                $('#' + targetId)
-                    .html('<option value="">Select request type first</option>')
-                    .prop('disabled', true);
-
-                return;
-            }
-
-            let filteredCategories = categories.filter(function (category) {
-                return String(category.fk_request_type_id) === String(requestTypeId);
-            });
-
-            if (filteredCategories.length === 0) {
-                options = `
-                    <option value="">No categories available</option>
-                `;
-            } else {
-                filteredCategories.forEach(function (category) {
-                    options += `
-                        <option
-                            value="${category.category_id}"
-                            ${String(category.category_id) === String(selectedId) ? 'selected' : ''}>
-                            ${category.category_name}
-                        </option>
-                    `;
-                });
-            }
-
-            $('#' + targetId)
-                .html(options)
-                .prop('disabled', false);
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | POPULATE ASSIGN TO
-        |--------------------------------------------------------------------------
-        */
-
-        function populateAssignTo(
-            providerId = '',
-            selectedId = '',
-            targetId = 'assign_to'
-        ) {
-            let options = '';
-
-            if (!providerId) {
-                options = `
-                    <option value="">
-                        Select service provider first
-                    </option>
-                `;
-            } else {
-                const filteredWorkers = users.filter(function (user) {
-                    return String(user.fk_provider_id) === String(providerId);
-                });
-
-                if (filteredWorkers.length === 0) {
-                    options = `
-                        <option value="">
-                            No workers available for this provider
-                        </option>
-                    `;
-                } else {
-                    options = `
-                        <option value="">Select worker</option>
-                    `;
-
-                    filteredWorkers.forEach(function (worker) {
-                        options += `
-                            <option
-                                value="${worker.id}"
-                                ${String(worker.id) === String(selectedId) ? 'selected' : ''}>
-                                ${worker.name}
-                            </option>
-                        `;
-                    });
-                }
-            }
-
-            $('#' + targetId).html(options);
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | ADD CASCADING DROPDOWNS
-        |--------------------------------------------------------------------------
-        */
-
-        $('#fk_campus_id').on('change', function () {
-            populateDepartments(
-                $(this).val(),
-                'fk_department_id'
-            );
-        });
-
-        $('#fk_provider_id').on('change', function () {
-            const providerId = $(this).val();
-
-            populateRequestTypes(
-                providerId,
-                'fk_request_type_id'
-            );
-
-            $('#fk_category_id')
-                .html('<option value="">Select request type first</option>')
-                .prop('disabled', true);
-
-            populateAssignTo(
-                providerId,
-                '',
-                'assign_to'
-            );
-        });
-
-        $('#fk_request_type_id').on('change', function () {
-            populateCategories(
-                $(this).val(),
-                'fk_category_id'
-            );
-        });
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | EDIT CASCADING DROPDOWNS
-        |--------------------------------------------------------------------------
-        */
-
-        $('#edit_fk_campus_id').on('change', function () {
-            populateDepartments(
-                $(this).val(),
-                'edit_fk_department_id'
-            );
-        });
-
-        $('#edit_fk_provider_id').on('change', function () {
-            const providerId = $(this).val();
-
-            populateRequestTypes(
-                providerId,
-                'edit_fk_request_type_id'
-            );
-
-            $('#edit_fk_category_id')
-                .html('<option value="">Select request type first</option>')
-                .prop('disabled', true);
-
-            populateAssignTo(
-                providerId,
-                '',
-                'edit_assign_to'
-            );
-        });
-
-        $('#edit_fk_request_type_id').on('change', function () {
-            populateCategories(
-                $(this).val(),
-                'edit_fk_category_id'
-            );
-        });
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | DATATABLE
-        |--------------------------------------------------------------------------
-        */
-
-        var table = $('#ticketTable').DataTable({
-            processing: true,
-            serverSide: false,
-            paging: true,
-            pageLength: 10,
-
-            ajax: {
-                url: "{{ route('provider.ticket') }}",
-                type: "GET",
-                dataSrc: 'data'
             },
 
-            columns: [
-         
+            error: function (xhr) {
 
-                {
-                    data: "classification",
-                    defaultContent: "-"
-                },
-
-
-                {
-                    data: "category.request_type.provider.provider_name",
-                    defaultContent: "-"
-                },
-
-                {
-                    data: "remarks",
-                    defaultContent: "-"
-                },
-
-                {
-                    data: "requested_by",
-                    defaultContent: "-"
-                },
-
-                {
-                    data: "category.category_name",
-                    defaultContent: "-"
-                },
-
-                {
-                    data: "assignee.name",
-                    defaultContent: "Not assigned",
-
-                    render: function (data) {
-                        return data || 'Not assigned';
-                    }
-                },
-
-                 {
-                    data: "status",
-                    defaultContent: "-"
-                },
-
-                {
-                    data: "ticket_id",
-                    orderable: false,
-                    searchable: false,
-                    className: "text-end",
-
-                    render: function (data) {
-                        return `
-                            <div class="action-buttons">
-
-                                <button
-                                    type="button"
-                                    name="edit"
-                                    class="action-btn edit"
-                                    data-id="${data}"
-                                    title="Edit Ticket">
-
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-
-                                <button
-                                    type="button"
-                                    name="delete"
-                                    class="action-btn delete"
-                                    data-id="${data}"
-                                    title="Delete Ticket">
-
-                                    <i class="bi bi-trash"></i>
-                                </button>
-
-                            </div>
-                        `;
-                    }
-                }
-            ]
-        });
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | CUSTOM SEARCH
-        |--------------------------------------------------------------------------
-        */
-
-        $('#ticketSearch').on('keyup', function () {
-            table.search(this.value).draw();
-        });
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | ADD TICKET
-        |--------------------------------------------------------------------------
-        */
-
-        $(document).on("submit", "#addForm", function (e) {
-            e.preventDefault();
-
-            let form = this;
-            let formData = new FormData(form);
-
-            clearValidationErrors();
-
-            $.ajax({
-                url: "{{ route('ticket-staff.store') }}",
-                method: "POST",
-                contentType: false,
-                processData: false,
-                data: formData,
-
-                success: function (data) {
-                    if (data == true) {
-                        Toast.fire({
-                            icon: 'success',
-                            title: 'Request Added!'
-                        });
-
-                        bootstrap.Modal.getOrCreateInstance(
-                            document.getElementById('addTicketModal')
-                        ).hide();
-
-                        $("#addForm").trigger("reset");
-                        resetAddDropdowns();
-
-                        table.ajax.reload(null, false);
-                    }
-                },
-
-                error: function (xhr) {
-                    handleValidationErrors(xhr, false);
-                }
-            });
-        });
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | EDIT TICKET
-        |--------------------------------------------------------------------------
-        */
-
-        $(document).on("click", "button[name='edit']", function () {
-            let id = $(this).data('id');
-
-            let route = "{{ route('ticket-staff.edit', ':id') }}";
-            route = route.replace(':id', id);
-
-            clearValidationErrors();
-
-            bootstrap.Modal.getOrCreateInstance(
-                document.getElementById('editTicketModal')
-            ).show();
-
-            $.ajax({
-                url: route,
-                method: "GET",
-
-                success: function (response) {
-                    let data = response.data;
-
-                    let campusId = data.department
-                        ? data.department.fk_campus_id
-                        : '';
-
-                    let providerId = data.category &&
-                        data.category.request_type
-                        ? data.category.request_type.fk_provider_id
-                        : '';
-
-                    let requestTypeId = data.category
-                        ? data.category.fk_request_type_id
-                        : '';
-
-                    $("#edit_ticket_id").val(data.ticket_id);
-                    $("#edit_ticket_number").val(data.ticket_number);
-                    $("#edit_requested_by").val(data.requested_by ?? '');
-                    $("#edit_remarks").val(data.remarks);
-
-                    /*
-                    | Campus and Department
-                    */
-                    $("#edit_fk_campus_id").val(campusId);
-
-                    populateDepartments(
-                        campusId,
-                        'edit_fk_department_id',
-                        data.fk_department_id
-                    );
-
-                    /*
-                    | Provider and Requested By
-                    */
-                    populateProviders(providerId);
-
-                    populateRequestTypes(
-                        providerId,
-                        'edit_fk_request_type_id',
-                        requestTypeId
-                    );
-
-                    /*
-                    | Category
-                    */
-                    populateCategories(
-                        requestTypeId,
-                        'edit_fk_category_id',
-                        data.fk_category_id
-                    );
-
-                    /*
-                    | Assign To
-                    */
-                    populateAssignTo(
-                        providerId,
-                        data.assign_to,
-                        'edit_assign_to'
-                    );
-                },
-
-                error: function (xhr) {
-                    console.error(
-                        'Failed to load ticket:',
-                        xhr.responseText
-                    );
-                }
-            });
-        });
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | UPDATE TICKET
-        |--------------------------------------------------------------------------
-        */
-
-        $(document).on("submit", "#updateForm", function (e) {
-            e.preventDefault();
-
-            let id = $("#edit_ticket_id").val();
-
-            let route = "{{ route('ticket-staff.update', ':id') }}";
-            route = route.replace(':id', id);
-
-            let formData = new FormData(this);
-            formData.append("_method", "PUT");
-
-            clearValidationErrors();
-
-            $.ajax({
-                url: route,
-                method: "POST",
-                contentType: false,
-                processData: false,
-                data: formData,
-
-                success: function (data) {
-                    if (data.success  == true) {
-                        Toast.fire({
-                            icon: 'success',
-                            title: 'Request Updated!'
-                        });
-
-                        bootstrap.Modal.getOrCreateInstance(
-                            document.getElementById('editTicketModal')
-                        ).hide();
-
-                        table.ajax.reload(null, false);
-                    }
-                },
-
-                error: function (xhr) {
-                    handleValidationErrors(xhr, true);
-                }
-            });
-        });
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | DELETE TICKET
-        |--------------------------------------------------------------------------
-        */
-
-        $(document).on("click", "button[name='delete']", function () {
-            let id = $(this).data('id');
-
-            let route = "{{ route('ticket-staff.destroy', ':id') }}";
-            route = route.replace(':id', id);
-
-            Swal.fire({
-                title: 'Are you sure?',
-                showDenyButton: true,
-                confirmButtonText: 'Delete',
-                denyButtonText: "Don't Delete"
-            }).then((result) => {
-
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: route,
-                        method: "POST",
-
-                        data: {
-                            _token: $('meta[name="csrf-token"]').attr('content'),
-                            _method: "DELETE"
-                        },
-
-                        success: function (data) {
-                            if (data == 1) {
-                                Toast.fire({
-                                    icon: 'success',
-                                    title: 'Request Deleted!'
-                                });
-
-                                table.ajax.reload(null, false);
-                            }
-                        },
-
-                        error: function (xhr) {
-                            console.error(
-                                'Failed to delete Request:',
-                                xhr.responseText
-                            );
-                        }
-                    });
-                }
-            });
-        });
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | VALIDATION ERRORS
-        |--------------------------------------------------------------------------
-        */
-
-        function clearValidationErrors() {
-            $('.is-invalid').removeClass('is-invalid');
-            $('.invalid-feedback').text('').hide();
-        }
-
-        function handleValidationErrors(xhr, isEdit) {
-            if (xhr.status !== 422) {
                 console.error(xhr.responseText);
-                return;
+
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Unable to load form data.'
+                });
+
             }
 
-            let errors = xhr.responseJSON.errors || {};
-            let prefix = isEdit ? 'edit_' : '';
+        });
 
-            $.each(errors, function (field, messages) {
-                let inputId = '#' + prefix + field;
-                let errorId = '#' + prefix + field + '_error';
+    }
 
-                $(inputId).addClass('is-invalid');
-                $(errorId)
-                    .text(messages[0])
-                    .show();
+
+    /*
+    |--------------------------------------------------------------------------
+    | POPULATE PROVIDERS
+    |--------------------------------------------------------------------------
+    */
+
+    function populateProviders(selectedId = '') {
+
+        let options = `
+            <option value="">Select service provider</option>
+        `;
+
+        providers.forEach(function (provider) {
+
+            options += `
+                <option
+                    value="${provider.provider_id}"
+                    ${String(provider.provider_id) === String(selectedId) ? 'selected' : ''}>
+                    ${$('<div>').text(provider.provider_name).html()}
+                </option>
+            `;
+
+        });
+
+        $('#fk_provider_id').html(options);
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | POPULATE REQUEST TYPES
+    |--------------------------------------------------------------------------
+    */
+
+    function populateRequestTypes(
+        providerId,
+        targetId,
+        selectedId = ''
+    ) {
+
+        let options = `
+            <option value="">Select request type</option>
+        `;
+
+        if (!providerId) {
+
+            $('#' + targetId)
+                .html('<option value="">Select service provider first</option>')
+                .prop('disabled', true);
+
+            return;
+
+        }
+
+        const filteredRequestTypes = requestTypes.filter(function (item) {
+
+            return String(item.fk_provider_id) === String(providerId);
+
+        });
+
+        if (filteredRequestTypes.length === 0) {
+
+            options = `
+                <option value="">No request types available</option>
+            `;
+
+        } else {
+
+            filteredRequestTypes.forEach(function (item) {
+
+                options += `
+                    <option
+                        value="${item.request_type_id}"
+                        ${String(item.request_type_id) === String(selectedId) ? 'selected' : ''}>
+                        ${$('<div>').text(item.rt_name).html()}
+                    </option>
+                `;
+
             });
+
         }
 
+        $('#' + targetId)
+            .html(options)
+            .prop('disabled', false);
 
-        /*
-        |--------------------------------------------------------------------------
-        | RESET ADD DROPDOWNS
-        |--------------------------------------------------------------------------
-        */
+    }
 
-        function resetAddDropdowns() {
-            $('#fk_campus_id').val('');
 
-            $('#fk_department_id')
-                .html('<option value="">Select campus first</option>')
-                .prop('disabled', true);
+    /*
+    |--------------------------------------------------------------------------
+    | POPULATE CATEGORIES
+    |--------------------------------------------------------------------------
+    */
 
-            $('#fk_provider_id').val('');
+    function populateCategories(
+        requestTypeId,
+        targetId,
+        selectedId = ''
+    ) {
 
-            $('#fk_request_type_id')
-                .html('<option value="">Select service provider first</option>')
-                .prop('disabled', true);
+        let options = `
+            <option value="">Select category</option>
+        `;
 
-            $('#fk_category_id')
+        if (!requestTypeId) {
+
+            $('#' + targetId)
                 .html('<option value="">Select request type first</option>')
                 .prop('disabled', true);
 
-            populateAssignTo(
-                '',
-                '',
-                'edit_assign_to'
-            );
+            return;
+
         }
 
+        const filteredCategories = categories.filter(function (item) {
 
-        /*
-        |--------------------------------------------------------------------------
-        | RESET EDIT DROPDOWNS
-        |--------------------------------------------------------------------------
-        */
+            return String(item.fk_request_type_id) === String(requestTypeId);
 
-        function resetEditDropdowns() {
-            $('#edit_fk_campus_id').val('');
+        });
 
-            $('#edit_fk_department_id')
-                .html('<option value="">Select campus first</option>')
-                .prop('disabled', true);
+        if (filteredCategories.length === 0) {
 
-            $('#edit_fk_provider_id').val('');
+            options = `
+                <option value="">No categories available</option>
+            `;
 
-            $('#edit_fk_request_type_id')
-                .html('<option value="">Select service provider first</option>')
-                .prop('disabled', true);
+        } else {
 
-            $('#edit_fk_category_id')
-                .html('<option value="">Select request type first</option>')
-                .prop('disabled', true);
+            filteredCategories.forEach(function (item) {
 
-            populateAssignTo(
-                '',
-                '',
-                'edit_assign_to'
-            );
+                options += `
+                    <option
+                        value="${item.category_id}"
+                        ${String(item.category_id) === String(selectedId) ? 'selected' : ''}>
+                        ${$('<div>').text(item.category_name).html()}
+                    </option>
+                `;
+
+            });
+
         }
 
+        $('#' + targetId)
+            .html(options)
+            .prop('disabled', false);
 
-        /*
-        |--------------------------------------------------------------------------
-        | MODAL RESET
-        |--------------------------------------------------------------------------
-        */
-
-        $('#addTicketModal').on('hidden.bs.modal', function () {
-            $("#addForm").trigger("reset");
-            resetAddDropdowns();
-            clearValidationErrors();
-        });
-
-        $('#editTicketModal').on('hidden.bs.modal', function () {
-            $("#updateForm").trigger("reset");
-            resetEditDropdowns();
-            clearValidationErrors();
-        });
+    }
 
 
-        loadFormData();
+    /*
+    |--------------------------------------------------------------------------
+    | CASCADING DROPDOWNS
+    |--------------------------------------------------------------------------
+    */
+
+    $('#fk_provider_id').on('change', function () {
+
+        const providerId = $(this).val();
+
+        populateRequestTypes(
+            providerId,
+            'fk_request_type_id'
+        );
+
+        $('#fk_category_id')
+            .html('<option value="">Select request type first</option>')
+            .prop('disabled', true);
 
     });
+
+
+    $('#fk_request_type_id').on('change', function () {
+
+        populateCategories(
+            $(this).val(),
+            'fk_category_id'
+        );
+
+    });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | DATATABLE
+    |--------------------------------------------------------------------------
+    */
+
+    const table = $('#ticketTable').DataTable({
+
+        processing: true,
+        serverSide: false,
+        paging: true,
+        pageLength: 10,
+
+        ajax: {
+
+            url: "{{ route('provider.ticket') }}",
+            type: "GET",
+            dataSrc: 'data'
+
+        },
+
+        columns: [
+
+            {
+                data: 'classification',
+                defaultContent: '-'
+            },
+
+            {
+                data: 'category.request_type.provider.provider_name',
+                defaultContent: '-'
+            },
+
+            {
+                data: 'remarks',
+                defaultContent: '-'
+            },
+
+            {
+                data: 'requested_by',
+                defaultContent: '-'
+            },
+
+            {
+                data: 'category.category_name',
+                defaultContent: '-'
+            },
+
+            {
+                data: 'assignee.name',
+                defaultContent: 'Not assigned',
+
+                render: function (data) {
+                    return data || 'Not assigned';
+                }
+            },
+
+            {
+                data: 'status',
+                defaultContent: '-'
+            },
+
+            {
+                data: 'ticket_id',
+                orderable: false,
+                searchable: false,
+                className: 'text-end',
+
+                render: function (data, type, row) {
+
+                    if (row.status !== 'For Approval') {
+
+                        return `
+                            <span class="text-muted">
+                                No action required
+                            </span>
+                        `;
+
+                    }
+
+                    return `
+                        <button
+                            type="button"
+                            class="btn btn-sm btn-primary btn-assign-worker"
+                            data-id="${data}">
+
+                            <i class="bi bi-person-check me-1"></i>
+                            Approve & Assign
+
+                        </button>
+                    `;
+
+                }
+
+            }
+
+        ]
+
+    });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | CUSTOM SEARCH
+    |--------------------------------------------------------------------------
+    */
+
+    $('#ticketSearch').on('keyup', function () {
+
+        table.search(this.value).draw();
+
+    });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | ADD TICKET
+    |--------------------------------------------------------------------------
+    */
+
+    $(document).on('submit', '#addForm', function (e) {
+
+        e.preventDefault();
+
+        const form = this;
+        const formData = new FormData(form);
+
+        clearValidationErrors();
+
+        $('#btnSaveTicket')
+            .prop('disabled', true)
+            .html(`
+                <span class="spinner-border spinner-border-sm me-1"></span>
+                Saving...
+            `);
+
+        $.ajax({
+
+            url: "{{ route('ticket-provider.store') }}",
+            method: 'POST',
+            contentType: false,
+            processData: false,
+            data: formData,
+
+            success: function (data) {
+
+                if (data == true || data.success === true) {
+
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Request Added!'
+                    });
+
+                    bootstrap.Modal.getOrCreateInstance(
+                        document.getElementById('addTicketModal')
+                    ).hide();
+
+                    $('#addForm')[0].reset();
+
+                    resetAddDropdowns();
+
+                    table.ajax.reload(null, false);
+
+                } else {
+
+                    Toast.fire({
+                        icon: 'error',
+                        title: data.message || 'Unable to save ticket.'
+                    });
+
+                }
+
+            },
+
+            error: function (xhr) {
+
+                handleValidationErrors(xhr, false);
+
+            },
+
+            complete: function () {
+
+                $('#btnSaveTicket')
+                    .prop('disabled', false)
+                    .html(`
+                        <i class="bi bi-save me-1"></i>
+                        Save Ticket
+                    `);
+
+            }
+
+        });
+
+    });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | GET TICKET CAMPUS
+    |--------------------------------------------------------------------------
+    */
+
+    function getTicketCampus(ticket) {
+
+        return ticket.department?.fk_campus_id ??
+               ticket.department?.campus?.campus_id ??
+               null;
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | GET WORKER CAMPUS
+    |--------------------------------------------------------------------------
+    */
+
+    function getWorkerCampus(worker) {
+
+        return worker.department?.fk_campus_id ??
+               worker.department?.campus?.campus_id ??
+               null;
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | APPROVE AND ASSIGN WORKER
+    |--------------------------------------------------------------------------
+    */
+
+    $(document).on('click', '.btn-assign-worker', function () {
+
+        const ticketId = $(this).data('id');
+
+        const ticket = table
+            .row($(this).closest('tr'))
+            .data();
+
+        if (!ticket) {
+
+            Toast.fire({
+                icon: 'error',
+                title: 'Unable to retrieve ticket information.'
+            });
+
+            return;
+
+        }
+
+        // Ticket service provider
+        const providerId =
+            ticket.category?.request_type?.fk_provider_id;
+
+        // Ticket campus
+        const campusId = getTicketCampus(ticket);
+
+        if (!providerId || !campusId) {
+
+            console.error('Ticket information:', ticket);
+
+            Toast.fire({
+                icon: 'error',
+                title: 'Ticket provider or campus information is missing.'
+            });
+
+            return;
+
+        }
+
+        $('#assign_ticket_id').val(ticketId);
+
+        $('#assign_to')
+            .removeClass('is-invalid')
+            .html('<option value="">Select worker</option>');
+
+        $('#assign_to_error')
+            .text('')
+            .hide();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | FILTER WORKERS
+        |--------------------------------------------------------------------------
+        |
+        | Conditions:
+        | 1. User type must be worker.
+        | 2. Worker must be active.
+        | 3. Worker provider must match ticket provider.
+        | 4. Worker campus must match ticket campus.
+        |
+        */
+
+        const filteredWorkers = users.filter(function (worker) {
+
+            const workerProviderId = worker.fk_provider_id;
+
+            const workerCampusId = getWorkerCampus(worker);
+
+            return (
+
+                worker.type === 'worker' &&
+
+                worker.is_active == 1 &&
+
+                String(workerProviderId) === String(providerId) &&
+
+                String(workerCampusId) === String(campusId)
+
+            );
+
+        });
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | POPULATE WORKER DROPDOWN
+        |--------------------------------------------------------------------------
+        */
+
+        let options = `
+            <option value="">Select worker</option>
+        `;
+
+        if (filteredWorkers.length === 0) {
+
+            options = `
+                <option value="">
+                    No active workers available for this provider and campus
+                </option>
+            `;
+
+        } else {
+
+            filteredWorkers.forEach(function (worker) {
+
+                options += `
+                    <option value="${worker.id}">
+                        ${$('<div>').text(worker.name).html()}
+                    </option>
+                `;
+
+            });
+
+        }
+
+        $('#assign_to').html(options);
+
+        $('#btnApproveAssign').prop(
+            'disabled',
+            filteredWorkers.length === 0
+        );
+
+        bootstrap.Modal.getOrCreateInstance(
+            document.getElementById('assignWorkerModal')
+        ).show();
+
+
+        // DEBUG INFORMATION
+        console.log('Ticket ID:', ticketId);
+        console.log('Ticket Provider:', providerId);
+        console.log('Ticket Campus:', campusId);
+        console.log('Filtered Workers:', filteredWorkers);
+
+    });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | SUBMIT APPROVE AND ASSIGN
+    |--------------------------------------------------------------------------
+    */
+
+    $('#assignWorkerForm').on('submit', function (e) {
+
+        e.preventDefault();
+
+        const ticketId = $('#assign_ticket_id').val();
+
+        const workerId = $('#assign_to').val();
+
+        if (!workerId) {
+
+            $('#assign_to').addClass('is-invalid');
+
+            $('#assign_to_error')
+                .text('Please select a worker.')
+                .show();
+
+            return;
+
+        }
+
+        const url = "{{ route('provider.tickets.approve', ':id') }}"
+            .replace(':id', ticketId);
+
+        $('#btnApproveAssign')
+            .prop('disabled', true)
+            .html(`
+                <span class="spinner-border spinner-border-sm me-1"></span>
+                Processing...
+            `);
+
+        $.ajax({
+
+            url: url,
+            method: 'POST',
+
+            data: {
+
+                _token: $('input[name="_token"]', '#assignWorkerForm').val(),
+
+                assign_to: workerId
+
+            },
+
+            success: function (response) {
+
+                if (response.success) {
+
+                    bootstrap.Modal.getOrCreateInstance(
+                        document.getElementById('assignWorkerModal')
+                    ).hide();
+
+                    Toast.fire({
+                        icon: 'success',
+                        title: response.message || 'Ticket approved and assigned!'
+                    });
+
+                    table.ajax.reload(null, false);
+
+                    $('#assignWorkerForm')[0].reset();
+
+                } else {
+
+                    Toast.fire({
+                        icon: 'error',
+                        title: response.message || 'Unable to assign worker.'
+                    });
+
+                }
+
+            },
+
+            error: function (xhr) {
+
+                if (
+                    xhr.status === 422 &&
+                    xhr.responseJSON?.errors?.assign_to
+                ) {
+
+                    $('#assign_to').addClass('is-invalid');
+
+                    $('#assign_to_error')
+                        .text(xhr.responseJSON.errors.assign_to[0])
+                        .show();
+
+                } else {
+
+                    Toast.fire({
+                        icon: 'error',
+                        title: xhr.responseJSON?.message ||
+                               'Unable to approve and assign ticket.'
+                    });
+
+                    console.error(xhr.responseText);
+
+                }
+
+            },
+
+            complete: function () {
+
+                $('#btnApproveAssign')
+                    .prop('disabled', false)
+                    .html(`
+                        <i class="bi bi-check-circle me-1"></i>
+                        Approve & Assign
+                    `);
+
+            }
+
+        });
+
+    });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | VALIDATION ERRORS
+    |--------------------------------------------------------------------------
+    */
+
+    function clearValidationErrors() {
+
+        $('.is-invalid').removeClass('is-invalid');
+
+        $('.invalid-feedback')
+            .text('')
+            .hide();
+
+    }
+
+
+    function handleValidationErrors(xhr, isEdit) {
+
+        if (xhr.status !== 422) {
+
+            console.error(xhr.responseText);
+
+            Toast.fire({
+                icon: 'error',
+                title: xhr.responseJSON?.message || 'Something went wrong.'
+            });
+
+            return;
+
+        }
+
+        const errors = xhr.responseJSON.errors || {};
+
+        const prefix = isEdit ? 'edit_' : '';
+
+        $.each(errors, function (field, messages) {
+
+            const inputId = '#' + prefix + field;
+
+            const errorId = '#' + prefix + field + '_error';
+
+            $(inputId).addClass('is-invalid');
+
+            $(errorId)
+                .text(messages[0])
+                .show();
+
+        });
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | RESET ADD DROPDOWNS
+    |--------------------------------------------------------------------------
+    */
+
+    function resetAddDropdowns() {
+
+        $('#fk_provider_id').val('');
+
+        $('#fk_request_type_id')
+            .html('<option value="">Select service provider first</option>')
+            .prop('disabled', true);
+
+        $('#fk_category_id')
+            .html('<option value="">Select request type first</option>')
+            .prop('disabled', true);
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | ADD MODAL RESET
+    |--------------------------------------------------------------------------
+    */
+
+    $('#addTicketModal').on('hidden.bs.modal', function () {
+
+        $('#addForm')[0].reset();
+
+        resetAddDropdowns();
+
+        clearValidationErrors();
+
+    });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | ASSIGN MODAL RESET
+    |--------------------------------------------------------------------------
+    */
+
+    $('#assignWorkerModal').on('hidden.bs.modal', function () {
+
+        $('#assignWorkerForm')[0].reset();
+
+        $('#assign_to')
+            .removeClass('is-invalid')
+            .html('<option value="">Select worker</option>');
+
+        $('#assign_to_error')
+            .text('')
+            .hide();
+
+        $('#btnApproveAssign')
+            .prop('disabled', false)
+            .html(`
+                <i class="bi bi-check-circle me-1"></i>
+                Approve & Assign
+            `);
+
+    });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | INITIALIZE
+    |--------------------------------------------------------------------------
+    */
+
+    loadFormData();
+
+});
 </script>
+
 @endpush
 
 </x-provider>

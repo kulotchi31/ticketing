@@ -9,6 +9,7 @@
         request()->routeIs('request.*') => 'request',
         request()->routeIs('category.*') => 'category',
         request()->routeIs('ticket.*') => 'ticket',
+         request()->routeIs('audit.*') => 'audit',
         default => 'dashboard',
     };
 
@@ -296,6 +297,18 @@
         
 
     </div>
+
+
+     <!-- Audit -->
+    <a
+        class="nav__item {{ request()->routeIs('audit.index') ? 'active' : '' }}"
+        href="{{ route('audit.index') }}"
+        data-page="audit"
+    >
+        <i class="bi bi-journal-text nav__icon"></i>
+        <span class="nav__label">Audit</span>
+    </a>
+
 
 </nav>
 

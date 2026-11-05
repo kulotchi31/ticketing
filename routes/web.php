@@ -10,6 +10,7 @@ use App\Http\Controllers\RequestTypeController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\WorkerController;
+use App\Http\Controllers\AuditLogsController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\worker\TicketController as TicketWorker;
 use App\Http\Controllers\staff\TicketController as TicketStaff;
@@ -51,6 +52,9 @@ Route::middleware(['auth','admin'])->prefix('admin')->group(function () {
         Route::resource('request', RequestTypeController::class);
         Route::resource('category', CategoryController::class);
         Route::resource('ticket', TicketController::class);
+        Route::resource('audit', AuditLogsController::class);
+
+
 
 
 
@@ -74,6 +78,10 @@ Route::middleware(['auth','admin'])->prefix('admin')->group(function () {
 
         Route::get('/get-ticket', [TicketController::class, 'getTicket'])
         ->name('admin.ticket');
+
+            Route::get('/get-audit', [AuditLogsController::class, 'getAudit'])
+        ->name('admin.audit');
+
    
 });
 
@@ -139,6 +147,16 @@ Route::middleware(['auth','service_provider'])->prefix('provider')->group(functi
 
         Route::get('/provider-get-ticket', [TicketProvider::class, 'getTicket'])
         ->name('provider.ticket');
+
+
+
+        Route::get('/ticket/create-data', [TicketProvider::class, 'createData'])
+        ->name('provider.createData');
+
+        Route::post(
+            '/provider/tickets/{id}/approve-assign',
+            [TicketProvider::class, 'approveAndAssign']
+        )->name('provider.tickets.approve');
 });
 
 

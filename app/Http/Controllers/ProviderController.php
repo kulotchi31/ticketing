@@ -3,48 +3,51 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Provider;
-use Auth;
-use Rules;
-use Validator;
-use DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
+use App\Models\Provider;
+use App\Models\AuditLogs;
 
 class ProviderController extends Controller
 {
     /**
+     * Validation rules.
+     */
+    public function validator(array $data)
+    {
+        return Validator::make($data, [
+
+            'provider_name' => [
+                'required',
+                'string',
+                'max:255',
+                'unique:provider_table,provider_name'
+            ],
+
+            'provider_code' => [
+                'required',
+                'string',
+                'max:255',
+                'unique:provider_table,provider_code'
+            ],
+
+        ], [
+
+            'provider_name.unique' => 'Provider Name already exists.',
+            'provider_code.unique' => 'Provider Code already exists.'
+
+        ]);
+    }
+
+    /**
      * Display a listing of the resource.
      */
-
-        public function validator(array $data)
-        {
-            return Validator::make($data, [
-
-                'provider_name' => [
-                    'required',
-                    'string',
-                    'max:255',
-                    'unique:provider_table,provider_name'
-                ],
-
-                'provider_code' => [
-                    'required',
-                    'string',
-                    'max:255',
-                    'unique:provider_table,provider_code'
-                ],
-
-            ], [
-
-                'provider_name.unique' => 'Provider Name already exists.',
-                'provider_code.unique' => 'Provider Code already exists.'
-
-            ]);
-        }
-
     public function index()
     {
-           return view('admin.provider');
+        return view('admin.provider');
     }
 
     /**
@@ -52,209 +55,348 @@ class ProviderController extends Controller
      */
     public function create()
     {
-     
+        //
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created provider.
      */
     public function store(Request $request)
-{
-    try {
-
+    {
         $validator = $this->validator($request->all());
 
         if ($validator->fails()) {
             return response()->json([
-                "errors" => $validator->errors()
+                'errors' => $validator->errors()
             ]);
         }
 
-        $provider = new Provider;
+        DB::beginTransaction();
 
-        $provider->provider_name = $request->provider_name;
-        $provider->provider_code = $request->provider_code;
+        try {
 
-        $provider->save();
+            /*
+            ========================================
+            CREATE PROVIDER
+            ========================================
+            */
 
-        if ($provider) {
+            DB::table('provider_table')->insert([
 
-            // AuditLogs::create([
-            //     'fk_user_id'       => Auth::id(),
-            //     'target_id'        => $provider->provider_id,
-            //     'action_type'      => 'Create Provider',
-            //     'payload'          => [
-            //         'name' => $request->provider_name,
-            //         'code' => $request->provider_code
-            //     ],
-            //     'transaction_date' => now(),
-            // ]);
+                'provider_name' => $request->provider_name,
 
-            return true;
+                'provider_code' => $request->provider_code,
+
+            ]);
+
+            // Retrieve the actual inserted ID
+            $providerId = DB::getPdo()->lastInsertId();
+
+            if (!$providerId) {
+                throw new \Exception('Unable to retrieve the new provider ID.');
+            }
+
+            /*
+            ========================================
+            AUDIT LOG: CREATE PROVIDER
+            ========================================
+            */
+
+            AuditLogs::create([
+
+                'fk_user_id' => Auth::id(),
+
+                'target_id' => $providerId,
+
+                'action_type' => 'Create Provider',
+
+                'payload' => [
+
+                    'provider_name' => $request->provider_name,
+
+                    'provider_code' => $request->provider_code,
+
+                ],
+
+                'transaction_date' => now(),
+
+            ]);
+
+            DB::commit();
+
+            return response()->json(true);
+
+        } catch (\Throwable $e) {
+
+            DB::rollBack();
+
+            Log::error('Provider creation failed: ' . $e->getMessage());
+
+            return response()->json([
+                'error' => 'Provider creation failed.',
+                'message' => $e->getMessage()
+            ], 500);
         }
-
-        return false;
-
-    } catch (\Throwable $e) {
-
-        return $e;
-
     }
-}
 
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        //
+    }
 
-/**
- * Display the specified resource.
- */
-public function show(string $id)
-{
-    //
-}
-
-
-/**
- * Show the form for editing the specified resource.
- */
-        public function edit(string $id)
-        {
-            $data = DB::table("provider_table")
-            ->select("*")
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        $data = DB::table('provider_table')
             ->where('provider_id', $id)
             ->get();
 
+        return response()->json([
+            'data' => $data
+        ]);
+    }
+
+    /**
+     * Update the specified provider.
+     */
+    public function update(Request $request, string $id)
+    {
+        $validator = Validator::make($request->all(), [
+
+            'provider_name' => [
+                'required',
+                'string',
+                'max:255',
+                'unique:provider_table,provider_name,' . $id . ',provider_id'
+            ],
+
+            'provider_code' => [
+                'required',
+                'string',
+                'max:255',
+                'unique:provider_table,provider_code,' . $id . ',provider_id'
+            ],
+
+        ], [
+
+            'provider_name.unique' => 'Provider Name already exists.',
+            'provider_code.unique' => 'Provider Code already exists.'
+
+        ]);
+
+        if ($validator->fails()) {
             return response()->json([
-                "data" => $data
+                'errors' => $validator->errors()
             ]);
         }
 
+        DB::beginTransaction();
 
-        /**
-         * Update the specified resource in storage.
-         */
-        public function update(Request $request, string $id)
-        {
-            try {
+        try {
 
-                $validator = Validator::make($request->all(), [
+            /*
+            ========================================
+            GET PROVIDER
+            ========================================
+            */
 
-                    'provider_name' =>
-                    'required|string|max:255|unique:provider_table,provider_name,' . $id . ',provider_id',
-
-                    'provider_code' =>
-                    'required|string|max:255|unique:provprovider_tableiders,provider_code,' . $id . ',provider_id',
-
-                ], [
-
-                    'provider_name.unique' => 'Provider Name already exists.',
-                    'provider_code.unique' => 'Provider Code already exists.'
-
-                ]);
-
-                if ($validator->fails()) {
-                    return response()->json([
-                        'errors' => $validator->errors()
-                    ]);
-                }
-
-
-                // Capture OLD data
-                $oldData = DB::table('provider_table')
+            $provider = DB::table('provider_table')
                 ->where('provider_id', $id)
                 ->first();
 
+            if (!$provider) {
 
-                $update = DB::table('providers')
+                DB::rollBack();
+
+                return response()->json(false);
+            }
+
+            /*
+            ========================================
+            CAPTURE OLD VALUES
+            ========================================
+            */
+
+            $oldData = [
+
+                'provider_name' => $provider->provider_name,
+
+                'provider_code' => $provider->provider_code,
+
+            ];
+
+            /*
+            ========================================
+            UPDATE PROVIDER
+            ========================================
+            */
+
+            DB::table('provider_table')
                 ->where('provider_id', $id)
                 ->update([
 
-                    "provider_name" => $request->provider_name,
-                    "provider_code" => $request->provider_code
+                    'provider_name' => $request->provider_name,
+
+                    'provider_code' => $request->provider_code,
 
                 ]);
 
+            /*
+            ========================================
+            AUDIT LOG: UPDATE PROVIDER
+            ========================================
+            */
 
-                if ($update) {
+            AuditLogs::create([
 
-                    // LOG THE UPDATE
-                    // AuditLogs::create([
-                    //     'fk_user_id'       => Auth::id(),
-                    //     'target_id'        => $id,
-                    //     'action_type'      => 'Update Provider',
-                    //     'payload'          => [
-                    //         'old' => [
-                    //             'name' => $oldData->provider_name,
-                    //             'code' => $oldData->provider_code
-                    //         ],
-                    //         'new' => [
-                    //             'name' => $request->provider_name,
-                    //             'code' => $request->provider_code
-                    //         ]
-                    //     ],
-                    //     'transaction_date' => now(),
-                    // ]);
+                'fk_user_id' => Auth::id(),
 
-                    return true;
-                }
+                'target_id' => $id,
 
-                return false;
+                'action_type' => 'Update Provider',
 
-            } catch (\Throwable $e) {
+                'payload' => [
 
-                return response()->json($e);
+                    'old' => $oldData,
 
-            }
+                    'new' => [
+
+                        'provider_name' => $request->provider_name,
+
+                        'provider_code' => $request->provider_code,
+
+                    ]
+
+                ],
+
+                'transaction_date' => now(),
+
+            ]);
+
+            DB::commit();
+
+            return response()->json(true);
+
+        } catch (\Throwable $e) {
+
+            DB::rollBack();
+
+            Log::error('Provider update failed: ' . $e->getMessage());
+
+            return response()->json([
+                'error' => 'Provider update failed.',
+                'message' => $e->getMessage()
+            ], 500);
         }
+    }
 
+    /**
+     * Remove the specified provider.
+     */
+    public function destroy(string $id)
+    {
+        DB::beginTransaction();
 
-        /**
-         * Remove the specified resource from storage.
-         */
-        public function destroy(string $id)
-        {
-            try {
+        try {
 
-                // Get data before deletion
-                $oldData = DB::table('provider_table')
+            /*
+            ========================================
+            GET PROVIDER BEFORE DELETION
+            ========================================
+            */
+
+            $provider = DB::table('provider_table')
                 ->where('provider_id', $id)
                 ->first();
 
+            if (!$provider) {
 
-                $delete = DB::table('provider_table')
-                ->where('provider_id', $id)
+                DB::rollBack();
+
+                return response()->json(false);
+            }
+
+            /*
+            ========================================
+            CAPTURE DELETED PROVIDER DETAILS
+            ========================================
+            */
+
+            $deletedProvider = [
+
+                'provider_name' => $provider->provider_name,
+
+                'provider_code' => $provider->provider_code,
+
+            ];
+
+            $providerId = $provider->provider_id;
+
+            /*
+            ========================================
+            DELETE PROVIDER
+            ========================================
+            */
+
+            DB::table('provider_table')
+                ->where('provider_id', $providerId)
                 ->delete();
 
+            /*
+            ========================================
+            AUDIT LOG: DELETE PROVIDER
+            ========================================
+            */
 
-                if ($delete != 0) {
+            AuditLogs::create([
 
-                    // LOG THE DELETION
-                    // AuditLogs::create([
-                    //     'fk_user_id'       => Auth::id(),
-                    //     'target_id'        => $id,
-                    //     'action_type'      => 'Delete Provider',
-                    //     'payload'          => [
-                    //         'deleted_provider' => $oldData->provider_name
-                    //     ],
-                    //     'transaction_date' => now(),
-                    // ]);
+                'fk_user_id' => Auth::id(),
 
-                    return true;
-                }
+                'target_id' => $providerId,
 
-                return false;
+                'action_type' => 'Delete Provider',
 
-            } catch (\Throwable $e) {
+                'payload' => [
 
-                return false;
+                    'deleted_provider' => $deletedProvider
 
-            }
+                ],
+
+                'transaction_date' => now(),
+
+            ]);
+
+            DB::commit();
+
+            return response()->json(true);
+
+        } catch (\Throwable $e) {
+
+            DB::rollBack();
+
+            Log::error('Provider deletion failed: ' . $e->getMessage());
+
+            return response()->json([
+                'error' => 'Provider deletion failed.',
+                'message' => $e->getMessage()
+            ], 500);
         }
-
-
-      public function getProvider(Request $request)
-    {
-       $provider = Provider::get();
-
-        return response()->json(['data' => $provider]);
     }
 
+    /**
+     * Get all providers.
+     */
+    public function getProvider(Request $request)
+    {
+        $provider = Provider::get();
+
+        return response()->json([
+            'data' => $provider
+        ]);
+    }
 }

@@ -3,24 +3,22 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
-use DB;
-use Validator;
-
-use Auth;
-use App\Models\Category;
-use App\Models\RequestType;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
+use App\Models\Category;
+use App\Models\RequestType;
+use App\Models\AuditLogs;
 
 class CategoryController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Validation rules
      */
-
-
-      public function validator(array $data)
+    public function validator(array $data)
     {
         return Validator::make($data, [
 
@@ -57,18 +55,24 @@ class CategoryController extends Controller
         ]);
     }
 
+    /**
+     * Display the category page.
+     */
     public function index()
     {
-    $requestTypes = RequestType::orderBy('rt_name')->get();
+        $requestTypes = RequestType::orderBy('rt_name')->get();
 
-    return view('admin.category', compact('requestTypes'));
+        return view('admin.category', compact('requestTypes'));
     }
 
+    /**
+     * Get all categories.
+     */
     public function getCategories()
     {
         $categories = Category::with('requestType.provider')
-        ->orderBy('category_name')
-        ->get();
+            ->orderBy('category_name')
+            ->get();
 
         return response()->json([
             'data' => $categories
@@ -84,9 +88,9 @@ class CategoryController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created category.
      */
-     public function store(Request $request)
+    public function store(Request $request)
     {
         try {
 
@@ -94,9 +98,11 @@ class CategoryController extends Controller
 
             if ($validator->fails()) {
                 return response()->json([
-                    "errors" => $validator->errors()
+                    'errors' => $validator->errors()
                 ]);
             }
+
+            DB::beginTransaction();
 
             $category = new Category;
 
@@ -106,34 +112,35 @@ class CategoryController extends Controller
 
             $category->save();
 
-            if ($category) {
+            // CREATE AUDIT LOG
+            AuditLogs::create([
+                'fk_user_id' => Auth::id(),
+                'target_id' => $category->category_id,
+                'action_type' => 'Create Category',
+                'payload' => [
+                    'category_name' => $category->category_name,
+                    'category_code' => $category->category_code,
+                    'fk_request_type_id' => $category->fk_request_type_id
+                ],
+                'transaction_date' => now(),
+            ]);
 
-                // AuditLogs::create([
-                //     'fk_user_id'       => Auth::id(),
-                //     'target_id'        => $category->category_id,
-                //     'action_type'      => 'Create Category',
-                //     'payload'          => [
-                //         'name' => $request->category_name,
-                //         'code' => $request->category_code,
-                //         'request_type_id' => $request->fk_request_type_id
-                //     ],
-                //     'transaction_date' => now(),
-                // ]);
+            DB::commit();
 
-                return true;
-            }
-
-            return false;
+            return true;
 
         } catch (\Throwable $e) {
 
-            return $e;
+            DB::rollBack();
 
+            Log::error('Category creation failed: ' . $e->getMessage());
+
+            return $e;
         }
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified category.
      */
     public function show(string $id)
     {
@@ -154,7 +161,7 @@ class CategoryController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing the specified category.
      */
     public function edit(string $id)
     {
@@ -164,12 +171,12 @@ class CategoryController extends Controller
             ->get();
 
         return response()->json([
-            "data" => $data
+            'data' => $data
         ]);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified category.
      */
     public function update(Request $request, string $id)
     {
@@ -217,93 +224,127 @@ class CategoryController extends Controller
                 ]);
             }
 
-            // Capture OLD data
+            DB::beginTransaction();
+
+            // GET OLD DATA BEFORE UPDATE
             $oldData = DB::table('category_table')
                 ->where('category_id', $id)
                 ->first();
 
+            if (!$oldData) {
+                DB::rollBack();
+                return false;
+            }
+
+            // UPDATE CATEGORY
             $update = DB::table('category_table')
                 ->where('category_id', $id)
                 ->update([
 
-                    "category_name" => $request->category_name,
-                    "category_code" => $request->category_code,
-                    "fk_request_type_id" => $request->fk_request_type_id
+                    'category_name' => $request->category_name,
+                    'category_code' => $request->category_code,
+                    'fk_request_type_id' => $request->fk_request_type_id
 
                 ]);
 
             if ($update) {
 
-                // LOG THE UPDATE
-                // AuditLogs::create([
-                //     'fk_user_id'       => Auth::id(),
-                //     'target_id'        => $id,
-                //     'action_type'      => 'Update Category',
-                //     'payload'          => [
-                //         'old' => [
-                //             'name' => $oldData->category_name,
-                //             'code' => $oldData->category_code,
-                //             'request_type_id' => $oldData->fk_request_type_id
-                //         ],
-                //         'new' => [
-                //             'name' => $request->category_name,
-                //             'code' => $request->category_code,
-                //             'request_type_id' => $request->fk_request_type_id
-                //         ]
-                //     ],
-                //     'transaction_date' => now(),
-                // ]);
+                // CREATE AUDIT LOG
+                AuditLogs::create([
+                    'fk_user_id' => Auth::id(),
+                    'target_id' => $id,
+                    'action_type' => 'Update Category',
+                    'payload' => [
+                        'old' => [
+                            'category_name' => $oldData->category_name,
+                            'category_code' => $oldData->category_code,
+                            'fk_request_type_id' => $oldData->fk_request_type_id
+                        ],
+                        'new' => [
+                            'category_name' => $request->category_name,
+                            'category_code' => $request->category_code,
+                            'fk_request_type_id' => $request->fk_request_type_id
+                        ]
+                    ],
+                    'transaction_date' => now(),
+                ]);
+
+                DB::commit();
 
                 return true;
             }
+
+            DB::rollBack();
 
             return false;
 
         } catch (\Throwable $e) {
 
-            return $e;
+            DB::rollBack();
 
+            Log::error('Category update failed: ' . $e->getMessage());
+
+            return $e;
         }
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified category.
      */
     public function destroy(string $id)
     {
         try {
 
-            // Get data before deletion
+            DB::beginTransaction();
+
+            // GET CATEGORY DATA BEFORE DELETION
             $oldData = DB::table('category_table')
                 ->where('category_id', $id)
                 ->first();
 
+            if (!$oldData) {
+                DB::rollBack();
+                return false;
+            }
+
+            // DELETE CATEGORY
             $delete = DB::table('category_table')
                 ->where('category_id', $id)
                 ->delete();
 
             if ($delete != 0) {
 
-                // LOG THE DELETION
-                // AuditLogs::create([
-                //     'fk_user_id'       => Auth::id(),
-                //     'target_id'        => $id,
-                //     'action_type'      => 'Delete Category',
-                //     'payload'          => [
-                //         'deleted_category' => $oldData->category_name
-                //     ],
-                //     'transaction_date' => now(),
-                // ]);
+                // CREATE AUDIT LOG
+                AuditLogs::create([
+                    'fk_user_id' => Auth::id(),
+                    'target_id' => $id,
+                    'action_type' => 'Delete Category',
+                    'payload' => [
+                        'deleted_category' => [
+                            'category_name' => $oldData->category_name,
+                            'category_code' => $oldData->category_code,
+                            'fk_request_type_id' => $oldData->fk_request_type_id
+                        ]
+                    ],
+                    'transaction_date' => now(),
+                ]);
+
+                DB::commit();
 
                 return true;
             }
+
+            DB::rollBack();
 
             return false;
 
         } catch (\Throwable $e) {
 
-            return false;
+            DB::rollBack();
 
+            Log::error('Category deletion failed: ' . $e->getMessage());
+
+            return false;
         }
     }
 }
