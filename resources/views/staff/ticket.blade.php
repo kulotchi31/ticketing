@@ -1254,7 +1254,7 @@
                 data: formData,
 
                 success: function (data) {
-                    if (data == true) {
+                    if (data.success == true) {
                         Toast.fire({
                             icon: 'success',
                             title: 'Request Added!'

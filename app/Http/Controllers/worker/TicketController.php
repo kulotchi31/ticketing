@@ -19,6 +19,9 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
+use Illuminate\Support\Facades\Mail;
+use App\Mail\WorkerTicketStatusUpdated;
+
 class TicketController extends Controller
 {
     /**
@@ -92,95 +95,106 @@ class TicketController extends Controller
     /**
      * Update ticket status and save history and audit logs.
      */
-    public function update(Request $request, string $id)
-    {
-        $validator = Validator::make($request->all(), [
+    
+public function update(Request $request, string $id)
+{
+    $validator = Validator::make($request->all(), [
 
-            'status' => [
-                'required',
-                'in:Work In Progress,Pending,Completed',
-            ],
+        'status' => [
+            'required',
+            'in:Work In Progress,Pending,Completed',
+        ],
 
-            'pending_remarks' => [
-                'nullable',
-                'required_if:status,Pending',
-                'string',
-                'max:5000',
-            ],
+        'pending_remarks' => [
+            'nullable',
+            'required_if:status,Pending',
+            'string',
+            'max:5000',
+        ],
 
-            'action_taken' => [
-                'nullable',
-                'required_if:status,Completed',
-                'string',
-                'max:5000',
-            ],
+        'action_taken' => [
+            'nullable',
+            'required_if:status,Completed',
+            'string',
+            'max:5000',
+        ],
 
-        ], [
-            'status.required' =>
-                'Please select a ticket status.',
+    ], [
+        'status.required' =>
+            'Please select a ticket status.',
 
-            'status.in' =>
-                'The selected status is invalid.',
+        'status.in' =>
+            'The selected status is invalid.',
 
-            'pending_remarks.required_if' =>
-                'Please provide remarks when the ticket is pending.',
+        'pending_remarks.required_if' =>
+            'Please provide remarks when the ticket is pending.',
 
-            'pending_remarks.max' =>
-                'Pending remarks must not exceed 5000 characters.',
+        'pending_remarks.max' =>
+            'Pending remarks must not exceed 5000 characters.',
 
-            'action_taken.required_if' =>
-                'Please provide the action taken when completing the ticket.',
+        'action_taken.required_if' =>
+            'Please provide the action taken when completing the ticket.',
 
-            'action_taken.max' =>
-                'Action taken must not exceed 5000 characters.',
-        ]);
+        'action_taken.max' =>
+            'Action taken must not exceed 5000 characters.',
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'errors' => $validator->errors(),
-            ], 422);
-        }
+    if ($validator->fails()) {
+        return response()->json([
+            'errors' => $validator->errors(),
+        ], 422);
+    }
 
-        try {
+    try {
 
-            DB::beginTransaction();
+        // Find ticket assigned to authenticated worker
+        $ticket = Ticket::where('ticket_id', $id)
+            ->where('assign_to', auth()->id())
+            ->firstOrFail();
 
-            // Find ticket assigned to the authenticated worker.
-            $ticket = Ticket::where('ticket_id', $id)
-                ->where('assign_to', auth()->id())
+        $oldStatus = $ticket->status;
+
+        // Capture old values
+        $oldValues = [
+            'status' => $ticket->status,
+            'pending_remarks' => $ticket->pending_remarks,
+            'action_taken' => $ticket->action_taken,
+        ];
+
+        // Prepare new values
+        $newValues = [
+            'status' => $request->status,
+
+            'pending_remarks' => $request->status === 'Pending'
+                ? $request->pending_remarks
+                : null,
+
+            'action_taken' => $request->status === 'Completed'
+                ? $request->action_taken
+                : null,
+        ];
+
+        // Update database
+        DB::transaction(function () use (
+            $ticket,
+            $newValues,
+            $oldValues,
+            $oldStatus,
+            $request
+        ) {
+
+            // Lock ticket while updating
+            $ticket = Ticket::where('ticket_id', $ticket->ticket_id)
                 ->lockForUpdate()
                 ->firstOrFail();
 
-            // Capture old values.
-            $oldValues = [
-                'status' => $ticket->status,
-                'pending_remarks' => $ticket->pending_remarks,
-                'action_taken' => $ticket->action_taken,
-            ];
-
-            $oldStatus = $ticket->status;
-
-            // Prepare new values.
-            $newValues = [
-                'status' => $request->status,
-
-                'pending_remarks' => $request->status === 'Pending'
-                    ? $request->pending_remarks
-                    : null,
-
-                'action_taken' => $request->status === 'Completed'
-                    ? $request->action_taken
-                    : null,
-            ];
-
-            // Update ticket.
+            // Update ticket
             $ticket->update($newValues);
 
             /*
             |--------------------------------------------------------------------------
             | STATUS HISTORY
             |--------------------------------------------------------------------------
-            | Only save when the ticket status actually changes.
             */
 
             if ($oldStatus !== $request->status) {
@@ -214,41 +228,97 @@ class TicketController extends Controller
 
                 'payload' => [
                     'ticket_number' => $ticket->ticket_number,
-
                     'old_values' => $oldValues,
-
                     'new_values' => $newValues,
-
                     'updated_by' => auth()->user()->name,
                 ],
 
                 'transaction_date' => now(),
             ]);
 
-            DB::commit();
+        });
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Ticket status updated successfully.',
-                'data' => $ticket->fresh(),
-            ]);
+        /*
+        |--------------------------------------------------------------------------
+        | EMAIL NOTIFICATION TO REQUESTER
+        |--------------------------------------------------------------------------
+        | Send only when the ticket status actually changes.
+        */
 
-        } catch (\Throwable $e) {
+        if ($oldStatus !== $request->status) {
 
-            DB::rollBack();
+            try {
 
-            Log::error('Worker ticket update failed.', [
-                'ticket_id' => $id,
-                'user_id' => auth()->id(),
-                'error' => $e->getMessage(),
-            ]);
+                // Reload ticket relationships
+                $ticket->refresh();
 
-            return response()->json([
-                'success' => false,
-                'message' => 'Unable to update ticket status. Please try again.',
-            ], 500);
+                $ticket->load([
+                    'creator',
+                    'assignee',
+                    'department',
+                    'category',
+                ]);
+
+                // Get requester's email
+                $requester = $ticket->creator;
+
+                if ($requester && $requester->email) {
+
+                    Mail::to($requester->email)
+                        ->queue(new WorkerTicketStatusUpdated(
+                            $ticket,
+                            $oldStatus,
+                            $request->status
+                        ));
+
+                    Log::info('Worker ticket status notification queued.', [
+                        'ticket_id' => $ticket->ticket_id,
+                        'requester_email' => $requester->email,
+                        'old_status' => $oldStatus,
+                        'new_status' => $request->status,
+                    ]);
+
+                } else {
+
+                    Log::warning('Requester email not found.', [
+                        'ticket_id' => $ticket->ticket_id,
+                        'created_by' => $ticket->created_by,
+                    ]);
+
+                }
+
+            } catch (\Throwable $e) {
+
+                // Email failure should not undo a successful ticket update
+                Log::error('Worker ticket notification failed.', [
+                    'ticket_id' => $id,
+                    'error' => $e->getMessage(),
+                ]);
+
+            }
         }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Ticket status updated successfully. Requester notification has been processed.',
+            'data' => $ticket->fresh(),
+        ]);
+
+    } catch (\Throwable $e) {
+
+        Log::error('Worker ticket update failed.', [
+            'ticket_id' => $id,
+            'user_id' => auth()->id(),
+            'error' => $e->getMessage(),
+        ]);
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Unable to update ticket status. Please try again.',
+        ], 500);
     }
+}
+
 
     /**
      * Remove the specified resource.
