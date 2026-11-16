@@ -2,8 +2,6 @@
 
     $currentPage = match (true) {
         request()->routeIs('worker.index') => 'dashboard',
-        request()->routeIs('worker-pending') => 'ticket-pending',
-         request()->routeIs('worker-wip') => 'ticket-wip',
         request()->routeIs('worker-ticket.*') => 'ticket',
         request()->routeIs('department.*') => 'department',
         request()->routeIs('users.*') => 'users',
@@ -199,35 +197,6 @@
 
 
                       
-                        <a
-                            href="{{ route('worker-pending') }}"
-                            class="nav__subitem {{ request()->routeIs('worker-pending') ? 'active' : '' }}"
-                            data-page="ticket-pending"
-                        >
-
-                            <i class="bi bi-ticket-perforated"></i>
-
-                            <span>
-                                Pending Tickets
-                            </span>
-
-                        </a>
-
-
-                        <a
-                            href="{{ route('worker-wip') }}"
-                            class="nav__subitem {{ request()->routeIs('worker-wip') ? 'active' : '' }}"
-                            data-page="ticket-wip"
-                        >
-
-                            <i class="bi bi-ticket-perforated"></i>
-
-                            <span>
-                                Work In Progress Tickets
-                            </span>
-
-                        </a>
-
 
                     </div>
                     <!-- END TICKETS SUBMENU -->

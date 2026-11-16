@@ -21,7 +21,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
-
 use App\Mail\ServiceRequestSubmitted;
 use Illuminate\Support\Facades\Mail;
 
@@ -59,261 +58,294 @@ class ticketController extends Controller
         ->get();
 
         return response()->json([
-            'campuses' => Campus::orderBy('campus_name')->get(),
-            'departments' => Department::orderBy('department_name')->get(),
-            'providers' => Provider::orderBy('provider_name')->get(),
+            'campuses'      => Campus::orderBy('campus_name')->get(),
+            'departments'   => Department::orderBy('department_name')->get(),
+            'providers'     => Provider::orderBy('provider_name')->get(),
             'request_types' => RequestType::orderBy('rt_name')->get(),
-            'categories' => Category::orderBy('category_name')->get(),
-            'users' => $users,
+            'categories'    => Category::orderBy('category_name')->get(),
+            'users'         => $users,
         ]);
     }
 
     /**
-     * Get tickets created by the authenticated staff member.
+     * Get tickets created by the authenticated staff member (Server-Side DataTables).
      */
-    public function getTicket()
+    public function getTicket(Request $request)
     {
-        $tickets = Ticket::with([
+        $baseQuery = Ticket::with([
             'department.campus',
             'category.requestType.provider',
             'creator',
             'assignee',
-        ])
-        ->where('created_by', auth()->id())
-        ->where('status', 'For Approval')
-        ->orderByDesc('ticket_id')
-        ->get();
+        ])->where('created_by', auth()->id());
+
+        // Filter by selected status tab (empty string = "All")
+        if ($request->filled('status')) {
+            $baseQuery->where('status', $request->status);
+        }
+
+        // Total records for this staff member under the selected status tab
+        $recordsTotal = (clone $baseQuery)->count();
+
+        // Global search across ticket fields and relationships
+        $searchValue = $request->input('search.value');
+        if (!empty($searchValue)) {
+            $baseQuery->where(function ($q) use ($searchValue) {
+                $q->where('ticket_number', 'like', "%{$searchValue}%")
+                  ->orWhere('classification', 'like', "%{$searchValue}%")
+                  ->orWhere('remarks', 'like', "%{$searchValue}%")
+                  ->orWhere('requested_by', 'like', "%{$searchValue}%")
+                  ->orWhere('pending_remarks', 'like', "%{$searchValue}%")
+                  ->orWhere('status', 'like', "%{$searchValue}%")
+                  ->orWhereHas('category', function ($catQ) use ($searchValue) {
+                      $catQ->where('category_name', 'like', "%{$searchValue}%")
+                           ->orWhereHas('requestType.provider', function ($provQ) use ($searchValue) {
+                               $provQ->where('provider_name', 'like', "%{$searchValue}%");
+                           });
+                  })
+                  ->orWhereHas('assignee', function ($userQ) use ($searchValue) {
+                      $userQ->where('name', 'like', "%{$searchValue}%");
+                  });
+            });
+        }
+
+        // Total records matching search + status filter
+        $recordsFiltered = (clone $baseQuery)->count();
+
+        // Column sorting
+        $orderColumnIndex = $request->input('order.0.column');
+        $orderDir = $request->input('order.0.dir', 'desc') === 'asc' ? 'asc' : 'desc';
+
+        $columns = [
+            0 => 'classification',
+            2 => 'remarks',
+            3 => 'requested_by',
+            6 => 'pending_remarks',
+            7 => 'status',
+        ];
+
+        if (isset($columns[$orderColumnIndex])) {
+            $baseQuery->orderBy($columns[$orderColumnIndex], $orderDir);
+        } else {
+            $baseQuery->orderByDesc('ticket_id');
+        }
+
+        // Pagination (LIMIT & OFFSET)
+        $start = max(0, (int) $request->input('start', 0));
+        $length = (int) $request->input('length', 10);
+
+        if ($length > 0) {
+            $baseQuery->skip($start)->take($length);
+        }
+
+        $tickets = $baseQuery->get();
 
         return response()->json([
-            'data' => $tickets
+            'draw'            => (int) $request->input('draw', 1),
+            'recordsTotal'    => $recordsTotal,
+            'recordsFiltered' => $recordsFiltered,
+            'data'            => $tickets,
         ]);
     }
 
     /**
      * Store a newly created ticket.
      */
-   
-
-public function store(Request $request, TicketAnalyzer $analyzer)
-{
-    $validator = Validator::make($request->all(), [
-        'requested_by' => 'required|string|max:255',
-        'fk_provider_id' => 'required|exists:provider_table,provider_id',
-        'fk_request_type_id' => 'required|exists:request_type_table,request_type_id',
-        'fk_category_id' => 'required|exists:category_table,category_id',
-        'remarks' => 'required|string|max:5000',
-    ]);
-
-    if ($validator->fails()) {
-        return response()->json([
-            'message' => 'Validation failed.',
-            'errors' => $validator->errors(),
-        ], 422);
-    }
-
-    $user = auth()->user();
-
-    if (!$user) {
-        return response()->json([
-            'message' => 'Unauthenticated.',
-        ], 401);
-    }
-
-    // Get authenticated staff department.
-    $departmentId = $user->fk_department_id;
-
-    if (!$departmentId) {
-        return response()->json([
-            'message' => 'No department is assigned to your account.',
-        ], 422);
-    }
-
-    // Default priority classification.
-    $classification = 'Medium';
-
-    // AI PRIORITY ANALYSIS
-    try {
-
-        $provider = Provider::where(
-            'provider_id',
-            $request->fk_provider_id
-        )->firstOrFail();
-
-        $serviceType = match (strtoupper(trim($provider->provider_code))) {
-            'MIS' => 'IT',
-            'BMGS' => 'General Services',
-
-            default => throw \Illuminate\Validation\ValidationException::withMessages([
-                'fk_provider_id' => 'Unsupported service provider.',
-            ]),
-        };
-
-        $analysis = $analyzer->analyze(
-            $request->remarks,
-            $serviceType
-        );
-
-        $classification = $analysis['classification'];
-
-    } catch (\Throwable $e) {
-
-        Log::error('Ticket priority analysis failed.', [
-            'user_id' => $user->id,
-            'error' => $e->getMessage(),
-        ]);
-    }
-
-    try {
-
-        DB::beginTransaction();
-
-        // CREATE TICKET
-        $ticket = Ticket::create([
-            'requested_by' => $request->requested_by,
-            'fk_department_id' => $departmentId,
-            'fk_provider_id' => $request->fk_provider_id,
-            'fk_request_type_id' => $request->fk_request_type_id,
-            'fk_category_id' => $request->fk_category_id,
-            'remarks' => $request->remarks,
-            'created_by' => $user->id,
-            'assign_to' => null,
-            'status' => 'For Approval',
-            'classification' => $classification,
-            'is_walk_in' => 'No',
+    public function store(Request $request, TicketAnalyzer $analyzer)
+    {
+        $validator = Validator::make($request->all(), [
+            'requested_by'       => 'required|string|max:255',
+            'fk_provider_id'     => 'required|exists:provider_table,provider_id',
+            'fk_request_type_id' => 'required|exists:request_type_table,request_type_id',
+            'fk_category_id'     => 'required|exists:category_table,category_id',
+            'remarks'            => 'required|string|max:5000',
         ]);
 
-        // CREATE AUDIT LOG
-        AuditLogs::create([
-            'fk_user_id' => $user->id,
-            'target_id' => $ticket->ticket_id,
-            'action_type' => 'Create Ticket',
-            'payload' => [
-                'requested_by' => $ticket->requested_by,
-                'fk_department_id' => $ticket->fk_department_id,
-                'fk_provider_id' => $ticket->fk_provider_id,
-                'fk_request_type_id' => $ticket->fk_request_type_id,
-                'fk_category_id' => $ticket->fk_category_id,
-                'remarks' => $ticket->remarks,
-                'created_by' => $ticket->created_by,
-                'assign_to' => $ticket->assign_to,
-                'status' => $ticket->status,
-                'classification' => $ticket->classification,
-                'is_walk_in' => $ticket->is_walk_in,
-            ],
-            'transaction_date' => now(),
-        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed.',
+                'errors'  => $validator->errors(),
+            ], 422);
+        }
 
-        DB::commit();
+        $user = auth()->user();
 
-    } catch (\Throwable $e) {
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthenticated.',
+            ], 401);
+        }
 
-        DB::rollBack();
+        // Get authenticated staff department.
+        $departmentId = $user->fk_department_id;
 
-        Log::error('Ticket creation failed.', [
-            'user_id' => $user->id,
-            'error' => $e->getMessage(),
-        ]);
+        if (!$departmentId) {
+            return response()->json([
+                'message' => 'No department is assigned to your account.',
+            ], 422);
+        }
 
-        return response()->json([
-            'message' => 'Unable to create ticket.',
-        ], 500);
-    }
+        // Default priority classification.
+        $classification = 'Medium';
 
-    /*
-    |--------------------------------------------------------------------------
-    | SEND EMAIL TO CONCERNED SERVICE PROVIDERS
-    |--------------------------------------------------------------------------
-    */
+        // AI PRIORITY ANALYSIS
+        try {
+            $provider = Provider::where(
+                'provider_id',
+                $request->fk_provider_id
+            )->firstOrFail();
 
-    try {
+            $serviceType = match (strtoupper(trim($provider->provider_code))) {
+                'MIS'  => 'IT',
+                'BMGS' => 'General Services',
+                default => throw \Illuminate\Validation\ValidationException::withMessages([
+                    'fk_provider_id' => 'Unsupported service provider.',
+                ]),
+            };
 
-        // Get the staff campus.
-        $staffDepartment = Department::with('campus')
-            ->find($departmentId);
+            $analysis = $analyzer->analyze(
+                $request->remarks,
+                $serviceType
+            );
 
-        $campusId = $staffDepartment?->fk_campus_id;
+            $classification = $analysis['classification'];
 
-        if (!$campusId) {
-
-            Log::warning('Staff campus not found. Email notification skipped.', [
-                'ticket_id' => $ticket->ticket_id,
+        } catch (\Throwable $e) {
+            Log::error('Ticket priority analysis failed.', [
                 'user_id' => $user->id,
+                'error'   => $e->getMessage(),
+            ]);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // CREATE TICKET
+            $ticket = Ticket::create([
+                'requested_by'       => $request->requested_by,
+                'fk_department_id'   => $departmentId,
+                'fk_provider_id'     => $request->fk_provider_id,
+                'fk_request_type_id' => $request->fk_request_type_id,
+                'fk_category_id'     => $request->fk_category_id,
+                'remarks'            => $request->remarks,
+                'created_by'         => $user->id,
+                'assign_to'          => null,
+                'status'             => 'For Approval',
+                'classification'     => $classification,
+                'is_walk_in'         => 'No',
             ]);
 
-        } else {
-
-            // Find all matching service provider accounts.
-            $recipients = User::where('type','service_provider')
-                ->where('fk_provider_id', $request->fk_provider_id)
-                ->where('is_active', 1)
-                ->where('email', '!=', '')
-                ->whereHas('department', function ($query) use ($campusId) {
-                    $query->where('fk_campus_id', $campusId);
-                })
-                ->get();
-
-            
-            $ticket->load([
-                'department.campus',
-                'category.requestType',
+            // CREATE AUDIT LOG
+            AuditLogs::create([
+                'fk_user_id'       => $user->id,
+                'target_id'        => $ticket->ticket_id,
+                'action_type'      => 'Create Ticket',
+                'payload'          => [
+                    'requested_by'       => $ticket->requested_by,
+                    'fk_department_id'   => $ticket->fk_department_id,
+                    'fk_provider_id'     => $ticket->fk_provider_id,
+                    'fk_request_type_id' => $ticket->fk_request_type_id,
+                    'fk_category_id'     => $ticket->fk_category_id,
+                    'remarks'            => $ticket->remarks,
+                    'created_by'         => $ticket->created_by,
+                    'assign_to'          => $ticket->assign_to,
+                    'status'             => $ticket->status,
+                    'classification'     => $ticket->classification,
+                    'is_walk_in'         => $ticket->is_walk_in,
+                ],
+                'transaction_date' => now(),
             ]);
 
-            if ($recipients->isEmpty()) {
+            DB::commit();
 
-                Log::warning('No matching service providers found.', [
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            Log::error('Ticket creation failed.', [
+                'user_id' => $user->id,
+                'error'   => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'message' => 'Unable to create ticket.',
+            ], 500);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | SEND EMAIL TO CONCERNED SERVICE PROVIDERS
+        |--------------------------------------------------------------------------
+        */
+
+        try {
+            // Get the staff campus.
+            $staffDepartment = Department::with('campus')
+                ->find($departmentId);
+
+            $campusId = $staffDepartment?->fk_campus_id;
+
+            if (!$campusId) {
+                Log::warning('Staff campus not found. Email notification skipped.', [
                     'ticket_id' => $ticket->ticket_id,
-                    'campus_id' => $campusId,
-                    'provider_id' => $ticket->fk_provider_id,
+                    'user_id'   => $user->id,
+                ]);
+            } else {
+                // Find all matching service provider accounts.
+                $recipients = User::where('type', 'service_provider')
+                    ->where('fk_provider_id', $request->fk_provider_id)
+                    ->where('is_active', 1)
+                    ->where('email', '!=', '')
+                    ->whereHas('department', function ($query) use ($campusId) {
+                        $query->where('fk_campus_id', $campusId);
+                    })
+                    ->get();
+
+                $ticket->load([
+                    'department.campus',
+                    'category.requestType',
                 ]);
 
-            } else {
+                if ($recipients->isEmpty()) {
+                    Log::warning('No matching service providers found.', [
+                        'ticket_id'   => $ticket->ticket_id,
+                        'campus_id'   => $campusId,
+                        'provider_id' => $ticket->fk_provider_id,
+                    ]);
+                } else {
+                    foreach ($recipients as $recipient) {
+                        try {
+                            Mail::to($recipient->email)
+                                ->queue(new ServiceRequestSubmitted($ticket));
 
-                foreach ($recipients as $recipient) {
-
-                    try {
-
-
-
-                        Mail::to($recipient->email)
-                            ->queue(new ServiceRequestSubmitted($ticket));
-
-                        Log::info('Service request email sent.', [
-                            'ticket_id' => $ticket->ticket_id,
-                            'recipient_id' => $recipient->id,
-                            'email' => $recipient->email,
-                        ]);
-
-                    } catch (\Throwable $mailException) {
-
-                        Log::error('Failed to send service request email.', [
-                            'ticket_id' => $ticket->ticket_id,
-                            'recipient_id' => $recipient->id,
-                            'email' => $recipient->email,
-                            'error' => $mailException->getMessage(),
-                        ]);
-
+                            Log::info('Service request email sent.', [
+                                'ticket_id'    => $ticket->ticket_id,
+                                'recipient_id' => $recipient->id,
+                                'email'        => $recipient->email,
+                            ]);
+                        } catch (\Throwable $mailException) {
+                            Log::error('Failed to send service request email.', [
+                                'ticket_id'    => $ticket->ticket_id,
+                                'recipient_id' => $recipient->id,
+                                'email'        => $recipient->email,
+                                'error'        => $mailException->getMessage(),
+                            ]);
+                        }
                     }
                 }
             }
+        } catch (\Throwable $mailException) {
+            Log::error('Service request notification process failed.', [
+                'ticket_id' => $ticket->ticket_id,
+                'error'     => $mailException->getMessage(),
+            ]);
         }
 
-    } catch (\Throwable $mailException) {
-
-        Log::error('Service request notification process failed.', [
+        return response()->json([
+            'success'   => true,
+            'message'   => 'Service request submitted successfully.',
             'ticket_id' => $ticket->ticket_id,
-            'error' => $mailException->getMessage(),
         ]);
-
     }
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Service request submitted successfully.',
-        'ticket_id' => $ticket->ticket_id,
-    ]);
-}
-
-
 
     /**
      * Display the specified resource.
@@ -333,7 +365,9 @@ public function store(Request $request, TicketAnalyzer $analyzer)
             'category.requestType.provider',
             'creator',
             'assignee',
-        ])->findOrFail($id);
+        ])
+        ->where('created_by', auth()->id())
+        ->findOrFail($id);
 
         return response()->json([
             'data' => $ticket
@@ -348,22 +382,26 @@ public function store(Request $request, TicketAnalyzer $analyzer)
         string $id,
         TicketAnalyzer $analyzer
     ) {
-        $ticket = Ticket::findOrFail($id);
+        $ticket = Ticket::where('created_by', auth()->id())->findOrFail($id);
+
+        if ($ticket->status !== 'For Approval') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Only tickets with "For Approval" status can be edited.',
+            ], 403);
+        }
 
         $validator = Validator::make($request->all(), [
-
             'requested_by' => [
                 'required',
                 'string',
                 'max:255',
             ],
-
             'fk_provider_id' => [
                 'required',
                 'integer',
                 'exists:provider_table,provider_id',
             ],
-
             'fk_request_type_id' => [
                 'required',
                 'integer',
@@ -377,7 +415,6 @@ public function store(Request $request, TicketAnalyzer $analyzer)
                     );
                 }),
             ],
-
             'fk_category_id' => [
                 'required',
                 'integer',
@@ -391,19 +428,17 @@ public function store(Request $request, TicketAnalyzer $analyzer)
                     );
                 }),
             ],
-
             'remarks' => [
                 'required',
                 'string',
                 'max:5000',
             ],
-
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed.',
-                'errors' => $validator->errors(),
+                'errors'  => $validator->errors(),
             ], 422);
         }
 
@@ -417,15 +452,15 @@ public function store(Request $request, TicketAnalyzer $analyzer)
         $serviceType = match (
             strtoupper(trim($provider->provider_code))
         ) {
-            'MIS' => 'IT',
-            'BMGS' => 'General Services',
+            'MIS'   => 'IT',
+            'BMGS'  => 'General Services',
             default => null,
         };
 
         if ($serviceType === null) {
             return response()->json([
                 'message' => 'Unsupported service provider.',
-                'errors' => [
+                'errors'  => [
                     'fk_provider_id' => [
                         'Only MIS and BMGS providers are supported.'
                     ],
@@ -434,7 +469,6 @@ public function store(Request $request, TicketAnalyzer $analyzer)
         }
 
         try {
-
             // Re-analyze updated remarks.
             $analysis = $analyzer->analyze(
                 $request->remarks,
@@ -446,68 +480,61 @@ public function store(Request $request, TicketAnalyzer $analyzer)
                 $request,
                 $analysis
             ) {
-
                 // CAPTURE OLD DATA BEFORE UPDATE
                 $oldData = [
-                    'requested_by' => $ticket->requested_by,
+                    'requested_by'   => $ticket->requested_by,
                     'fk_category_id' => $ticket->fk_category_id,
-                    'remarks' => $ticket->remarks,
+                    'remarks'        => $ticket->remarks,
                     'classification' => $ticket->classification,
                 ];
 
                 // UPDATE TICKET
                 $ticket->update([
-
-                    'requested_by' => $request->requested_by,
-                    'fk_category_id' => $request->fk_category_id,
-                    'remarks' => $request->remarks,
-                    'classification' => $analysis['classification'],
-
+                    'requested_by'       => $request->requested_by,
+                    'fk_provider_id'     => $request->fk_provider_id,
+                    'fk_request_type_id' => $request->fk_request_type_id,
+                    'fk_category_id'     => $request->fk_category_id,
+                    'remarks'            => $request->remarks,
+                    'classification'     => $analysis['classification'],
                 ]);
 
                 // CREATE AUDIT LOG
                 AuditLogs::create([
-                    'fk_user_id' => auth()->id(),
-                    'target_id' => $ticket->ticket_id,
+                    'fk_user_id'  => auth()->id(),
+                    'target_id'   => $ticket->ticket_id,
                     'action_type' => 'Update Ticket',
-                    'payload' => [
-
+                    'payload'     => [
                         'old' => $oldData,
-
                         'new' => [
-                            'requested_by' => $ticket->requested_by,
+                            'requested_by'   => $ticket->requested_by,
                             'fk_category_id' => $ticket->fk_category_id,
-                            'remarks' => $ticket->remarks,
+                            'remarks'        => $ticket->remarks,
                             'classification' => $ticket->classification,
                         ],
-
                         'ai_analysis' => [
-                            'reason' => $analysis['reason'] ?? null,
+                            'reason'     => $analysis['reason'] ?? null,
                             'confidence' => $analysis['confidence'] ?? null,
                         ],
-
                     ],
                     'transaction_date' => now(),
                 ]);
-
             });
 
             return response()->json([
                 'success' => true,
                 'message' => 'Ticket updated successfully.',
-                'data' => [
-                    'ticket_id' => $ticket->ticket_id,
-                    'requested_by' => $ticket->requested_by,
-                    'remarks' => $ticket->remarks,
+                'data'    => [
+                    'ticket_id'      => $ticket->ticket_id,
+                    'requested_by'   => $ticket->requested_by,
+                    'remarks'        => $ticket->remarks,
                     'fk_category_id' => $ticket->fk_category_id,
                     'classification' => $analysis['classification'],
-                    'reason' => $analysis['reason'],
-                    'confidence' => $analysis['confidence'],
+                    'reason'         => $analysis['reason'],
+                    'confidence'     => $analysis['confidence'],
                 ],
             ]);
 
         } catch (\Throwable $e) {
-
             report($e);
 
             return response()->json([
@@ -523,25 +550,32 @@ public function store(Request $request, TicketAnalyzer $analyzer)
     public function destroy(string $id)
     {
         try {
-
             DB::beginTransaction();
 
-            $ticket = Ticket::findOrFail($id);
+            $ticket = Ticket::where('created_by', auth()->id())->findOrFail($id);
+
+            if ($ticket->status !== 'For Approval') {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only tickets with "For Approval" status can be deleted.',
+                ], 403);
+            }
 
             // CAPTURE TICKET DATA BEFORE DELETION
             $oldData = [
-                'ticket_number' => $ticket->ticket_number,
-                'requested_by' => $ticket->requested_by,
-                'fk_department_id' => $ticket->fk_department_id,
-                'fk_provider_id' => $ticket->fk_provider_id,
+                'ticket_number'      => $ticket->ticket_number,
+                'requested_by'       => $ticket->requested_by,
+                'fk_department_id'   => $ticket->fk_department_id,
+                'fk_provider_id'     => $ticket->fk_provider_id,
                 'fk_request_type_id' => $ticket->fk_request_type_id,
-                'fk_category_id' => $ticket->fk_category_id,
-                'remarks' => $ticket->remarks,
-                'created_by' => $ticket->created_by,
-                'assign_to' => $ticket->assign_to,
-                'status' => $ticket->status,
-                'classification' => $ticket->classification,
-                'is_walk_in' => $ticket->is_walk_in,
+                'fk_category_id'     => $ticket->fk_category_id,
+                'remarks'            => $ticket->remarks,
+                'created_by'         => $ticket->created_by,
+                'assign_to'          => $ticket->assign_to,
+                'status'             => $ticket->status,
+                'classification'     => $ticket->classification,
+                'is_walk_in'         => $ticket->is_walk_in,
             ];
 
             $ticketId = $ticket->ticket_id;
@@ -551,10 +585,10 @@ public function store(Request $request, TicketAnalyzer $analyzer)
 
             // CREATE AUDIT LOG
             AuditLogs::create([
-                'fk_user_id' => auth()->id(),
-                'target_id' => $ticketId,
-                'action_type' => 'Delete Ticket',
-                'payload' => [
+                'fk_user_id'       => auth()->id(),
+                'target_id'        => $ticketId,
+                'action_type'      => 'Delete Ticket',
+                'payload'          => [
                     'deleted_ticket' => $oldData
                 ],
                 'transaction_date' => now(),
@@ -565,17 +599,81 @@ public function store(Request $request, TicketAnalyzer $analyzer)
             return response()->json(1);
 
         } catch (\Throwable $e) {
-
             DB::rollBack();
 
             Log::error('Ticket deletion failed.', [
                 'ticket_id' => $id,
-                'error' => $e->getMessage(),
+                'error'     => $e->getMessage(),
             ]);
 
             return response()->json([
                 'success' => false,
                 'message' => 'Unable to delete ticket.',
+            ], 500);
+        }
+    }
+
+/**
+     * Acknowledge a completed ticket.
+     */
+    public function acknowledge(string $id)
+    {
+        try {
+            DB::beginTransaction();
+
+            $ticket = Ticket::where('created_by', auth()->id())->findOrFail($id);
+
+            if ($ticket->status !== 'Completed') {
+                DB::rollBack();
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only completed tickets can be acknowledged.',
+                ], 422);
+            }
+
+            $oldStatus = $ticket->status;
+
+            $ticket->update([
+                'status' => 'Acknowledged',
+            ]);
+
+            // CREATE AUDIT LOG
+            AuditLogs::create([
+                'fk_user_id'       => auth()->id(),
+                'target_id'        => $ticket->ticket_id,
+                'action_type'      => 'Acknowledge Ticket',
+                'payload'          => [
+                    'ticket_number' => $ticket->ticket_number,
+                    'old'           => [
+                        'status' => $oldStatus,
+                    ],
+                    'new'           => [
+                        'status' => $ticket->status,
+                    ],
+                ],
+                'transaction_date' => now(),
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Ticket acknowledged successfully.',
+            ]);
+
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            Log::error('Ticket acknowledgment failed.', [
+                'ticket_id' => $id,
+                'user_id'   => auth()->id(),
+                'error'     => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Unable to acknowledge ticket. Please try again.',
             ], 500);
         }
     }

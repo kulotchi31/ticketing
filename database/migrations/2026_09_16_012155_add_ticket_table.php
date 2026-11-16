@@ -30,7 +30,7 @@ return new class extends Migration
                 'Work In Progress',
                 'Pending',
                 'Completed',
-                'Aknowledged',
+                'Acknowledged',
             ])->default('For Approval');
 
             $table->enum('classification', [

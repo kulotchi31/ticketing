@@ -3,6 +3,8 @@
     $currentPage = match (true) {
         request()->routeIs('service-provider.index') => 'dashboard',
         request()->routeIs('ticket-provider.*') => 'ticket',
+        request()->routeIs('facility-provider.index') => 'facility',
+        request()->routeIs('stock-provider.index') => 'stock',
         request()->routeIs('department.*') => 'department',
         request()->routeIs('users.*') => 'users',
         default => 'dashboard',
@@ -133,7 +135,7 @@
 
                 <a
                     href="{{ route('service-provider.index') }}"
-                    class="nav__item {{ request()->routeIs('servicer-provider.index') ? 'active' : '' }}"
+                    class="nav__item {{ request()->routeIs('service-provider.index') ? 'active' : '' }}"
                     data-page="dashboard"
                 >
 
@@ -144,6 +146,38 @@
                     </span>
 
                 </a>
+
+
+                <a
+                    href="{{ route('facility-provider.index') }}"
+                    class="nav__item {{ request()->routeIs('facility-provider.index') ? 'active' : '' }}"
+                    data-page="facility"
+                >
+
+                    <i class="bi bi-building nav__icon"></i>
+
+                    <span class="nav__label">
+                        Facility
+                    </span>
+
+                </a>
+
+
+                   <a
+                    href="{{ route('stock-provider.index') }}"
+                    class="nav__item {{ request()->routeIs('stock-provider.index') ? 'active' : '' }}"
+                    data-page="stock"
+                >
+
+                    <i class="bi bi-box-seam nav__icon"></i>
+
+                    <span class="nav__label">
+                        Stocks
+                    </span>
+
+                </a>
+
+
 
 
 

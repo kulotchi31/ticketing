@@ -2,15 +2,15 @@
 
 @push('styles')
 <style>
-    .ticket-page {
-        padding: 8px;
-    }
+    .ticket-page { padding: 8px; }
 
     .ticket-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 24px;
+        flex-wrap: wrap;
+        gap: 16px;
     }
 
     .ticket-header-left {
@@ -46,25 +46,36 @@
         color: #6b7280;
     }
 
-    .btn-add-ticket {
+    /* Filter Tabs */
+    .ticket-tabs {
         display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 18px;
-        border: none;
+        background: #f1f5f9;
+        padding: 4px;
         border-radius: 10px;
+        gap: 4px;
+        flex-wrap: wrap;
+    }
+
+    .ticket-tab-btn {
+        border: none;
+        background: transparent;
+        padding: 8px 16px;
+        border-radius: 8px;
         font-size: 13px;
         font-weight: 600;
-        background: #2563eb;
-        color: #ffffff;
-        box-shadow: 0 6px 16px rgba(37, 99, 235, .20);
+        color: #64748b;
+        cursor: pointer;
         transition: all .2s ease;
     }
 
-    .btn-add-ticket:hover {
-        background: #1d4ed8;
-        color: #fff;
-        transform: translateY(-1px);
+    .ticket-tab-btn:hover {
+        color: #1e293b;
+    }
+
+    .ticket-tab-btn.active {
+        background: #ffffff;
+        color: #2563eb;
+        box-shadow: 0 2px 6px rgba(15, 23, 42, .06);
     }
 
     .ticket-card {
@@ -72,9 +83,7 @@
         border: 1px solid #e9edf3;
         border-radius: 16px;
         overflow: hidden;
-        box-shadow:
-            0 1px 2px rgba(16, 24, 40, .02),
-            0 8px 24px rgba(16, 24, 40, .04);
+        box-shadow: 0 1px 2px rgba(16, 24, 40, .02), 0 8px 24px rgba(16, 24, 40, .04);
     }
 
     .ticket-toolbar {
@@ -97,9 +106,7 @@
         color: #9ca3af;
     }
 
-    .ticket-search {
-        position: relative;
-    }
+    .ticket-search { position: relative; }
 
     .ticket-search i {
         position: absolute;
@@ -152,17 +159,9 @@
         vertical-align: middle;
     }
 
-    .ticket-table tbody tr {
-        transition: all .15s ease;
-    }
-
-    .ticket-table tbody tr:hover {
-        background: #f8fbff;
-    }
-
-    .ticket-table tbody tr:last-child td {
-        border-bottom: none !important;
-    }
+    .ticket-table tbody tr { transition: all .15s ease; }
+    .ticket-table tbody tr:hover { background: #f8fbff; }
+    .ticket-table tbody tr:last-child td { border-bottom: none !important; }
 
     .ticket-number {
         display: inline-flex;
@@ -184,26 +183,6 @@
         font-size: 15px;
     }
 
-    .ticket-badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 5px 10px;
-        border-radius: 7px;
-        font-size: 11px;
-        font-weight: 600;
-        white-space: nowrap;
-    }
-
-    .badge-walkin {
-        background: #f3e8ff;
-        color: #7e22ce;
-    }
-
-    .badge-appointment {
-        background: #f1f5f9;
-        color: #64748b;
-    }
-
     .action-buttons {
         display: flex;
         justify-content: flex-end;
@@ -223,6 +202,7 @@
         font-size: 14px;
         cursor: pointer;
         transition: all .18s ease;
+        text-decoration: none;
     }
 
     .action-btn.edit:hover {
@@ -231,89 +211,37 @@
         background: #eff6ff;
     }
 
-    .action-btn.delete:hover {
+    .action-btn.print:hover {
         color: #dc2626;
         border-color: #fecaca;
         background: #fef2f2;
     }
 
-    .dataTables_wrapper {
-        padding: 0 !important;
-    }
-
-    .dataTables_filter,
-    .dataTables_length {
-        display: none !important;
-    }
-
-    .dataTables_info {
-        padding: 18px 24px !important;
-        font-size: 12px !important;
-        color: #94a3b8 !important;
-    }
-
-    .dataTables_paginate {
-        padding: 12px 20px !important;
-    }
-
+    .dataTables_wrapper { padding: 0 !important; }
+    .dataTables_filter, .dataTables_length { display: none !important; }
+    .dataTables_info { padding: 18px 24px !important; font-size: 12px !important; color: #94a3b8 !important; }
+    .dataTables_paginate { padding: 12px 20px !important; }
     .dataTables_paginate .paginate_button {
-        min-width: 34px !important;
-        height: 34px !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        padding: 0 8px !important;
-        margin-left: 4px !important;
-        border: none !important;
-        border-radius: 8px !important;
-        background: transparent !important;
-        color: #64748b !important;
-        font-size: 13px !important;
+        min-width: 34px !important; height: 34px !important;
+        display: inline-flex !important; align-items: center !important; justify-content: center !important;
+        padding: 0 8px !important; margin-left: 4px !important; border: none !important;
+        border-radius: 8px !important; background: transparent !important; color: #64748b !important; font-size: 13px !important;
     }
-
-    .dataTables_paginate .paginate_button:hover {
-        background: #f1f5f9 !important;
-        color: #2563eb !important;
-    }
-
-    .dataTables_paginate .paginate_button.current {
-        background: #eff6ff !important;
-        color: #2563eb !important;
-        font-weight: 600 !important;
-    }
-
-    .dataTables_empty {
-        padding: 60px !important;
-        text-align: center !important;
-        color: #94a3b8 !important;
-    }
+    .dataTables_paginate .paginate_button:hover { background: #f1f5f9 !important; color: #2563eb !important; }
+    .dataTables_paginate .paginate_button.current { background: #eff6ff !important; color: #2563eb !important; font-weight: 600 !important; }
+    .dataTables_empty { padding: 60px !important; text-align: center !important; color: #94a3b8 !important; }
 
     @media (max-width: 768px) {
-        .ticket-header {
+        .ticket-header, .ticket-toolbar {
             align-items: flex-start;
             flex-direction: column;
-            gap: 16px;
-        }
-
-        .btn-add-ticket {
-            width: 100%;
-            justify-content: center;
-        }
-
-        .ticket-toolbar {
-            flex-direction: column;
-            align-items: flex-start;
             gap: 15px;
         }
-
-        .ticket-search,
-        .ticket-search input {
-            width: 100%;
-        }
+        .ticket-tabs, .ticket-search, .ticket-search input { width: 100%; }
+        .ticket-tab-btn { flex: 1; text-align: center; }
     }
 </style>
 @endpush
-
 
 <div class="ticket-page">
 
@@ -323,52 +251,80 @@
             <div class="ticket-header-icon">
                 <i class="bi bi-ticket-perforated"></i>
             </div>
-
             <div>
                 <h4 class="ticket-title">Ticket Management</h4>
-                <p class="ticket-subtitle">
-                    Manage and monitor university service tickets
-                </p>
+                <p class="ticket-subtitle">Manage and monitor university service tickets</p>
             </div>
         </div>
 
-       {{--  <button
-            type="button"
-            class="btn-add-ticket"
-            data-bs-toggle="modal"
-            data-bs-target="#addTicketModal">
+        <!-- STATUS FILTER TABS -->
+        <div class="ticket-tabs" role="tablist">
+            <button type="button"
+                class="ticket-tab-btn active"
+                data-url="{{ route('worker-accepted-ticket') }}"
+                data-title="Assigned Ticket Directory"
+                data-show-pending="false"
+                data-show-completed="false"
+                data-is-acknowledge="false">
+                Assigned
+            </button>
 
-            <i class="bi bi-plus-lg"></i>
-            Add Ticket
-        </button> --}}
+            <button type="button"
+                class="ticket-tab-btn"
+                data-url="{{ route('worker-wip-ticket') }}"
+                data-title="Work In Progress Ticket Directory"
+                data-show-pending="false"
+                data-show-completed="false"
+                data-is-acknowledge="false">
+                Work In Progress
+            </button>
+
+            <button type="button"
+                class="ticket-tab-btn"
+                data-url="{{ route('worker-pending-ticket') }}"
+                data-title="Pending Ticket Directory"
+                data-show-pending="true"
+                data-show-completed="false"
+                data-is-acknowledge="false">
+                Pending
+            </button>
+
+            <button type="button"
+                class="ticket-tab-btn"
+                data-url="{{ route('worker-completed-ticket') }}"
+                data-title="Completed Ticket Directory"
+                data-show-pending="false"
+                data-show-completed="true"
+                data-is-acknowledge="false">
+                Completed
+            </button>
+
+            <button type="button"
+                class="ticket-tab-btn"
+                data-url="{{ route('worker-acknowledged-ticket') }}"
+                data-title="Acknowledged Ticket Directory"
+                data-show-pending="false"
+                data-show-completed="true"
+                data-is-acknowledge="true">
+                Acknowledge
+            </button>
+        </div>
     </div>
-
 
     <!-- MAIN CARD -->
     <div class="ticket-card">
-
         <!-- TOOLBAR -->
         <div class="ticket-toolbar">
             <div>
-                <div class="ticket-toolbar-title">
-                    Assigned Ticket Directory
-                </div>
-
-                <div class="ticket-toolbar-description">
-                    View and manage all registered tickets
-                </div>
+                <div class="ticket-toolbar-title" id="directoryTitle">Assigned Ticket Directory</div>
+                <div class="ticket-toolbar-description">View and manage all registered tickets</div>
             </div>
 
             <div class="ticket-search">
                 <i class="bi bi-search"></i>
-
-                <input
-                    type="text"
-                    id="ticketSearch"
-                    placeholder="Search tickets...">
+                <input type="text" id="ticketSearch" placeholder="Search tickets...">
             </div>
         </div>
-
 
         <!-- TABLE -->
         <div class="table-responsive">
@@ -379,488 +335,309 @@
                         <th>Campus</th>
                         <th>Department</th>
                         <th>Remarks</th>
-                         <th>Classification</th>
+                        <th>Classification</th>
+                        <th>Pending Remarks</th>
+                        <th>Action Taken</th>
                         <th>Status</th>
                         <th class="text-end">Actions</th>
                     </tr>
                 </thead>
-
                 <tbody></tbody>
             </table>
         </div>
-
     </div>
 </div>
 
-
-
-<div
-    class="modal fade"
-    id="editTicketModal"
-    tabindex="-1"
-    aria-labelledby="editTicketModalLabel"
-    aria-hidden="true">
-
+<!-- EDIT TICKET MODAL -->
+<div class="modal fade" id="editTicketModal" tabindex="-1" aria-labelledby="editTicketModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
 
-            <!-- MODAL HEADER -->
             <div class="modal-header">
                 <h5 class="modal-title" id="editTicketModalLabel">
                     <i class="bi bi-pencil-square me-2"></i>
                     Update Ticket Status
                 </h5>
-
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Close">
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            <!-- UPDATE FORM -->
-            <form
-                id="updateForm"
-                action="javascript:void(0);"
-                method="POST">
-
+            <form id="updateForm" action="javascript:void(0);" method="POST">
                 @csrf
-
-                <input
-                    type="hidden"
-                    id="edit_ticket_id"
-                    name="ticket_id">
+                <input type="hidden" id="edit_ticket_id" name="ticket_id">
 
                 <div class="modal-body">
-
                     <!-- STATUS -->
                     <div class="mb-3">
                         <label for="edit_status" class="form-label">
-                            Ticket Status
-                            <span class="text-danger">*</span>
+                            Ticket Status <span class="text-danger">*</span>
                         </label>
-
-                        <select
-                            class="form-select"
-                            id="edit_status"
-                            name="status"
-                            required>
-
-                            <option value="">
-                                Select status
-                            </option>
-
-                            <option value="Work In Progress">
-                                Work In Progress
-                            </option>
-
-                            
-
-                            <option value="Pending">
-                                Pending
-                            </option>
-
-                            <option value="Completed">
-                                Completed
-                            </option>
+                        <select class="form-select" id="edit_status" name="status" required>
+                            <option value="">Select status</option>
+                            <option value="Work In Progress">Work In Progress</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Completed">Completed</option>
                         </select>
-
-                        <div
-                            id="edit_status_error"
-                            class="invalid-feedback">
-                        </div>
+                        <div id="edit_status_error" class="invalid-feedback"></div>
                     </div>
 
                     <!-- PENDING REMARKS -->
-                    <div
-                        class="mb-3 d-none"
-                        id="pendingRemarksContainer">
-
-                        <label
-                            for="edit_pending_remarks"
-                            class="form-label">
-
-                            Pending Remarks
-                            <span class="text-danger">*</span>
+                    <div class="mb-3 d-none" id="pendingRemarksContainer">
+                        <label for="edit_pending_remarks" class="form-label">
+                            Pending Remarks <span class="text-danger">*</span>
                         </label>
-
-                        <textarea
-                            class="form-control"
-                            id="edit_pending_remarks"
-                            name="pending_remarks"
-                            rows="4"
-                            placeholder="Enter the reason why this ticket is pending...">
-                        </textarea>
-
-                        <div
-                            id="edit_pending_remarks_error"
-                            class="invalid-feedback">
-                        </div>
+                        <textarea class="form-control" id="edit_pending_remarks" name="pending_remarks" rows="4"
+                            placeholder="Enter the reason why this ticket is pending..."></textarea>
+                        <div id="edit_pending_remarks_error" class="invalid-feedback"></div>
                     </div>
 
-
-
-                       <!-- Action Taken -->
-                    <div
-                        class="mb-3 d-none"
-                        id="CompletedRemarksContainer">
-
-                        <label
-                            for="edit_action_taken"
-                            class="form-label">
-
-                            Action Taken
-                            <span class="text-danger">*</span>
+                    <!-- ACTION TAKEN -->
+                    <div class="mb-3 d-none" id="CompletedRemarksContainer">
+                        <label for="edit_action_taken" class="form-label">
+                            Action Taken <span class="text-danger">*</span>
                         </label>
-
-                        <textarea
-                            class="form-control"
-                            id="edit_action_taken"
-                            name="action_taken"
-                            rows="4"
-                            placeholder="Enter the reason why this ticket is pending...">
-                        </textarea>
-
-                        <div
-                            id="edit_action_taken_error"
-                            class="invalid-feedback">
-                        </div>
+                        <textarea class="form-control" id="edit_action_taken" name="action_taken" rows="4"
+                            placeholder="Enter the action taken to resolve this ticket..."></textarea>
+                        <div id="edit_action_taken_error" class="invalid-feedback"></div>
                     </div>
-
                 </div>
 
-                <!-- MODAL FOOTER -->
                 <div class="modal-footer">
-
-                    <button
-                        type="button"
-                        class="btn btn-light"
-                        data-bs-dismiss="modal">
-                        Cancel
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="btnUpdateTicket">
+                        <i class="bi bi-check-lg me-1"></i> Update Status
                     </button>
-
-                    <button
-                        type="submit"
-                        class="btn btn-primary"
-                        id="btnUpdateTicket">
-
-                        <i class="bi bi-check-lg me-1"></i>
-                        Update Status
-                    </button>
-
                 </div>
-
             </form>
 
         </div>
     </div>
 </div>
 
-
 @push('scripts')
 <script>
-    $(document).ready(function () {
+$(document).ready(function () {
 
-        let campuses = [];
-        let departments = [];
-        let providers = [];
-        let requestTypes = [];
-        let categories = [];
-        let users = [];
+    let isAcknowledgeTab = false;
+    const printPdfRouteTemplate = "{{ route('worker-ticket.print', ':id') }}";
 
-
-     
-
-  
-
-    
-     
-
-
-        var table = $('#ticketTable').DataTable({
-            processing: true,
-            serverSide: false,
-            paging: true,
-            pageLength: 10,
-
-            ajax: {
-                url: "{{ route('worker-accepted-ticket') }}",
-                type: "GET",
-                dataSrc: 'data'
-            },
-
-            columns: [
-                {
-                    data: "ticket_number",
-
-                    render: function (data) {
-                        return `
-                            <div class="ticket-number">
-                                <div class="ticket-avatar">
-                                    <i class="bi bi-ticket-perforated"></i>
-                                </div>
-
-                                <span>${data ?? ''}</span>
+    // Initialize Server-Side DataTable (defaults to Assigned/Accepted Tickets)
+    var table = $('#ticketTable').DataTable({
+        processing: true,
+        serverSide: true,
+        paging: true,
+        pageLength: 10,
+        order: [],
+        ajax: {
+            url: "{{ route('worker-accepted-ticket') }}",
+            type: "GET"
+        },
+        columns: [
+            {
+                data: null,
+                name: "ticket_number",
+                render: function (data, type, row) {
+                    const ticketNo = row.ticket_number || row.ticket_no || ('#' + row.ticket_id);
+                    return `
+                        <div class="ticket-number">
+                            <div class="ticket-avatar">
+                                <i class="bi bi-ticket-perforated"></i>
                             </div>
-                        `;
-                    }
-                },
-
-                {
-                    data: "department.campus.campus_name",
-                    defaultContent: "-"
-                },
-
-                {
-                    data: "department.department_name",
-                    defaultContent: "-"
-                },
-
-
-                {
-                    data: "remarks",
-                    defaultContent: "-"
-                },
-
-                {
-                    data: "classification",
-                    defaultContent: "-"
-                },
-
-
-                {
-                    data: "status",
-                    defaultContent: "-"
-                },
-
-                {
-                    data: "ticket_id",
-                    orderable: false,
-                    searchable: false,
-                    className: "text-end",
-
-                    render: function (data) {
+                            <span>${ticketNo}</span>
+                        </div>
+                    `;
+                }
+            },
+            {
+                data: "department.campus.campus_name",
+                orderable: false,
+                defaultContent: "-"
+            },
+            {
+                data: "department.department_name",
+                orderable: false,
+                defaultContent: "-"
+            },
+            {
+                data: "remarks",
+                defaultContent: "-"
+            },
+            {
+                data: "classification",
+                defaultContent: "-"
+            },
+            {
+                data: "pending_remarks",
+                defaultContent: "-",
+                visible: false
+            },
+            {
+                data: "action_taken",
+                defaultContent: "-",
+                visible: false
+            },
+            {
+                data: "status",
+                defaultContent: "-"
+            },
+            {
+                data: "ticket_id",
+                orderable: false,
+                searchable: false,
+                className: "text-end",
+                render: function (data) {
+                    if (isAcknowledgeTab) {
+                        const pdfUrl = printPdfRouteTemplate.replace(':id', data);
                         return `
                             <div class="action-buttons">
-
-                                <button
-                                    type="button"
-                                    name="edit"
-                                    class="action-btn edit"
-                                    data-id="${data}"
-                                    title="Edit Ticket">
-
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-
-
+                                <a href="${pdfUrl}" target="_blank" class="action-btn print" title="Print Service Order Slip (PDF)">
+                                    <i class="bi bi-printer"></i>
+                                </a>
                             </div>
                         `;
                     }
+
+                    return `
+                        <div class="action-buttons">
+                            <button type="button" name="edit" class="action-btn edit" data-id="${data}" title="Edit Ticket">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                        </div>
+                    `;
                 }
-            ]
+            }
+        ]
+    });
+
+    // Tab Switching Logic
+    $('.ticket-tab-btn').on('click', function () {
+        if ($(this).hasClass('active')) return;
+
+        $('.ticket-tab-btn').removeClass('active');
+        $(this).addClass('active');
+
+        const url = $(this).data('url');
+        const title = $(this).data('title');
+        const showPendingCol = $(this).data('show-pending') === true;
+        const showCompletedCol = $(this).data('show-completed') === true;
+        isAcknowledgeTab = $(this).data('is-acknowledge') === true;
+
+        $('#directoryTitle').text(title);
+        table.column(5).visible(showPendingCol);
+        table.column(6).visible(showCompletedCol);
+        table.ajax.url(url).load();
+    });
+
+    // Debounced Server-Side Search
+    let searchTimer;
+    $('#ticketSearch').on('keyup', function () {
+        const query = this.value;
+        clearTimeout(searchTimer);
+
+        searchTimer = setTimeout(function () {
+            table.search(query).draw();
+        }, 350);
+    });
+
+    // Load Ticket into Edit Modal
+    $(document).on("click", "button[name='edit']", function () {
+        let id = $(this).data('id');
+        let route = "{{ route('worker-ticket.edit', ':id') }}".replace(':id', id);
+
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('editTicketModal')).show();
+
+        $.ajax({
+            url: route,
+            method: "GET",
+            success: function (response) {
+                let data = response.data;
+
+                $("#edit_ticket_id").val(data.ticket_id);
+                $("#edit_status").val(data.status ?? '');
+                $("#edit_pending_remarks").val(data.pending_remarks ?? '');
+                $("#edit_action_taken").val(data.action_taken ?? '');
+
+                toggleTicketStatusFields();
+            },
+            error: function (xhr) {
+                console.error('Failed to load ticket:', xhr.responseText);
+            }
         });
+    });
 
+    // Submit Ticket Update
+    $(document).on("submit", "#updateForm", function (e) {
+        e.preventDefault();
 
-        /*
-        |--------------------------------------------------------------------------
-        | CUSTOM SEARCH
-        |--------------------------------------------------------------------------
-        */
+        let id = $("#edit_ticket_id").val();
+        let route = "{{ route('worker-ticket.update', ':id') }}".replace(':id', id);
+        let formData = new FormData(this);
+        formData.append("_method", "PUT");
 
-        $('#ticketSearch').on('keyup', function () {
-            table.search(this.value).draw();
-        });
+        $.ajax({
+            url: route,
+            method: "POST",
+            contentType: false,
+            processData: false,
+            data: formData,
+            success: function (data) {
+                if (data.success == true) {
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Ticket Updated!'
+                    });
 
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | EDIT TICKET
-        |--------------------------------------------------------------------------
-        */
-
-        $(document).on("click", "button[name='edit']", function () {
-            let id = $(this).data('id');
-
-            let route = "{{ route('worker-ticket.edit', ':id') }}";
-            route = route.replace(':id', id);
-
-            bootstrap.Modal.getOrCreateInstance(
-                document.getElementById('editTicketModal')
-            ).show();
-
-            $.ajax({
-                url: route,
-                method: "GET",
-
-                success: function (response) {
-                    let data = response.data;
-
-                    $("#edit_ticket_id").val(data.ticket_id);
-                    $("#edit_ticket_number").val(data.ticket_number);
-                    $("#edit_remarks").val(data.remarks);
-
-                    $("#edit_fk_campus_id").val(campusId);
-
-               
-                },
-
-                error: function (xhr) {
-                    console.error(
-                        'Failed to load ticket:',
-                        xhr.responseText
-                    );
+                    bootstrap.Modal.getOrCreateInstance(document.getElementById('editTicketModal')).hide();
+                    table.ajax.reload(null, false);
                 }
-            });
-        });
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | UPDATE TICKET
-        |--------------------------------------------------------------------------
-        */
-
-        $(document).on("submit", "#updateForm", function (e) {
-            e.preventDefault();
-
-            let id = $("#edit_ticket_id").val();
-
-            let route = "{{ route('worker-ticket.update', ':id') }}";
-            route = route.replace(':id', id);
-
-            let formData = new FormData(this);
-            formData.append("_method", "PUT");
-
-            $.ajax({
-                url: route,
-                method: "POST",
-                contentType: false,
-                processData: false,
-                data: formData,
-
-                success: function (data) {
-                    if (data.success == true) {
-                        Toast.fire({
-                            icon: 'success',
-                            title: 'Ticket Updated!'
-                        });
-
-                        bootstrap.Modal.getOrCreateInstance(
-                            document.getElementById('editTicketModal')
-                        ).hide();
-
-                        table.ajax.reload(null, false);
-                    }
-                },
-
-                error: function (xhr) {
+            },
+            error: function (xhr) {
+                if (typeof handleValidationErrors === 'function') {
                     handleValidationErrors(xhr, true);
                 }
-            });
+            }
         });
+    });
 
-
-  
-  
-
-        /*
-        |--------------------------------------------------------------------------
-        | MODAL RESET
-        |--------------------------------------------------------------------------
-        */
-
-        $('#addTicketModal').on('hidden.bs.modal', function () {
-            $("#addForm").trigger("reset");
-            resetAddDropdowns();
-            clearValidationErrors();
-        });
-
-        $('#editTicketModal').on('hidden.bs.modal', function () {
-            $("#updateForm").trigger("reset");
-            resetEditDropdowns();
-            clearValidationErrors();
-        });
-
-
-        function togglePendingRemarks() {
+    // Toggle Conditional Fields Based on Status
+    function toggleTicketStatusFields() {
         const status = $('#edit_status').val();
 
-        const remarksContainer = $('#pendingRemarksContainer');
-        const remarksInput = $('#edit_pending_remarks');
+        const pendingContainer = $('#pendingRemarksContainer');
+        const pendingInput = $('#edit_pending_remarks');
+        const completedContainer = $('#CompletedRemarksContainer');
+        const actionTakenInput = $('#edit_action_taken');
 
         if (status === 'Pending') {
-            remarksContainer.removeClass('d-none');
-            remarksInput.prop('required', true);
+            pendingContainer.removeClass('d-none');
+            pendingInput.prop('required', true);
         } else {
-            remarksContainer.addClass('d-none');
-            remarksInput.prop('required', false);
-            remarksInput.val('');
-            remarksInput.removeClass('is-invalid');
-
+            pendingContainer.addClass('d-none');
+            pendingInput.prop('required', false).removeClass('is-invalid').val('');
             $('#edit_pending_remarks_error').text('');
         }
-    }
-
-
-    function toggleCompletedActionTaken() {
-        const status = $('#edit_status').val();
-
-        const remarksContainer = $('#CompletedRemarksContainer');
-        const remarksInput = $('#edit_action_taken');
 
         if (status === 'Completed') {
-            remarksContainer.removeClass('d-none');
-            remarksInput.prop('required', true);
+            completedContainer.removeClass('d-none');
+            actionTakenInput.prop('required', true);
         } else {
-            remarksContainer.addClass('d-none');
-
-            remarksInput.prop('required', false);
-            remarksInput.val('');
-            remarksInput.removeClass('is-invalid');
-
+            completedContainer.addClass('d-none');
+            actionTakenInput.prop('required', false).removeClass('is-invalid').val('');
             $('#edit_action_taken_error').text('');
         }
     }
 
-    // Show or hide pending remarks when status changes
-    $('#edit_status').on('change', function () {
-        togglePendingRemarks();
-        toggleCompletedActionTaken();
-    });
+    $('#edit_status').on('change', toggleTicketStatusFields);
 
-    // Reset the form when the modal closes
+    // Clean Single Modal Reset Listener
     $('#editTicketModal').on('hidden.bs.modal', function () {
         $('#updateForm')[0].reset();
-
-    // Reset Pending Remarks
-        $('#pendingRemarksContainer').addClass('d-none');
-
-        $('#edit_pending_remarks')
-        .prop('required', false)
-        .removeClass('is-invalid');
-
-        $('#edit_pending_remarks_error').text('');
-
-    // Reset Completed Action Taken
-        $('#CompletedRemarksContainer').addClass('d-none');
-
-        $('#edit_action_taken')
-        .prop('required', false)
-        .removeClass('is-invalid');
-
-        $('#edit_action_taken_error').text('');
-
-    // Reset Status validation
+        $('#pendingRemarksContainer, #CompletedRemarksContainer').addClass('d-none');
+        $('#edit_pending_remarks, #edit_action_taken').prop('required', false).removeClass('is-invalid');
         $('#edit_status').removeClass('is-invalid');
-        $('#edit_status_error').text('');
+        $('#edit_status_error, #edit_pending_remarks_error, #edit_action_taken_error').text('');
     });
 
-
-
-    });
+});
 </script>
 @endpush
 

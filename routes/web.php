@@ -18,6 +18,11 @@ use App\Http\Controllers\provider\TicketController as TicketProvider;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\staff\ChatAssistantController;
 use App\Http\Controllers\provider\ServiceProviderController;
+use App\Http\Controllers\provider\FacilityController;
+use App\Http\Controllers\provider\StockProviderController;
+use App\Http\Controllers\provider\MaintenanceController;
+
+
 
 
 
@@ -91,25 +96,30 @@ Route::middleware(['auth','user'])->prefix('user')->group(function () {
 });
 
 
-Route::middleware(['auth','worker'])->prefix('worker')->group(function () {
+Route::middleware(['auth', 'worker'])->prefix('worker')->group(function () {
 
-        Route::resource('worker', WorkerController::class);
+    Route::resource('worker', WorkerController::class);
+    Route::resource('worker-ticket', TicketWorker::class);
 
-        Route::resource('worker-ticket', TicketWorker::class);
-
-        Route::get('/ticket-accepted', [TicketWorker::class, 'getAcceptedTicket'])
+    Route::get('/ticket-accepted', [TicketWorker::class, 'getAcceptedTicket'])
         ->name('worker-accepted-ticket');
-        Route::get('/ticket-pending', [TicketWorker::class, 'showPending'])
-        ->name('worker-pending');
-          Route::get('/ticket-wip', [TicketWorker::class, 'showWip'])
-        ->name('worker-wip');
-        Route::get('/get-pending-ticket', [TicketWorker::class, 'getPendingTicket'])
+
+    Route::get('/get-pending-ticket', [TicketWorker::class, 'getPendingTicket'])
         ->name('worker-pending-ticket');
-          Route::get('/get-wip-ticket', [TicketWorker::class, 'getWipTicket'])
+
+    Route::get('/get-wip-ticket', [TicketWorker::class, 'getWipTicket'])
         ->name('worker-wip-ticket');
 
-});
+    Route::get('/get-completed-ticket', [TicketWorker::class, 'getCompletedTicket'])
+        ->name('worker-completed-ticket');
 
+    Route::get('/get-acknowledged-ticket', [TicketWorker::class, 'getAcknowledgeTicket'])
+        ->name('worker-acknowledged-ticket');
+
+    Route::get('/ticket/{id}/pdf', [TicketWorker::class, 'printPdf'])
+        ->name('worker-ticket.print');
+
+});
 
 Route::middleware(['auth','staff'])->prefix('staff')->group(function () {
 
@@ -133,6 +143,10 @@ Route::middleware(['auth','staff'])->prefix('staff')->group(function () {
           Route::post('/chat-assistant/chat', [ChatAssistantController::class, 'chat'])
         ->name('staff.chat-assistant.chat');
 
+
+     Route::put('/staff/ticket/{id}/acknowledge', [TicketStaff::class, 'acknowledge'])
+    ->name('ticket-staff.acknowledge');
+
         
 });
 
@@ -141,8 +155,13 @@ Route::middleware(['auth','staff'])->prefix('staff')->group(function () {
 Route::middleware(['auth','service_provider'])->prefix('provider')->group(function () {
 
         Route::resource('ticket-provider', TicketProvider::class);
-        Route::resource('service-provider', ServiceProviderController::class);
+        Route::resource('facility-provider', FacilityController::class);
+        Route::resource('maintenance-provider',MaintenanceController::class);
+        Route::resource('stock-provider',StockProviderController::class);
 
+
+
+        Route::resource('service-provider', ServiceProviderController::class);
 
 
         Route::get('/provider-get-ticket', [TicketProvider::class, 'getTicket'])
@@ -153,10 +172,16 @@ Route::middleware(['auth','service_provider'])->prefix('provider')->group(functi
         Route::get('/ticket/create-data', [TicketProvider::class, 'createData'])
         ->name('provider.createData');
 
+        Route::get('/stocks/create-data', [StockProviderController::class,'createData'])->name('stock-provider.createData');
+
+        Route::get('/facility/create-data', [FacilityController::class, 'createData'])->name('facility-provider.createData');
+
         Route::post(
             '/provider/tickets/{id}/approve-assign',
             [TicketProvider::class, 'approveAndAssign']
         )->name('provider.tickets.approve');
+
+        Route::post('/adjust', [StockProviderController::class, 'adjust'])->name('stock-provider.adjust');
 });
 
 

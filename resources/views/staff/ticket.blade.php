@@ -10,7 +10,9 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 24px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 16px;
     }
 
     .ticket-header-left {
@@ -65,6 +67,42 @@
         background: #1d4ed8;
         color: #fff;
         transform: translateY(-1px);
+    }
+
+    /* Filter Tabs */
+    .ticket-tabs-wrapper {
+        margin-bottom: 18px;
+    }
+
+    .ticket-tabs {
+        display: inline-flex;
+        background: #f1f5f9;
+        padding: 4px;
+        border-radius: 10px;
+        gap: 4px;
+        flex-wrap: wrap;
+    }
+
+    .ticket-tab-btn {
+        border: none;
+        background: transparent;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #64748b;
+        cursor: pointer;
+        transition: all .2s ease;
+    }
+
+    .ticket-tab-btn:hover {
+        color: #1e293b;
+    }
+
+    .ticket-tab-btn.active {
+        background: #ffffff;
+        color: #2563eb;
+        box-shadow: 0 2px 6px rgba(15, 23, 42, .06);
     }
 
     .ticket-card {
@@ -170,6 +208,7 @@
         gap: 10px;
         font-weight: 700;
         color: #1f2937;
+        white-space: nowrap;
     }
 
     .ticket-avatar {
@@ -237,6 +276,23 @@
         background: #fef2f2;
     }
 
+    .action-btn.acknowledge {
+        width: auto;
+        padding: 0 12px;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #16a34a;
+        border-color: #bbf7d0;
+        background: #f0fdf4;
+    }
+
+    .action-btn.acknowledge:hover {
+        color: #ffffff;
+        border-color: #16a34a;
+        background: #16a34a;
+    }
+
     .dataTables_wrapper {
         padding: 0 !important;
     }
@@ -300,6 +356,15 @@
             justify-content: center;
         }
 
+        .ticket-tabs {
+            width: 100%;
+        }
+
+        .ticket-tab-btn {
+            flex: 1;
+            text-align: center;
+        }
+
         .ticket-toolbar {
             flex-direction: column;
             align-items: flex-start;
@@ -344,14 +409,80 @@
     </div>
 
 
+    <!-- STATUS FILTER TABS -->
+    <div class="ticket-tabs-wrapper">
+        <div class="ticket-tabs" role="tablist">
+            <button type="button"
+                class="ticket-tab-btn active"
+                data-status="For Approval"
+                data-title="For Approval Ticket Directory"
+                data-show-ticket-no="false"
+                data-show-pending="false"
+                data-show-completed="false">
+                For Approval
+            </button>
+
+            <button type="button"
+                class="ticket-tab-btn"
+                data-status="Accepted"
+                data-title="Accepted Ticket Directory"
+                data-show-ticket-no="true"
+                data-show-pending="false"
+                data-show-completed="false">
+                Accepted
+            </button>
+
+            <button type="button"
+                class="ticket-tab-btn"
+                data-status="Work In Progress"
+                data-title="Work In Progress Ticket Directory"
+                data-show-ticket-no="true"
+                data-show-pending="false"
+                data-show-completed="false">
+                Work In Progress
+            </button>
+
+            <button type="button"
+                class="ticket-tab-btn"
+                data-status="Pending"
+                data-title="Pending Ticket Directory"
+                data-show-ticket-no="true"
+                data-show-pending="true"
+                data-show-completed="false">
+                Pending
+            </button>
+
+            <button type="button"
+                class="ticket-tab-btn"
+                data-status="Completed"
+                data-title="Completed Ticket Directory"
+                data-show-ticket-no="true"
+                data-show-pending="false"
+                data-show-completed="true">
+                Completed
+            </button>
+
+            <button type="button"
+                class="ticket-tab-btn"
+                data-status="Acknowledged"
+                data-title="Acknowledged Ticket Directory"
+                data-show-ticket-no="true"
+                data-show-pending="false"
+                data-show-completed="true">
+                Acknowledged
+            </button>
+        </div>
+    </div>
+
+
     <!-- MAIN CARD -->
     <div class="ticket-card">
 
         <!-- TOOLBAR -->
         <div class="ticket-toolbar">
             <div>
-                <div class="ticket-toolbar-title">
-                    Ticket Directory
+                <div class="ticket-toolbar-title" id="directoryTitle">
+                    For Approval Ticket Directory
                 </div>
 
                 <div class="ticket-toolbar-description">
@@ -375,12 +506,15 @@
             <table id="ticketTable" class="ticket-table">
                 <thead>
                     <tr>
+                        <th>Ticket Number</th>
                         <th>Classification</th>
                         <th>Service Provider</th>
                         <th>Remarks</th>
                         <th>Requested By</th>
                         <th>Category</th>
                         <th>Assigned To</th>
+                        <th>Pending Remarks</th>
+                        <th>Action Taken</th>
                         <th>Status</th>
                         <th class="text-end">Actions</th>
                     </tr>
@@ -432,7 +566,7 @@
                 <div class="modal-body">
                     <div class="row">
 
-                                                                                                      <!-- REQUESTED BY -->
+                        <!-- REQUESTED BY -->
                         <div class="col-md-6 mb-3">
                             <label for="requested_by" class="form-label">
                                 Requested By
@@ -450,7 +584,6 @@
                                 id="requested_by_error"
                                 class="invalid-feedback"></div>
                         </div>
-
 
 
                         <!-- SERVICE PROVIDER -->
@@ -524,7 +657,7 @@
                         </div>
 
 
-                                                <!-- REMARKS -->
+                        <!-- REMARKS -->
                         <div class="col-12 mb-3">
                             <label for="remarks" class="form-label">
                                 Remarks
@@ -615,7 +748,7 @@
                 <div class="modal-body">
                     <div class="row">
 
-                                                                                                <!-- REQUESTED BY -->
+                        <!-- REQUESTED BY -->
                         <div class="col-md-6 mb-3">
                             <label for="edit_requested_by" class="form-label">
                                 Requested By
@@ -703,7 +836,7 @@
                         </div>
 
 
-                                                <!-- REMARKS -->
+                        <!-- REMARKS -->
                         <div class="col-12 mb-3">
                             <label for="edit_remarks" class="form-label">
                                 Remarks
@@ -783,11 +916,7 @@
 
                     populateCampuses();
                     populateProviders();
-                    populateAssignTo(
-                '',
-                '',
-                'edit_assign_to'
-            );
+                    populateAssignTo('', '', 'edit_assign_to');
                 },
 
                 error: function (xhr) {
@@ -807,9 +936,7 @@
         */
 
         function populateCampuses() {
-            let options = `
-                <option value="">Select campus</option>
-            `;
+            let options = `<option value="">Select campus</option>`;
 
             campuses.forEach(function (campus) {
                 options += `
@@ -830,9 +957,7 @@
         */
 
         function populateDepartments(campusId, targetId, selectedId = '') {
-            let options = `
-                <option value="">Select department</option>
-            `;
+            let options = `<option value="">Select department</option>`;
 
             if (!campusId) {
                 $('#' + targetId)
@@ -847,9 +972,7 @@
             });
 
             if (filteredDepartments.length === 0) {
-                options = `
-                    <option value="">No departments available</option>
-                `;
+                options = `<option value="">No departments available</option>`;
             } else {
                 filteredDepartments.forEach(function (department) {
                     options += `
@@ -875,9 +998,7 @@
         */
 
         function populateProviders(selectedId = '') {
-            let options = `
-                <option value="">Select service provider</option>
-            `;
+            let options = `<option value="">Select service provider</option>`;
 
             providers.forEach(function (provider) {
                 options += `
@@ -899,14 +1020,8 @@
         |--------------------------------------------------------------------------
         */
 
-        function populateRequestTypes(
-            providerId,
-            targetId,
-            selectedId = ''
-        ) {
-            let options = `
-                <option value="">Select request type</option>
-            `;
+        function populateRequestTypes(providerId, targetId, selectedId = '') {
+            let options = `<option value="">Select request type</option>`;
 
             if (!providerId) {
                 $('#' + targetId)
@@ -921,9 +1036,7 @@
             });
 
             if (filteredRequestTypes.length === 0) {
-                options = `
-                    <option value="">No request types available</option>
-                `;
+                options = `<option value="">No request types available</option>`;
             } else {
                 filteredRequestTypes.forEach(function (requestType) {
                     options += `
@@ -948,14 +1061,8 @@
         |--------------------------------------------------------------------------
         */
 
-        function populateCategories(
-            requestTypeId,
-            targetId,
-            selectedId = ''
-        ) {
-            let options = `
-                <option value="">Select category</option>
-            `;
+        function populateCategories(requestTypeId, targetId, selectedId = '') {
+            let options = `<option value="">Select category</option>`;
 
             if (!requestTypeId) {
                 $('#' + targetId)
@@ -970,9 +1077,7 @@
             });
 
             if (filteredCategories.length === 0) {
-                options = `
-                    <option value="">No categories available</option>
-                `;
+                options = `<option value="">No categories available</option>`;
             } else {
                 filteredCategories.forEach(function (category) {
                     options += `
@@ -997,34 +1102,20 @@
         |--------------------------------------------------------------------------
         */
 
-        function populateAssignTo(
-            providerId = '',
-            selectedId = '',
-            targetId = 'assign_to'
-        ) {
+        function populateAssignTo(providerId = '', selectedId = '', targetId = 'assign_to') {
             let options = '';
 
             if (!providerId) {
-                options = `
-                    <option value="">
-                        Select service provider first
-                    </option>
-                `;
+                options = `<option value="">Select service provider first</option>`;
             } else {
                 const filteredWorkers = users.filter(function (user) {
                     return String(user.fk_provider_id) === String(providerId);
                 });
 
                 if (filteredWorkers.length === 0) {
-                    options = `
-                        <option value="">
-                            No workers available for this provider
-                        </option>
-                    `;
+                    options = `<option value="">No workers available for this provider</option>`;
                 } else {
-                    options = `
-                        <option value="">Select worker</option>
-                    `;
+                    options = `<option value="">Select worker</option>`;
 
                     filteredWorkers.forEach(function (worker) {
                         options += `
@@ -1049,36 +1140,23 @@
         */
 
         $('#fk_campus_id').on('change', function () {
-            populateDepartments(
-                $(this).val(),
-                'fk_department_id'
-            );
+            populateDepartments($(this).val(), 'fk_department_id');
         });
 
         $('#fk_provider_id').on('change', function () {
             const providerId = $(this).val();
 
-            populateRequestTypes(
-                providerId,
-                'fk_request_type_id'
-            );
+            populateRequestTypes(providerId, 'fk_request_type_id');
 
             $('#fk_category_id')
                 .html('<option value="">Select request type first</option>')
                 .prop('disabled', true);
 
-            populateAssignTo(
-                providerId,
-                '',
-                'assign_to'
-            );
+            populateAssignTo(providerId, '', 'assign_to');
         });
 
         $('#fk_request_type_id').on('change', function () {
-            populateCategories(
-                $(this).val(),
-                'fk_category_id'
-            );
+            populateCategories($(this).val(), 'fk_category_id');
         });
 
 
@@ -1089,117 +1167,148 @@
         */
 
         $('#edit_fk_campus_id').on('change', function () {
-            populateDepartments(
-                $(this).val(),
-                'edit_fk_department_id'
-            );
+            populateDepartments($(this).val(), 'edit_fk_department_id');
         });
 
         $('#edit_fk_provider_id').on('change', function () {
             const providerId = $(this).val();
 
-            populateRequestTypes(
-                providerId,
-                'edit_fk_request_type_id'
-            );
+            populateRequestTypes(providerId, 'edit_fk_request_type_id');
 
             $('#edit_fk_category_id')
                 .html('<option value="">Select request type first</option>')
                 .prop('disabled', true);
 
-            populateAssignTo(
-                providerId,
-                '',
-                'edit_assign_to'
-            );
+            populateAssignTo(providerId, '', 'edit_assign_to');
         });
 
         $('#edit_fk_request_type_id').on('change', function () {
-            populateCategories(
-                $(this).val(),
-                'edit_fk_category_id'
-            );
+            populateCategories($(this).val(), 'edit_fk_category_id');
         });
 
 
         /*
         |--------------------------------------------------------------------------
-        | DATATABLE
+        | DATATABLE (SERVER-SIDE)
         |--------------------------------------------------------------------------
         */
 
+        let currentStatus = 'For Approval';
+
         var table = $('#ticketTable').DataTable({
             processing: true,
-            serverSide: false,
+            serverSide: true,
             paging: true,
             pageLength: 10,
+            order: [],
 
             ajax: {
                 url: "{{ route('staff.ticket') }}",
                 type: "GET",
-                dataSrc: 'data'
+                data: function (d) {
+                    d.status = currentStatus;
+                }
             },
 
             columns: [
-         
+                {
+                    data: "ticket_number",
+                    visible: false, // Hidden by default on "For Approval"
+                    render: function (data) {
+                        if (!data) {
+                            return '<span class="text-muted small">Pending Approval</span>';
+                        }
 
+                        return `
+                            <div class="ticket-number">
+                                <div class="ticket-avatar">
+                                    <i class="bi bi-ticket-perforated"></i>
+                                </div>
+                                <span>${data}</span>
+                            </div>
+                        `;
+                    }
+                },
                 {
                     data: "classification",
                     defaultContent: "-"
                 },
-
-
                 {
                     data: "category.request_type.provider.provider_name",
+                    orderable: false,
                     defaultContent: "-"
                 },
-
                 {
                     data: "remarks",
                     defaultContent: "-"
                 },
-
                 {
                     data: "requested_by",
                     defaultContent: "-"
                 },
-
                 {
                     data: "category.category_name",
+                    orderable: false,
                     defaultContent: "-"
                 },
-
                 {
                     data: "assignee.name",
+                    orderable: false,
                     defaultContent: "Not assigned",
-
                     render: function (data) {
                         return data || 'Not assigned';
                     }
                 },
-
-                 {
+                {
+                    data: "pending_remarks",
+                    defaultContent: "-",
+                    visible: false
+                },
+                {
+                    data: "action_taken",
+                    defaultContent: "-",
+                    visible: false
+                },
+                {
                     data: "status",
                     defaultContent: "-"
                 },
-
                 {
                     data: "ticket_id",
                     orderable: false,
                     searchable: false,
                     className: "text-end",
+                    render: function (data, type, row) {
+                        if (row.status === 'Completed') {
+                            const ticketNo = row.ticket_number || ('#' + data);
+                            return `
+                                <div class="action-buttons">
+                                    <button
+                                        type="button"
+                                        name="acknowledge"
+                                        class="action-btn acknowledge"
+                                        data-id="${data}"
+                                        data-ticket-no="${ticketNo}"
+                                        title="Acknowledge Completion">
+                                        <i class="bi bi-check-circle"></i>
+                                        <span>Acknowledge</span>
+                                    </button>
+                                </div>
+                            `;
+                        }
 
-                    render: function (data) {
+                        if (row.status !== 'For Approval') {
+                            return '<span class="text-muted small">Locked</span>';
+                        }
+
                         return `
                             <div class="action-buttons">
-
                                 <button
                                     type="button"
                                     name="edit"
                                     class="action-btn edit"
                                     data-id="${data}"
                                     title="Edit Ticket">
-
                                     <i class="bi bi-pencil"></i>
                                 </button>
 
@@ -1209,10 +1318,8 @@
                                     class="action-btn delete"
                                     data-id="${data}"
                                     title="Delete Ticket">
-
                                     <i class="bi bi-trash"></i>
                                 </button>
-
                             </div>
                         `;
                     }
@@ -1223,12 +1330,96 @@
 
         /*
         |--------------------------------------------------------------------------
-        | CUSTOM SEARCH
+        | STATUS TAB SWITCHING LOGIC
         |--------------------------------------------------------------------------
         */
 
+        $('.ticket-tab-btn').on('click', function () {
+            if ($(this).hasClass('active')) return;
+
+            $('.ticket-tab-btn').removeClass('active');
+            $(this).addClass('active');
+
+            currentStatus = $(this).data('status') ?? '';
+            const title = $(this).data('title');
+            const showTicketNoCol = $(this).data('show-ticket-no') === true;
+            const showPendingCol = $(this).data('show-pending') === true;
+            const showCompletedCol = $(this).data('show-completed') === true;
+
+            $('#directoryTitle').text(title);
+            table.column(0).visible(showTicketNoCol);
+            table.column(7).visible(showPendingCol);
+            table.column(8).visible(showCompletedCol);
+            table.ajax.reload(null, true);
+        });
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | CUSTOM SEARCH (DEBOUNCED)
+        |--------------------------------------------------------------------------
+        */
+
+        let searchTimer;
         $('#ticketSearch').on('keyup', function () {
-            table.search(this.value).draw();
+            const query = this.value;
+            clearTimeout(searchTimer);
+
+            searchTimer = setTimeout(function () {
+                table.search(query).draw();
+            }, 350);
+        });
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | ACKNOWLEDGE COMPLETED TICKET
+        |--------------------------------------------------------------------------
+        */
+
+        $(document).on("click", "button[name='acknowledge']", function () {
+            const id = $(this).data('id');
+            const ticketNo = $(this).data('ticket-no');
+            const route = "{{ route('ticket-staff.acknowledge', ':id') }}".replace(':id', id);
+
+            Swal.fire({
+                title: 'Acknowledge Ticket?',
+                text: `Confirm that ticket ${ticketNo} has been properly completed?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#16a34a',
+                confirmButtonText: 'Yes, Acknowledge',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: route,
+                        method: "POST",
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            _method: "PUT",
+                            status: "Acknowledged"
+                        },
+                        success: function (data) {
+                            if (data.success == true) {
+                                Toast.fire({
+                                    icon: 'success',
+                                    title: 'Ticket Acknowledged!'
+                                });
+
+                                table.ajax.reload(null, false);
+                            }
+                        },
+                        error: function (xhr) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: xhr.responseJSON?.message || 'Failed to acknowledge ticket.'
+                            });
+                        }
+                    });
+                }
+            });
         });
 
 
@@ -1333,7 +1524,7 @@
                     );
 
                     /*
-                    | Provider and Requested By
+                    | Provider and Request Type
                     */
                     populateProviders(providerId);
 
@@ -1399,7 +1590,7 @@
                 data: formData,
 
                 success: function (data) {
-                    if (data.success  == true) {
+                    if (data.success == true) {
                         Toast.fire({
                             icon: 'success',
                             title: 'Request Updated!'
@@ -1527,11 +1718,7 @@
                 .html('<option value="">Select request type first</option>')
                 .prop('disabled', true);
 
-            populateAssignTo(
-                '',
-                '',
-                'edit_assign_to'
-            );
+            populateAssignTo('', '', 'edit_assign_to');
         }
 
 
@@ -1558,11 +1745,7 @@
                 .html('<option value="">Select request type first</option>')
                 .prop('disabled', true);
 
-            populateAssignTo(
-                '',
-                '',
-                'edit_assign_to'
-            );
+            populateAssignTo('', '', 'edit_assign_to');
         }
 
 
