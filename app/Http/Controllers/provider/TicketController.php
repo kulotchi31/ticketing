@@ -12,6 +12,7 @@ use App\Models\RequestType;
 use App\Models\Provider;
 use App\Models\AuditLogs;
 use App\Services\TicketAnalyzer;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -36,13 +37,9 @@ class TicketController extends Controller
      */
     public function createData()
     {
-        // Get the logged-in user and their department/campus
         $authUser = User::with('department.campus')->find(auth()->id());
-
-        // Get the campus ID assigned to the logged-in user
         $campusId = $authUser?->department?->fk_campus_id;
 
-        // Load active workers with their department and campus
         $users = User::with('department.campus')
             ->select([
                 'id',
@@ -61,21 +58,14 @@ class TicketController extends Controller
 
         return response()->json([
             'campuses'           => Campus::orderBy('campus_name')->get(),
-
-            // Only show departments belonging to the user's campus
             'departments'        => Department::where('fk_campus_id', $campusId)
                 ->orderBy('department_name')
                 ->get(),
-
             'providers'          => Provider::orderBy('provider_name')->get(),
             'request_types'      => RequestType::orderBy('rt_name')->get(),
             'categories'         => Category::orderBy('category_name')->get(),
             'users'              => $users,
-
-            // Send the user's campus ID to the Blade JavaScript
             'user_campus_id'     => $campusId,
-
-            // Send the user's department ID as well
             'user_department_id' => $authUser?->fk_department_id,
         ]);
     }
@@ -102,12 +92,6 @@ class TicketController extends Controller
             ], 401);
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | GET AUTHENTICATED USER'S CAMPUS
-        |--------------------------------------------------------------------------
-        */
-
         $userDepartment = Department::where(
             'department_id',
             $user->fk_department_id
@@ -121,12 +105,6 @@ class TicketController extends Controller
         }
 
         $userCampusId = $userDepartment->fk_campus_id;
-
-        /*
-        |--------------------------------------------------------------------------
-        | VALIDATE SUBMITTED DATA
-        |--------------------------------------------------------------------------
-        */
 
         $validator = Validator::make($request->all(), [
             'requested_by' => [
@@ -192,12 +170,6 @@ class TicketController extends Controller
             ], 422);
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | VERIFY CAMPUS AUTHORIZATION
-        |--------------------------------------------------------------------------
-        */
-
         if ((int) $request->fk_campus_id !== (int) $userCampusId) {
             return response()->json([
                 'success' => false,
@@ -205,14 +177,7 @@ class TicketController extends Controller
             ], 403);
         }
 
-        // Use the department selected in the form.
         $departmentId = $request->fk_department_id;
-
-        /*
-        |--------------------------------------------------------------------------
-        | VERIFY PROVIDER AUTHORIZATION
-        |--------------------------------------------------------------------------
-        */
 
         if (
             $user->fk_provider_id &&
@@ -223,12 +188,6 @@ class TicketController extends Controller
                 'message' => 'You are not authorized to create tickets for this provider.',
             ], 403);
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | RETRIEVE SELECTED PROVIDER
-        |--------------------------------------------------------------------------
-        */
 
         $provider = Provider::where(
             'provider_id',
@@ -241,12 +200,6 @@ class TicketController extends Controller
                 'message' => 'Selected provider was not found.',
             ], 422);
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | DETERMINE AI ANALYSIS CONTEXT
-        |--------------------------------------------------------------------------
-        */
 
         $serviceType = match (
             strtoupper(trim($provider->provider_code))
@@ -262,12 +215,6 @@ class TicketController extends Controller
                 'message' => 'Unsupported service provider.',
             ], 422);
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | AI PRIORITY CLASSIFICATION
-        |--------------------------------------------------------------------------
-        */
 
         $classification = 'Medium';
 
@@ -291,12 +238,6 @@ class TicketController extends Controller
             ]);
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | CREATE TICKET AND AUDIT LOG
-        |--------------------------------------------------------------------------
-        */
-
         try {
             $ticket = DB::transaction(function () use (
                 $request,
@@ -317,12 +258,6 @@ class TicketController extends Controller
                     'classification'     => $classification,
                     'is_walk_in'         => 'Yes',
                 ]);
-
-                /*
-                |--------------------------------------------------------------------------
-                | CREATE AUDIT LOG
-                |--------------------------------------------------------------------------
-                */
 
                 AuditLogs::create([
                     'fk_user_id'       => $user->id,
@@ -347,26 +282,13 @@ class TicketController extends Controller
                 return $ticket;
             });
 
-            /*
-            |--------------------------------------------------------------------------
-            | LOAD TICKET RELATIONSHIPS
-            |--------------------------------------------------------------------------
-            */
-
             $ticket->load([
                 'department.campus',
                 'category.requestType.provider',
             ]);
 
-            /*
-            |--------------------------------------------------------------------------
-            | SEND EMAILS TO STAFF IN THE SELECTED DEPARTMENT
-            |--------------------------------------------------------------------------
-            */
-
             DB::afterCommit(function () use ($ticket) {
                 try {
-                    // Find active staff assigned to this ticket's department only.
                     $staffUsers = User::query()
                         ->where('type', 'staff')
                         ->where('is_active', 1)
@@ -396,7 +318,6 @@ class TicketController extends Controller
                         return;
                     }
 
-                    // Queue one notification email for every matching staff member.
                     foreach ($staffUsers as $staff) {
                         Mail::to($staff->email)->queue(
                             new WalkInTicketCreatedMail($ticket)
@@ -444,44 +365,11 @@ class TicketController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Reusable query helper for fetching tickets by status scoped to the provider's campus & provider ID.
      */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
-
-    /**
-     * Get tickets awaiting approval for the authenticated provider's campus.
-     */
-    public function getTicket()
+    private function fetchTicketsByStatus(string $status)
     {
         $user = auth()->user();
-
         $campus_id = $user->department?->fk_campus_id;
 
         if (!$campus_id) {
@@ -503,7 +391,7 @@ class TicketController extends Controller
         ->whereHas('category.requestType', function ($query) use ($user) {
             $query->where('fk_provider_id', $user->fk_provider_id);
         })
-        ->where('status', 'For Approval')
+        ->where('status', $status)
         ->orderByDesc('ticket_id')
         ->get();
 
@@ -513,11 +401,86 @@ class TicketController extends Controller
     }
 
     /**
+     * Tab 1: Get tickets awaiting approval.
+     */
+    public function getTicket()
+    {
+        return $this->fetchTicketsByStatus('For Approval');
+    }
+
+    /**
+     * Tab 2: Get accepted/assigned tickets.
+     */
+    public function getAcceptedTicket()
+    {
+        return $this->fetchTicketsByStatus('Accepted');
+    }
+
+    /**
+     * Tab 3: Get work-in-progress tickets.
+     */
+    public function getWipTicket()
+    {
+        return $this->fetchTicketsByStatus('Work In Progress');
+    }
+
+    /**
+     * Tab 4: Get pending tickets.
+     */
+    public function getPendingTicket()
+    {
+        return $this->fetchTicketsByStatus('Pending');
+    }
+
+    /**
+     * Tab 5: Get completed tickets.
+     */
+    public function getCompletedTicket()
+    {
+        return $this->fetchTicketsByStatus('Completed');
+    }
+
+    /**
+     * Tab 6: Get acknowledged tickets.
+     */
+    public function getAcknowledgedTicket()
+    {
+        return $this->fetchTicketsByStatus('Acknowledged');
+    }
+
+    /**
+     * Print Service Order Slip (PDF) for acknowledged tickets.
+     */
+    public function printTicket($id)
+    {
+        $user = auth()->user();
+        $campus_id = $user->department?->fk_campus_id;
+
+        $ticket = Ticket::with([
+            'department.campus',
+            'category.requestType.provider',
+            'creator',
+            'assignee',
+        ])
+        ->whereHas('department', function ($query) use ($campus_id) {
+            $query->where('fk_campus_id', $campus_id);
+        })
+        ->whereHas('category.requestType', function ($query) use ($user) {
+            $query->where('fk_provider_id', $user->fk_provider_id);
+        })
+        ->findOrFail($id);
+
+        // Replace 'pdf.service_order_slip' with your exact PDF Blade view path
+        $pdf = Pdf::loadView('provider.service_order_slip', compact('ticket'));
+
+        return $pdf->stream('Service-Order-' . ($ticket->ticket_number ?? $ticket->ticket_id) . '.pdf');
+    }
+
+    /**
      * Approve ticket, generate ticket number, and assign to a worker.
      */
     public function approveAndAssign(Request $request, $id)
     {
-        // Validate assigned worker
         $request->validate([
             'assign_to' => [
                 'required',
@@ -535,7 +498,6 @@ class TicketController extends Controller
             ], 401);
         }
 
-        // Authenticated provider
         $providerId = $user->fk_provider_id;
 
         if (!$providerId) {
@@ -545,14 +507,12 @@ class TicketController extends Controller
             ], 403);
         }
 
-        // Retrieve ticket and requester
         $ticket = Ticket::with([
             'category.requestType.provider',
             'creator',
             'department'
         ])->findOrFail($id);
 
-        // Verify ticket belongs to authenticated provider
         $ticketProviderId = $ticket->category?->requestType?->fk_provider_id;
 
         if ((int) $ticketProviderId !== (int) $providerId) {
@@ -562,7 +522,6 @@ class TicketController extends Controller
             ], 403);
         }
 
-        // Check ticket status
         if ($ticket->status !== 'For Approval') {
             return response()->json([
                 'success' => false,
@@ -570,7 +529,6 @@ class TicketController extends Controller
             ], 422);
         }
 
-        // Verify assigned worker
         $worker = User::where('id', $request->assign_to)
             ->where('type', 'worker')
             ->where('fk_provider_id', $providerId)
@@ -584,7 +542,6 @@ class TicketController extends Controller
             ], 422);
         }
 
-        // Get requester's email
         $requester = $ticket->creator;
 
         try {
@@ -596,7 +553,6 @@ class TicketController extends Controller
             ) {
                 $oldStatus = $ticket->status;
 
-                // Generate ticket number if not yet set
                 $ticketNumber = $ticket->ticket_number;
 
                 if (empty($ticketNumber)) {
@@ -606,7 +562,6 @@ class TicketController extends Controller
                     $year = now()->format('Y');
                     $prefix = "{$providerCode}-{$year}-";
 
-                    // Lock matching rows to prevent duplicate ticket numbers on concurrent approvals
                     $lastTicket = Ticket::where('ticket_number', 'like', "{$prefix}%")
                         ->lockForUpdate()
                         ->orderByDesc('ticket_number')
@@ -620,7 +575,6 @@ class TicketController extends Controller
                     $ticketNumber = $prefix . str_pad($nextSequence, 5, '0', STR_PAD_LEFT);
                 }
 
-                // Update ticket
                 $ticket->update([
                     'ticket_number' => $ticketNumber,
                     'assign_to'     => $worker->id,
@@ -628,7 +582,6 @@ class TicketController extends Controller
                     'approved_by'   => $user->id,
                 ]);
 
-                // Record status history
                 DB::table('status_history_table')->insert([
                     'ticket_id'  => $ticket->ticket_id,
                     'fk_user_id' => $user->id,
@@ -638,7 +591,6 @@ class TicketController extends Controller
                     'updated_at' => now(),
                 ]);
 
-                // Record audit log
                 AuditLogs::create([
                     'fk_user_id'       => $user->id,
                     'target_id'        => $ticket->ticket_id,
@@ -654,7 +606,6 @@ class TicketController extends Controller
                     'transaction_date' => now(),
                 ]);
 
-                // Email requester only, after successful commit
                 if ($requester && $requester->email) {
                     DB::afterCommit(function () use (
                         $ticket,

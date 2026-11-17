@@ -21,7 +21,8 @@ use App\Http\Controllers\provider\ServiceProviderController;
 use App\Http\Controllers\provider\FacilityController;
 use App\Http\Controllers\provider\StockProviderController;
 use App\Http\Controllers\provider\MaintenanceController;
-
+use App\Http\Controllers\provider\ReportController;
+use App\Http\Controllers\provider\DashboardController;
 
 
 
@@ -152,38 +153,63 @@ Route::middleware(['auth','staff'])->prefix('staff')->group(function () {
 
 
 
-Route::middleware(['auth','service_provider'])->prefix('provider')->group(function () {
+Route::middleware(['auth', 'service_provider'])->prefix('provider')->group(function () {
 
-        Route::resource('ticket-provider', TicketProvider::class);
-        Route::resource('facility-provider', FacilityController::class);
-        Route::resource('maintenance-provider',MaintenanceController::class);
-        Route::resource('stock-provider',StockProviderController::class);
+    Route::resource('ticket-provider', TicketProvider::class);
+    Route::resource('facility-provider', FacilityController::class);
+    Route::resource('maintenance-provider', MaintenanceController::class);
+    Route::resource('stock-provider', StockProviderController::class);
+    Route::resource('service-provider', ServiceProviderController::class);
+    Route::resource('report-provider', ReportController::class);
 
-
-
-        Route::resource('service-provider', ServiceProviderController::class);
-
-
-        Route::get('/provider-get-ticket', [TicketProvider::class, 'getTicket'])
+    // Ticket Tab Endpoints
+    Route::get('/provider-get-ticket', [TicketProvider::class, 'getTicket'])
         ->name('provider.ticket');
 
+    Route::get('/provider-accepted-ticket', [TicketProvider::class, 'getAcceptedTicket'])
+        ->name('provider.accepted-ticket');
 
+    Route::get('/provider-wip-ticket', [TicketProvider::class, 'getWipTicket'])
+        ->name('provider.wip-ticket');
 
-        Route::get('/ticket/create-data', [TicketProvider::class, 'createData'])
+    Route::get('/provider-pending-ticket', [TicketProvider::class, 'getPendingTicket'])
+        ->name('provider.pending-ticket');
+
+    Route::get('/provider-completed-ticket', [TicketProvider::class, 'getCompletedTicket'])
+        ->name('provider.completed-ticket');
+
+    Route::get('/provider-acknowledged-ticket', [TicketProvider::class, 'getAcknowledgedTicket'])
+        ->name('provider.acknowledged-ticket');
+
+    // Ticket Print & Actions
+    Route::get('/tickets/{id}/print', [TicketProvider::class, 'printTicket'])
+        ->name('provider.ticket.print');
+
+    Route::get('/ticket/create-data', [TicketProvider::class, 'createData'])
         ->name('provider.createData');
 
-        Route::get('/stocks/create-data', [StockProviderController::class,'createData'])->name('stock-provider.createData');
+    Route::post('/tickets/{id}/approve-assign', [TicketProvider::class, 'approveAndAssign'])
+        ->name('provider.tickets.approve');
 
-        Route::get('/facility/create-data', [FacilityController::class, 'createData'])->name('facility-provider.createData');
+    // Other Provider Routes
+    Route::get('/stocks/create-data', [StockProviderController::class, 'createData'])
+        ->name('stock-provider.createData');
 
-        Route::post(
-            '/provider/tickets/{id}/approve-assign',
-            [TicketProvider::class, 'approveAndAssign']
-        )->name('provider.tickets.approve');
+    Route::get('/facility/create-data', [FacilityController::class, 'createData'])
+        ->name('facility-provider.createData');
 
-        Route::post('/adjust', [StockProviderController::class, 'adjust'])->name('stock-provider.adjust');
+    Route::post('/adjust', [StockProviderController::class, 'adjust'])
+        ->name('stock-provider.adjust');
+
+
+    Route::get('/report-provider-data', [ReportController::class, 'getData'])
+        ->name('report-provider.data');
+    
+    Route::get('/report-provider-pdf', [ReportController::class, 'exportPdf'])
+    ->name('report-provider.pdf');
+
+  Route::get('/dashboard', [DashboardController::class, 'index'])->name('provider.dashboard');
 });
-
 
 
 

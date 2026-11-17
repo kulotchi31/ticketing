@@ -3,6 +3,7 @@
     $currentPage = match (true) {
         request()->routeIs('service-provider.index') => 'dashboard',
         request()->routeIs('ticket-provider.*') => 'ticket',
+         request()->routeIs('report-provider.*') => 'report',
         request()->routeIs('facility-provider.index') => 'facility',
         request()->routeIs('stock-provider.index') => 'stock',
         request()->routeIs('department.*') => 'department',
@@ -236,6 +237,20 @@
                      
 
                     </div>
+
+                            <a
+                    href="{{ route('report-provider.index') }}"
+                    class="nav__item {{ request()->routeIs('report-provider.index') ? 'active' : '' }}"
+                    data-page="report"
+                >
+
+                    <i class="bi bi-clipboard-data nav__icon"></i>
+
+                    <span class="nav__label">
+                        Reports
+                    </span>
+
+                </a>
                     <!-- END TICKETS SUBMENU -->
 
 
