@@ -237,7 +237,7 @@
                     {{ number_format($stats['accepted'] + $stats['work_in_progress'] + $stats['pending']) }}
                 </div>
                 <div class="kpi-meta">
-                    {{ $stats['work_in_progress'] }} working • {{ $stats['pending'] }} pending
+                    {{ $stats['accepted'] }} accepted • {{ $stats['work_in_progress'] }} working • {{ $stats['pending'] }} pending
                 </div>
             </div>
         </div>
@@ -245,7 +245,7 @@
         <div class="col-sm-6 col-xl-3">
             <div class="kpi-card">
                 <div class="kpi-top">
-                    <span class="kpi-label">Completed</span>
+                    <span class="kpi-label">Completed & Acknowledged</span>
                     <div class="kpi-icon bg-success-subtle text-success">
                         <i class="bi bi-check-circle"></i>
                     </div>
@@ -255,7 +255,7 @@
                     @php
                         $rate = $stats['total'] > 0 ? round(($stats['completed'] / $stats['total']) * 100, 1) : 0;
                     @endphp
-                    {{ $rate }}% completion rate
+                    {{ $rate }}% completion rate ({{ $stats['completed_only'] }} done • {{ $stats['acknowledged'] }} ack)
                 </div>
             </div>
         </div>
@@ -268,7 +268,7 @@
                 <div class="dash-card-header">
                     <div>
                         <h6 class="dash-card-title">Monthly Ticket Volume</h6>
-                        <p class="dash-card-subtitle">Created vs. completed tickets over the last 6 months</p>
+                        <p class="dash-card-subtitle">Created vs. completed/acknowledged tickets over the last 6 months</p>
                     </div>
                 </div>
                 <div class="dash-card-body">
@@ -365,13 +365,14 @@
                         <tbody>
                             @forelse ($recentTickets as $ticket)
                                 @php
-                                    $badgeClass = match ($ticket->status) {
-                                        'For Approval'     => 'bg-warning-subtle text-warning',
-                                        'Accepted'         => 'bg-primary-subtle text-primary',
-                                        'Work In Progress' => 'bg-info-subtle text-info',
-                                        'Pending'          => 'bg-secondary-subtle text-secondary',
-                                        'Completed',
-                                        'Acknowledged'     => 'bg-success-subtle text-success',
+                                    $normalizedStatus = strtolower(trim($ticket->status ?? ''));
+                                    $badgeClass = match ($normalizedStatus) {
+                                        'for approval'     => 'bg-warning-subtle text-warning',
+                                        'accepted'         => 'bg-primary-subtle text-primary',
+                                        'work in progress' => 'bg-info-subtle text-info',
+                                        'pending'          => 'bg-secondary-subtle text-secondary',
+                                        'completed',
+                                        'acknowledged'     => 'bg-success-subtle text-success',
                                         default            => 'bg-light text-dark',
                                     };
                                 @endphp
@@ -379,7 +380,7 @@
                                     <td class="fw-semibold text-dark">
                                         {{ $ticket->ticket_number ?? ('#' . $ticket->ticket_id) }}
                                         <div class="small text-muted fw-normal">
-                                            {{ $ticket->created_at ? $ticket->created_at->format('M d, Y') : '-' }}
+                                            {{ $ticket->created_at ? \Carbon\Carbon::parse($ticket->created_at)->format('M d, Y') : '-' }}
                                         </div>
                                     </td>
                                     <td>{{ $ticket->department->department_name ?? '-' }}</td>
@@ -406,7 +407,6 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // 1. Monthly Trend Line/Bar Chart
     const trendCtx = document.getElementById('monthlyTicketsChart');
     if (trendCtx) {
         new Chart(trendCtx, {
@@ -422,7 +422,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         barPercentage: 0.55
                     },
                     {
-                        label: 'Completed',
+                        label: 'Completed / Acknowledged',
                         data: @json($monthlyTrend['completed']),
                         backgroundColor: 'rgba(16, 185, 129, 0.85)',
                         borderRadius: 6,
@@ -445,7 +445,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // 2. Category Breakdown Doughnut Chart
     const catCtx = document.getElementById('categoryDoughnutChart');
     if (catCtx) {
         new Chart(catCtx, {
