@@ -7,6 +7,7 @@ use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\UserMiddleware;
 use App\Http\Middleware\WorkerMiddleware;
 use App\Http\Middleware\StaffMiddleware;
+use App\Http\Middleware\EnsureBmgsProvider;
 use App\Http\Middleware\ServiceProviderMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -49,6 +50,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'worker' => WorkerMiddleware::class,
             'user' => UserMiddleware::class,
             'staff' => StaffMiddleware::class,
+            'bmgs.provider' => EnsureBmgsProvider::class,
             'service_provider' => ServiceProviderMiddleware::class,
             'nocache' => \App\Http\Middleware\NoCache::class,
           ]);

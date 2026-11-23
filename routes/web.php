@@ -24,7 +24,8 @@ use App\Http\Controllers\provider\MaintenanceController;
 use App\Http\Controllers\provider\ReportController;
 use App\Http\Controllers\provider\DashboardController;
 
-
+use App\Http\Controllers\worker\DashboardController as WorkerDashboardController;
+use App\Http\Controllers\staff\DashboardController as StaffDashboardController;
 
 
 
@@ -120,6 +121,9 @@ Route::middleware(['auth', 'worker'])->prefix('worker')->group(function () {
     Route::get('/ticket/{id}/pdf', [TicketWorker::class, 'printPdf'])
         ->name('worker-ticket.print');
 
+
+    Route::get('/dashboard', [WorkerDashboardController::class, 'index'])->name('worker.dashboard');
+
 });
 
 Route::middleware(['auth','staff'])->prefix('staff')->group(function () {
@@ -155,8 +159,24 @@ Route::middleware(['auth','staff'])->prefix('staff')->group(function () {
 
 Route::middleware(['auth', 'service_provider'])->prefix('provider')->group(function () {
 
+    // Facility & Next-Action Prediction Endpoints (BMGS only: fk_provider_id = 2)
+    Route::middleware('bmgs.provider')->group(function () {
+        Route::get('/facility-provider/{id}/next-action', [FacilityController::class, 'getNextAction'])
+            ->name('facility-provider.next-action');
+
+        Route::post('/facility-provider/{id}/next-action/predict', [FacilityController::class, 'predictNextAction'])
+            ->name('facility-provider.next-action.predict');
+
+        Route::post('/facility-provider/maintenance', [FacilityController::class, 'storeMaintenance'])
+            ->name('facility-provider.maintenance.store');
+
+        Route::get('/facility/create-data', [FacilityController::class, 'createData'])
+            ->name('facility-provider.createData');
+
+        Route::resource('facility-provider', FacilityController::class);
+    });
+
     Route::resource('ticket-provider', TicketProvider::class);
-    Route::resource('facility-provider', FacilityController::class);
     Route::resource('maintenance-provider', MaintenanceController::class);
     Route::resource('stock-provider', StockProviderController::class);
     Route::resource('service-provider', ServiceProviderController::class);
@@ -195,20 +215,16 @@ Route::middleware(['auth', 'service_provider'])->prefix('provider')->group(funct
     Route::get('/stocks/create-data', [StockProviderController::class, 'createData'])
         ->name('stock-provider.createData');
 
-    Route::get('/facility/create-data', [FacilityController::class, 'createData'])
-        ->name('facility-provider.createData');
-
     Route::post('/adjust', [StockProviderController::class, 'adjust'])
         ->name('stock-provider.adjust');
 
-
     Route::get('/report-provider-data', [ReportController::class, 'getData'])
         ->name('report-provider.data');
-    
-    Route::get('/report-provider-pdf', [ReportController::class, 'exportPdf'])
-    ->name('report-provider.pdf');
 
-  Route::get('/dashboard', [DashboardController::class, 'index'])->name('provider.dashboard');
+    Route::get('/report-provider-pdf', [ReportController::class, 'exportPdf'])
+        ->name('report-provider.pdf');
+
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('provider.dashboard');
 });
 
 

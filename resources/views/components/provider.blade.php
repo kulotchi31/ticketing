@@ -1,10 +1,12 @@
 @php
 
+    $isBmgsProvider = (int) (auth()->user()?->fk_provider_id ?? 0) === 2;
+
     $currentPage = match (true) {
         request()->routeIs('service-provider.index') => 'dashboard',
         request()->routeIs('ticket-provider.*') => 'ticket',
-         request()->routeIs('report-provider.*') => 'report',
-        request()->routeIs('facility-provider.index') => 'facility',
+        request()->routeIs('report-provider.*') => 'report',
+        request()->routeIs('facility-provider.*') && $isBmgsProvider => 'facility',
         request()->routeIs('stock-provider.index') => 'stock',
         request()->routeIs('department.*') => 'department',
         request()->routeIs('users.*') => 'users',
@@ -149,22 +151,24 @@
                 </a>
 
 
+                @if ($isBmgsProvider)
+                    <a
+                        href="{{ route('facility-provider.index') }}"
+                        class="nav__item {{ request()->routeIs('facility-provider.*') ? 'active' : '' }}"
+                        data-page="facility"
+                    >
+
+                        <i class="bi bi-building nav__icon"></i>
+
+                        <span class="nav__label">
+                            Facility
+                        </span>
+
+                    </a>
+                @endif
+
+
                 <a
-                    href="{{ route('facility-provider.index') }}"
-                    class="nav__item {{ request()->routeIs('facility-provider.index') ? 'active' : '' }}"
-                    data-page="facility"
-                >
-
-                    <i class="bi bi-building nav__icon"></i>
-
-                    <span class="nav__label">
-                        Facility
-                    </span>
-
-                </a>
-
-
-                   <a
                     href="{{ route('stock-provider.index') }}"
                     class="nav__item {{ request()->routeIs('stock-provider.index') ? 'active' : '' }}"
                     data-page="stock"
@@ -177,11 +181,6 @@
                     </span>
 
                 </a>
-
-
-
-
-
 
 
                 <!-- =================================================
@@ -234,24 +233,22 @@
                         </a>
 
 
-                     
-
                     </div>
 
-                            <a
-                    href="{{ route('report-provider.index') }}"
-                    class="nav__item {{ request()->routeIs('report-provider.index') ? 'active' : '' }}"
-                    data-page="report"
-                >
 
-                    <i class="bi bi-clipboard-data nav__icon"></i>
+                    <a
+                        href="{{ route('report-provider.index') }}"
+                        class="nav__item {{ request()->routeIs('report-provider.index') ? 'active' : '' }}"
+                        data-page="report"
+                    >
 
-                    <span class="nav__label">
-                        Reports
-                    </span>
+                        <i class="bi bi-clipboard-data nav__icon"></i>
 
-                </a>
-                    <!-- END TICKETS SUBMENU -->
+                        <span class="nav__label">
+                            Reports
+                        </span>
+
+                    </a>
 
 
                 </div>
@@ -550,11 +547,6 @@
                             role="menu"
                             aria-label="Profile"
                         >
-
-{{-- 
-                            <div class="dd__head">
-                                Account
-                            </div> --}}
 
 
                             <a

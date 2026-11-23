@@ -232,6 +232,17 @@
         border-radius: 20px;
     }
 
+    .confidence-pill {
+        display: inline-block;
+        margin-left: 6px;
+        font-size: 10.5px;
+        font-weight: 600;
+        color: #475569;
+        background: #f1f5f9;
+        padding: 2px 7px;
+        border-radius: 12px;
+    }
+
     .badge-preventive { background: #ecfdf5; color: #059669; }
     .badge-corrective { background: #fffbeb; color: #d97706; }
     .badge-emergency  { background: #fef2f2; color: #dc2626; }
@@ -346,6 +357,14 @@
         border: 3px solid #dbeafe;
     }
 
+    .prediction-summary-box {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-bottom: 20px;
+    }
+
     @media(max-width:768px) {
         .facility-header {
             align-items: flex-start;
@@ -372,7 +391,7 @@
             <div>
                 <h4 class="facility-title">Facility Management</h4>
                 <p class="facility-subtitle">
-                    Manage university facilities and maintenance records
+                    Manage university facilities, maintenance records, and predicted next actions
                 </p>
             </div>
         </div>
@@ -394,7 +413,7 @@
                     Facility Directory
                 </div>
                 <div class="facility-toolbar-description">
-                    View registered facilities and their latest maintenance
+                    View registered facilities, latest maintenance, and predicted next action
                 </div>
             </div>
 
@@ -416,6 +435,7 @@
                         <th>Date Established</th>
                         <th>Last Maintenance</th>
                         <th>Maintenance Type</th>
+                        <th>Predicted Next Action</th>
                         <th class="text-end">Actions</th>
                     </tr>
                 </thead>
@@ -648,7 +668,7 @@
 
                     <div class="alert alert-info small mb-0">
                         <i class="bi bi-info-circle me-1"></i>
-                        Only record maintenance activities that have already been completed.
+                        Saving a maintenance record automatically updates the predicted next action for this facility.
                     </div>
                 </div>
 
@@ -785,13 +805,57 @@ $(document).ready(function () {
 
     function getMaintenanceBadge(type) {
         const badges = {
-            'Preventive': { class: 'badge-preventive', icon: 'bi-shield-check' },
-            'Corrective': { class: 'badge-corrective', icon: 'bi-tools' },
-            'Emergency':  { class: 'badge-emergency',  icon: 'bi-exclamation-triangle' },
-            'Improvement':{ class: 'badge-improvement',icon: 'bi-arrow-up-circle' }
+            'Preventive':  { class: 'badge-preventive',  icon: 'bi-shield-check' },
+            'Corrective':  { class: 'badge-corrective',  icon: 'bi-tools' },
+            'Emergency':   { class: 'badge-emergency',   icon: 'bi-exclamation-triangle' },
+            'Improvement': { class: 'badge-improvement', icon: 'bi-arrow-up-circle' }
         };
         const badge = badges[type] || { class: 'badge-default', icon: 'bi-tag' };
         return `<span class="maintenance-badge ${badge.class}"><i class="bi ${badge.icon}"></i> ${escapeHtml(type)}</span>`;
+    }
+
+    function renderNextActionCell(prediction) {
+        if (!prediction || !prediction.predicted_next_action) {
+            return '<span class="no-maintenance">Not predicted yet</span>';
+        }
+        const pct = prediction.confidence !== undefined && prediction.confidence !== null
+            ? `<span class="confidence-pill">${(Number(prediction.confidence) * 100).toFixed(1)}%</span>`
+            : '';
+        return `<div>${getMaintenanceBadge(prediction.predicted_next_action)}${pct}</div>`;
+    }
+
+    function buildPredictionBoxHtml(prediction) {
+        if (!prediction || !prediction.predicted_next_action) {
+            return `
+                <div class="prediction-summary-box">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="small text-muted">No next-action prediction available yet.</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        const probs = prediction.probabilities || {};
+        const probBadges = Object.entries(probs)
+            .map(([action, score]) => {
+                const percent = (Number(score) * 100).toFixed(1);
+                return `<span class="badge bg-light text-dark border me-1 mb-1">${escapeHtml(action)}: ${percent}%</span>`;
+            })
+            .join('');
+
+        return `
+            <div class="prediction-summary-box">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+                    <div>
+                        <span class="small fw-bold text-secondary text-uppercase me-2">Predicted Next Action:</span>
+                        ${getMaintenanceBadge(prediction.predicted_next_action)}
+                        <span class="confidence-pill">${(Number(prediction.confidence || 0) * 100).toFixed(1)}% confidence</span>
+                    </div>
+                    <small class="text-muted">Model: ${escapeHtml(prediction.model_used || 'sequence')}</small>
+                </div>
+                <div>${probBadges}</div>
+            </div>
+        `;
     }
 
     /*
@@ -882,6 +946,12 @@ $(document).ready(function () {
                 }
             },
             {
+                data: 'next_prediction',
+                render: function (data) {
+                    return renderNextActionCell(data);
+                }
+            },
+            {
                 data: 'facility_id',
                 orderable: false,
                 searchable: false,
@@ -891,7 +961,7 @@ $(document).ready(function () {
                     const countBadge = count > 0 ? `<span class="badge bg-secondary ms-1">${count}</span>` : '';
 
                     return `
-                        <div class="d-flex justify-content-end gap-1">
+                        <div class="d-flex justify-content-end gap-1 flex-wrap">
                             <button type="button"
                                     class="btn-action text-primary btn-record-maintenance"
                                     title="Record Maintenance"
@@ -900,6 +970,13 @@ $(document).ready(function () {
                                     data-bs-toggle="modal"
                                     data-bs-target="#maintenanceModal">
                                 <i class="bi bi-wrench-adjustable"></i> Record
+                            </button>
+                            <button type="button"
+                                    class="btn-action text-indigo btn-predict-next"
+                                    title="Predict / Refresh Next Action"
+                                    data-id="${row.facility_id}"
+                                    data-name="${escapeHtml(row.facility_name)}">
+                                <i class="bi bi-cpu"></i> Predict
                             </button>
                             <button type="button"
                                     class="btn-action text-secondary"
@@ -952,7 +1029,53 @@ $(document).ready(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | DYNAMIC HISTORY MODAL BUILDER (WITH EDIT & DELETE ACTIONS)
+    | PREDICT / REFRESH NEXT MAINTENANCE ACTION (AJAX)
+    |--------------------------------------------------------------------------
+    */
+    $(document).on('click', '.btn-predict-next', function () {
+        const btn = $(this);
+        const facilityId = btn.data('id');
+        const originalHtml = btn.html();
+
+        btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span>');
+
+        const url = "{{ route('facility-provider.next-action.predict', ':id') }}".replace(':id', facilityId);
+
+        $.ajax({
+            url: url,
+            method: 'POST',
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function (response) {
+                if (response.success && response.data) {
+                    Toast.fire({
+                        icon: 'success',
+                        title: `Next Action: ${response.data.predicted_next_action}`
+                    });
+                    facilityTable.ajax.reload(null, false);
+                } else {
+                    Toast.fire({
+                        icon: 'error',
+                        title: response.message || 'Unable to predict next action.'
+                    });
+                }
+            },
+            error: function (xhr) {
+                Toast.fire({
+                    icon: 'error',
+                    title: xhr.responseJSON?.message || 'Unable to predict next action.'
+                });
+            },
+            complete: function () {
+                btn.prop('disabled', false).html(originalHtml);
+            }
+        });
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | DYNAMIC HISTORY MODAL BUILDER (WITH PREDICTION SUMMARY + EDIT & DELETE)
     |--------------------------------------------------------------------------
     */
     function buildHistoryModal(facility) {
@@ -962,7 +1085,7 @@ $(document).ready(function () {
         }
 
         const histories = facility.maintenance_histories || [];
-        let historyContent = '';
+        let historyContent = buildPredictionBoxHtml(facility.next_prediction);
 
         if (histories.length > 0) {
             const sorted = [...histories].sort((a, b) => new Date(b.maintenance_date) - new Date(a.maintenance_date));
@@ -1012,7 +1135,7 @@ $(document).ready(function () {
             });
             historyContent += '</div>';
         } else {
-            historyContent = `
+            historyContent += `
                 <div class="text-center py-5">
                     <i class="bi bi-clipboard-x text-secondary" style="font-size:42px;"></i>
                     <h6 class="mt-3 fw-bold">No Maintenance History</h6>

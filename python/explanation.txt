@@ -1,0 +1,19 @@
+Weighted Markov sequence model
+
+Probability
+
+
+It uses a weighted Markov sequence model that scores each possible next maintenance action based on historical transitions from the facility's current and previous maintenance states—along with similarity in maintenance intervals and costs—and normalizes those scores into probabilities so each action gets a percentage likelihood.
+
+
+
+Base Baseline & Smoothing (0.1 + 0.25): Gives every candidate action (Preventive, Corrective, Emergency, Improvement) a small starting score so no valid option is stuck at zero when data is limited.
+
+Current Maintenance Type (+2.0): Checks whether a past row's curr_type matches the facility's most recent maintenance_type (the primary Markov transition criterion—e.g., what typically follows a Corrective or Preventive job).
+
+Previous-to-Current 2-Step Sequence (+1.0): Checks whether both the prior action (prev_type) and the current action (curr_type) match the facility's last two actions (capturing short multi-step patterns).
+
+Days Since Previous Maintenance (up to +0.5): Compares how many days passed between the last two maintenance records (days_since_prev) against similar historical transitions—closer intervals get a higher bonus.
+
+Maintenance Cost Scale (up to +0.25): Compares the log-scaled cost (log1p(cost)) of the current/latest maintenance record against historical rows—similar cost scales get a smaller bonus.
+

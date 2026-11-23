@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\NextMaintenancePrediction;
 
 class Facility extends Model
 {
@@ -33,4 +34,14 @@ class Facility extends Model
             'facility_id'
         );
     }
+
+
+    public function nextPrediction()
+{
+    return $this->hasOne(
+        NextMaintenancePrediction::class,
+        'fk_facility_id',
+        'facility_id'
+    );
+}
 }

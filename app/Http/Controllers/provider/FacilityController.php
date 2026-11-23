@@ -5,11 +5,18 @@ namespace App\Http\Controllers\provider;
 use App\Http\Controllers\Controller;
 use App\Models\Facility;
 use App\Models\FacilityMaintenance;
+use App\Models\NextMaintenancePrediction;
+use App\Services\NextMaintenanceActionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Throwable;
 
 class FacilityController extends Controller
 {
+    public function __construct(
+        private readonly NextMaintenanceActionService $nextActionService
+    ) {}
+
     /**
      * Get the logged-in provider's campus.
      */
@@ -65,6 +72,7 @@ class FacilityController extends Controller
 
         $facilities = Facility::with([
             'campus',
+            'nextPrediction',
             'maintenanceHistories' => function ($query) {
                 $query->latest('maintenance_date');
             }
@@ -120,7 +128,7 @@ class FacilityController extends Controller
         }
 
         return redirect()
-            ->route('facility.index')
+            ->route('facility-provider.index')
             ->with('success', 'Facility created successfully.');
     }
 
@@ -133,6 +141,7 @@ class FacilityController extends Controller
 
         $facility->load([
             'campus',
+            'nextPrediction',
             'maintenanceHistories' => function ($query) {
                 $query->latest('maintenance_date');
             }
@@ -184,7 +193,7 @@ class FacilityController extends Controller
         }
 
         return redirect()
-            ->route('facility.index')
+            ->route('facility-provider.index')
             ->with('success', 'Facility updated successfully.');
     }
 
@@ -204,7 +213,7 @@ class FacilityController extends Controller
         }
 
         return redirect()
-            ->route('facility.index')
+            ->route('facility-provider.index')
             ->with('success', 'Facility deleted successfully.');
     }
 
@@ -251,15 +260,90 @@ class FacilityController extends Controller
             'maintenance_cost' => $validated['maintenance_cost'] ?? null,
         ]);
 
+        // Refresh next-action prediction automatically after new maintenance is logged
+        $prediction = null;
+        try {
+            $prediction = $this->nextActionService->predictForFacility(
+                (int) $facility->facility_id,
+                true
+            );
+        } catch (Throwable $e) {
+            // Do not block saving the maintenance record if not enough history exists yet
+            report($e);
+        }
+
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Maintenance record saved successfully.'
+                'message' => 'Maintenance record saved successfully.',
+                'prediction' => $prediction,
             ]);
         }
 
         return redirect()
-            ->route('facility.index')
+            ->route('facility-provider.index')
             ->with('success', 'Maintenance record saved successfully.');
+    }
+
+    /**
+     * Get the saved next-action prediction for a facility in the provider's campus.
+     */
+    public function getNextAction(string $id)
+    {
+        $facility = $this->getFacility($id);
+
+        $prediction = NextMaintenancePrediction::where('fk_facility_id', $facility->facility_id)
+            ->first();
+
+        // If no saved prediction exists yet, generate one on demand
+        if (!$prediction) {
+            try {
+                $generated = $this->nextActionService->predictForFacility(
+                    (int) $facility->facility_id,
+                    true
+                );
+
+                return response()->json([
+                    'success' => true,
+                    'data' => $generated,
+                ]);
+            } catch (Throwable $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ], 422);
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $prediction,
+        ]);
+    }
+
+    /**
+     * Re-run and save the next-action prediction for a facility in the provider's campus.
+     */
+    public function predictNextAction(Request $request, string $id)
+    {
+        $facility = $this->getFacility($id);
+
+        try {
+            $result = $this->nextActionService->predictForFacility(
+                (int) $facility->facility_id,
+                true
+            );
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Next maintenance action predicted successfully.',
+                'data' => $result,
+            ]);
+        } catch (Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 422);
+        }
     }
 }
