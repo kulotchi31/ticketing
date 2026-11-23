@@ -245,17 +245,20 @@
         <div class="col-sm-6 col-xl-3">
             <div class="kpi-card">
                 <div class="kpi-top">
-                    <span class="kpi-label">Completed & Acknowledged</span>
+                    <span class="kpi-label">Completed</span>
                     <div class="kpi-icon bg-success-subtle text-success">
                         <i class="bi bi-check-circle"></i>
                     </div>
                 </div>
-                <div class="kpi-value">{{ number_format($stats['completed']) }}</div>
+                @php
+                    $completedCount = (int) ($stats['completed'] ?? 0);
+                    $totalCount = (int) ($stats['total'] ?? 0);
+                    $completionRate = $stats['completion_rate']
+                        ?? ($totalCount > 0 ? round(($completedCount / $totalCount) * 100, 1) : 0);
+                @endphp
+                <div class="kpi-value">{{ number_format($completedCount) }}</div>
                 <div class="kpi-meta">
-                    @php
-                        $rate = $stats['total'] > 0 ? round(($stats['completed'] / $stats['total']) * 100, 1) : 0;
-                    @endphp
-                    {{ $rate }}% completion rate ({{ $stats['completed_only'] }} done • {{ $stats['acknowledged'] }} ack)
+                   completed • {{ $stats['acknowledged'] ?? 0 }} acknowledged
                 </div>
             </div>
         </div>
@@ -268,7 +271,7 @@
                 <div class="dash-card-header">
                     <div>
                         <h6 class="dash-card-title">Monthly Ticket Volume</h6>
-                        <p class="dash-card-subtitle">Created vs. completed/acknowledged tickets over the last 6 months</p>
+                        <p class="dash-card-subtitle">Created vs. completed (including acknowledged) tickets over the last 6 months</p>
                     </div>
                 </div>
                 <div class="dash-card-body">

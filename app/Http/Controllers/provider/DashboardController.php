@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    public function index()
+   public function index()
 {
     $user = auth()->user();
     $campusId   = $user?->department?->fk_campus_id;
@@ -29,7 +29,7 @@ class DashboardController extends Controller
             $q->where('fk_provider_id', $providerId);
         });
 
-    // 1. KPI Summary Counts (normalized lowercase status keys)
+    // 1. KPI Summary Counts (Acknowledged is treated as completed)
     $rawStatusCounts = (clone $baseQuery)
         ->select(DB::raw('LOWER(TRIM(status)) as normalized_status'), DB::raw('COUNT(*) as total'))
         ->groupBy(DB::raw('LOWER(TRIM(status))'))
@@ -41,8 +41,12 @@ class DashboardController extends Controller
     $pending        = (int) ($rawStatusCounts['pending'] ?? 0);
     $completedOnly  = (int) ($rawStatusCounts['completed'] ?? 0);
     $acknowledged   = (int) ($rawStatusCounts['acknowledged'] ?? 0);
-    $resolvedTotal  = $completedOnly + $acknowledged;
+    $completedTotal = $completedOnly + $acknowledged;
     $totalTickets   = (int) (clone $baseQuery)->count();
+
+    $completionRate = $totalTickets > 0
+        ? round(($completedTotal / $totalTickets) * 100, 1)
+        : 0;
 
     $stats = [
         'total'            => $totalTickets,
@@ -52,7 +56,8 @@ class DashboardController extends Controller
         'pending'          => $pending,
         'completed_only'   => $completedOnly,
         'acknowledged'     => $acknowledged,
-        'completed'        => $resolvedTotal,
+        'completed'        => $completedTotal,
+        'completion_rate'  => $completionRate,
         'unassigned'       => (clone $baseQuery)
             ->whereNull('assign_to')
             ->whereNotIn(DB::raw('LOWER(TRIM(status))'), ['completed', 'acknowledged'])
@@ -63,7 +68,7 @@ class DashboardController extends Controller
             ->count(),
     ];
 
-    // 2. Last 6 Months Ticket Trend (exact month & year match)
+    // 2. Last 6 Months Ticket Trend (for Chart.js)
     $labels = [];
     $totalSeries = [];
     $completedSeries = [];
