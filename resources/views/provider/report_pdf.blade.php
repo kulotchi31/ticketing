@@ -3,7 +3,16 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>NEUST MIS Service Request Monthly Summary</title>
+    @php
+        $code = strtoupper(trim($providerCode ?? 'MIS'));
+        $isBmgsProvider = !empty($isBmgs) || in_array($code, ['BMGS', 'ABMGS']);
+        $activeCode = $isBmgsProvider ? 'BMGS' : 'MIS';
+        $activeHeading = $providerTitle ?? ($isBmgsProvider
+            ? 'BUILDING MAINTENANCE AND GENERAL SERVICES'
+            : 'MANAGEMENT INFORMATION SYSTEM');
+        $activePrefix = $docNoPrefix ?? $activeCode;
+    @endphp
+    <title>NEUST {{ $activeCode }} Service Request Monthly Summary</title>
     <style>
         @page {
             size: letter portrait;
@@ -63,6 +72,14 @@
 
         .spacer-cell {
             width: 1.8in;
+            text-align: left;
+            padding-left: 10px;
+        }
+
+        .spacer-cell img {
+            width: 0.65in;
+            height: 0.55in;
+            object-fit: contain;
         }
 
         .republic {
@@ -84,6 +101,7 @@
         .department {
             text-align: center;
             font-size: 10pt;
+            font-weight: bold;
             margin-top: 0.16in;
             line-height: 1.25;
         }
@@ -195,12 +213,18 @@
                         <div class="school">NUEVA ECIJA UNIVERSITY OF SCIENCE AND TECHNOLOGY</div>
                         <div class="location">Nueva Ecija, Philippines</div>
                     </td>
-                    <td class="spacer-cell"></td>
+                    <td class="spacer-cell">
+                        @if ($isBmgsProvider && file_exists(public_path('images/abmgs.png')))
+                            <img src="{{ public_path('images/abmgs.png') }}" alt="BMGS Logo">
+                        @elseif ($isBmgsProvider && file_exists(public_path('abmgs.png')))
+                            <img src="{{ public_path('abmgs.png') }}" alt="BMGS Logo">
+                        @endif
+                    </td>
                 </tr>
             </table>
 
-            <div class="department">MANAGEMENT INFORMATION SYSTEM</div>
-            <div class="subtitle">Monthly Summary of MIS Service Request</div>
+            <div class="department">{{ $activeHeading }}</div>
+            <div class="subtitle">Monthly Summary of {{ $activeCode }} Service Request</div>
             <div class="month">
                 For the month of <span class="month-line">{{ $monthLabel }}</span>
             </div>
@@ -217,7 +241,7 @@
                 </colgroup>
                 <thead>
                     <tr>
-                        <th>MISSR NO.</th>
+                        <th>{{ $activePrefix }}SR NO.</th>
                         <th>REQUESTED</th>
                         <th>APPROVED</th>
                         <th>WORK ASSIGNED<br>TO</th>
@@ -229,9 +253,14 @@
                     @foreach ($pageTickets as $ticket)
                         <tr>
                             <td class="text-center">{{ $ticket->ticket_number ?? ('#' . $ticket->ticket_id) }}</td>
-                            <td>{{ $ticket->requested_by ?? '-' }}</td>
-                            <td>{{ $ticket->approver->name ?? ($ticket->status !== 'For Approval' ? 'Approved' : '') }}</td>
-                            <td>{{ $ticket->assignee->name ?? '' }}</td>
+                            <td>{{ $ticket->requested_by ?? ($ticket->creator?->name ?? '-') }}</td>
+                            <td>
+                                {{ $ticket->approver?->name
+                                    ?? (is_string($ticket->approved_by) && !is_numeric($ticket->approved_by)
+                                        ? $ticket->approved_by
+                                        : ($ticket->status !== 'For Approval' ? 'Approved' : '')) }}
+                            </td>
+                            <td>{{ $ticket->assignee?->name ?? '' }}</td>
                             <td class="text-center">
                                 {{ $ticket->created_at ? $ticket->created_at->format('m/d/y') : '' }}
                             </td>
@@ -293,7 +322,7 @@
 
             <!-- DOCUMENT CONTROL FOOTER -->
             <div class="footer">
-                NEUST-MIS-F011<br>Rev. 00 (09.12.18)
+                NEUST-{{ $activePrefix }}-F011<br>Rev. 00 (09.12.18)
             </div>
         </div>
     @endforeach

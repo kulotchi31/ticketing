@@ -484,14 +484,18 @@ $(document).ready(function () {
                 orderable: false,
                 searchable: false,
                 className: "text-end",
-                render: function (data) {
+                render: function (data, type, row) {
+                    const pdfUrl = printPdfRouteTemplate.replace(':id', data);
+                    const printBtn = `
+                        <a href="${pdfUrl}" target="_blank" class="action-btn print" title="Print Service Order Slip (PDF)">
+                            <i class="bi bi-printer"></i>
+                        </a>
+                    `;
+
                     if (isAcknowledgeTab) {
-                        const pdfUrl = printPdfRouteTemplate.replace(':id', data);
                         return `
                             <div class="action-buttons">
-                                <a href="${pdfUrl}" target="_blank" class="action-btn print" title="Print Service Order Slip (PDF)">
-                                    <i class="bi bi-printer"></i>
-                                </a>
+                                ${printBtn}
                             </div>
                         `;
                     }
@@ -501,6 +505,7 @@ $(document).ready(function () {
                             <button type="button" name="edit" class="action-btn edit" data-id="${data}" title="Edit Ticket">
                                 <i class="bi bi-pencil"></i>
                             </button>
+                            ${printBtn}
                         </div>
                     `;
                 }

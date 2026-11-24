@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Department;
 use App\Models\Category;
 use App\Models\User;
-
+use App\Models\Provider;
 
 class Ticket extends Model
 {
@@ -45,8 +45,7 @@ class Ticket extends Model
         'assign_to' => 'integer',
     ];
 
-
-     public function department()
+    public function department()
     {
         return $this->belongsTo(
             Department::class,
@@ -79,6 +78,27 @@ class Ticket extends Model
             User::class,
             'assign_to',
             'id'
+        );
+    }
+
+    public function approver()
+    {
+        return $this->belongsTo(
+            User::class,
+            'approved_by',
+            'id'
+        );
+    }
+
+    public function provider()
+    {
+        return $this->hasOneThrough(
+            Provider::class,
+            Category::class,
+            'category_id',
+            'provider_id', // adjust if your Provider primary key is 'id'
+            'fk_category_id',
+            'fk_provider_id' // adjust if Category links to provider via another foreign key
         );
     }
 }

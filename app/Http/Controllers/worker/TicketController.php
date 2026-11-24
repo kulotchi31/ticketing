@@ -393,23 +393,36 @@ class TicketController extends Controller
      * Generate Letter PDF (2-up half-sheet) NEUST MIS Service Request Form.
      */
     public function printPdf(string $id)
-    {
-        $ticket = Ticket::with([
-            'department.campus',
-            'category.requestType.provider',
-            'creator',
-            'assignee',
-        ])
-        ->where('ticket_id', $id)
-        ->where('assign_to', auth()->id())
-        ->where('status', 'Acknowledged')
-        ->firstOrFail();
+{
+    $ticket = Ticket::with([
+        'department.campus',
+        'category.requestType.provider',
+        'creator',
+        'assignee',
+    ])
+    ->where('ticket_id', $id)
+    ->where('assign_to', auth()->id())
+    // ->where('status', 'Acknowledged')
+    ->firstOrFail();
 
-        $pdf = Pdf::loadView('worker.ticket-pdf', compact('ticket'))
-            ->setPaper('letter', 'portrait');
+    $requestType = $ticket->category?->requestType;
+    $providerName = strtoupper(trim($requestType?->provider?->provider_name ?? $requestType?->provider?->code ?? 'MIS'));
+    $requestTypeName = trim($requestType?->rt_name ?? '');
 
-        $filename = 'MIS-Service-Request-' . ($ticket->ticket_number ?? $ticket->ticket_id) . '.pdf';
+    $ticketRef = $ticket->ticket_number ?? $ticket->ticket_id;
 
-        return $pdf->stream($filename);
+    // Route to ABMGS Service Order Slip
+    if (in_array($providerName, ['BMGS', 'ABMGS']) && strcasecmp($requestTypeName, 'Service Order Slip') === 0) {
+        $pdf = Pdf::loadView('worker.abmgs-service-order-pdf', compact('ticket'))
+            ->setPaper('a5', 'portrait');
+
+        return $pdf->stream("ABMGS-Service-Order-{$ticketRef}.pdf");
     }
+
+    // Default: MIS Service Request
+    $pdf = Pdf::loadView('worker.ticket-pdf', compact('ticket'))
+        ->setPaper('letter', 'portrait');
+
+    return $pdf->stream("MIS-Service-Request-{$ticketRef}.pdf");
+}
 }

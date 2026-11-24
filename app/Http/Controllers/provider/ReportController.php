@@ -227,69 +227,93 @@ class ReportController extends Controller
     /**
      * Generate PDF matching NEUST-MIS-F011 Monthly Summary layout.
      */
-    public function exportPdf(Request $request)
-    {
-        $user = auth()->user();
-        $campusId = $user?->department?->fk_campus_id;
+public function exportPdf(Request $request)
+{
+    $user = auth()->user();
+    $campusId = $user?->department?->fk_campus_id;
 
-        if (!$campusId || !$user?->fk_provider_id) {
-            abort(422, 'No campus or provider associated with the authenticated user.');
-        }
-
-        $validator = $this->validateFilterRequest($request, $campusId);
-
-        if ($validator->fails()) {
-            abort(422, $validator->errors()->first());
-        }
-
-        $tickets = $this->buildFilteredQuery($request, $campusId, $user->fk_provider_id)
-            ->orderBy('ticket_id')
-            ->get();
-
-        // Block PDF generation if there are no matching tickets
-        if ($tickets->isEmpty()) {
-            if ($request->expectsJson() || $request->ajax()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'No ticket records found for the selected filters. Cannot generate PDF.',
-                ], 422);
-            }
-
-            return redirect()
-                ->route('report-provider.index')
-                ->with('error', 'No ticket records found for the selected filters. Cannot generate PDF.');
-        }
-
-        // Format month/period label for the header line
-        if ($request->filled('date_from') && $request->filled('date_to')) {
-            $from = Carbon::parse($request->date_from);
-            $to   = Carbon::parse($request->date_to);
-            $monthLabel = $from->format('F Y') === $to->format('F Y')
-                ? $from->format('F Y')
-                : $from->format('M d, Y') . ' - ' . $to->format('M d, Y');
-        } elseif ($request->filled('date_from')) {
-            $monthLabel = Carbon::parse($request->date_from)->format('F Y');
-        } elseif ($request->filled('date_to')) {
-            $monthLabel = Carbon::parse($request->date_to)->format('F Y');
-        } else {
-            $monthLabel = now()->format('F Y');
-        }
-
-        // Split into pages of 37 rows each (matching NEUST-MIS-F011 grid)
-        $rowsPerPage = 37;
-        $pages = $tickets->chunk($rowsPerPage);
-
-        $pdf = Pdf::loadView('provider.report_pdf', [
-            'pages'       => $pages,
-            'rowsPerPage' => $rowsPerPage,
-            'monthLabel'  => $monthLabel,
-            'preparedBy'  => $user->name ?? '',
-            'preparedPos' => $user->position ?? 'MIS Staff',
-            'dateToday'   => now()->format('m/d/Y'),
-        ])->setPaper('letter', 'portrait');
-
-        return $pdf->stream('NEUST-MIS-Service-Request-Summary.pdf');
+    if (!$campusId || !$user?->fk_provider_id) {
+        abort(422, 'No campus or provider associated with the authenticated user.');
     }
+
+    $validator = $this->validateFilterRequest($request, $campusId);
+
+    if ($validator->fails()) {
+        abort(422, $validator->errors()->first());
+    }
+
+    $tickets = $this->buildFilteredQuery($request, $campusId, $user->fk_provider_id)
+        ->with([
+            'category.requestType.provider',
+            'assignee',
+            'department.campus',
+        ])
+        ->orderBy('ticket_id')
+        ->get();
+
+    if ($tickets->isEmpty()) {
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No ticket records found for the selected filters. Cannot generate PDF.',
+            ], 422);
+        }
+
+        return redirect()
+            ->route('report-provider.index')
+            ->with('error', 'No ticket records found for the selected filters. Cannot generate PDF.');
+    }
+
+    if ($request->filled('date_from') && $request->filled('date_to')) {
+        $from = Carbon::parse($request->date_from);
+        $to   = Carbon::parse($request->date_to);
+        $monthLabel = $from->format('F Y') === $to->format('F Y')
+            ? $from->format('F Y')
+            : $from->format('M d, Y') . ' - ' . $to->format('M d, Y');
+    } elseif ($request->filled('date_from')) {
+        $monthLabel = Carbon::parse($request->date_from)->format('F Y');
+    } elseif ($request->filled('date_to')) {
+        $monthLabel = Carbon::parse($request->date_to)->format('F Y');
+    } else {
+        $monthLabel = now()->format('F Y');
+    }
+
+    $provider = $tickets->first()?->category?->requestType?->provider
+        ?? Provider::find($user->fk_provider_id);
+
+    $providerCodeRaw = strtoupper(trim($provider?->provider_code ?? ''));
+    $providerNameRaw = strtoupper(trim($provider?->provider_name ?? ''));
+
+    $isBmgs = in_array($providerCodeRaw, ['BMGS', 'ABMGS'])
+        || str_contains($providerCodeRaw, 'BMGS')
+        || str_contains($providerNameRaw, 'BUILDING MAINTENANCE')
+        || str_contains($providerNameRaw, 'BMGS');
+
+    $providerCode  = $isBmgs ? 'BMGS' : 'MIS';
+    $providerTitle = $isBmgs
+        ? ($provider?->provider_name ?: 'BUILDING MAINTENANCE AND GENERAL SERVICES')
+        : 'MANAGEMENT INFORMATION SYSTEM';
+    $docNoPrefix   = $isBmgs ? 'BMGS' : 'MIS';
+    $defaultPos    = $isBmgs ? 'BMGS Staff' : 'MIS Staff';
+
+    $rowsPerPage = 37;
+    $pages = $tickets->chunk($rowsPerPage);
+
+    $pdf = Pdf::loadView('provider.report_pdf', [
+        'pages'         => $pages,
+        'rowsPerPage'   => $rowsPerPage,
+        'monthLabel'    => $monthLabel,
+        'preparedBy'    => $user->name ?? '',
+        'preparedPos'   => $user->position ?? $defaultPos,
+        'dateToday'     => now()->format('m/d/Y'),
+        'isBmgs'        => $isBmgs,
+        'providerCode'  => $providerCode,
+        'providerTitle' => $providerTitle,
+        'docNoPrefix'   => $docNoPrefix,
+    ])->setPaper('letter', 'portrait');
+
+    return $pdf->stream("NEUST-{$providerCode}-Service-Request-Summary.pdf");
+}
 
     public function create() {}
     public function store(Request $request) {}

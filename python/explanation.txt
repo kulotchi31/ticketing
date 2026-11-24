@@ -17,3 +17,26 @@ Days Since Previous Maintenance (up to +0.5): Compares how many days passed betw
 
 Maintenance Cost Scale (up to +0.25): Compares the log-scaled cost (log1p(cost)) of the current/latest maintenance record against historical rows—similar cost scales get a smaller bonus.
 
+
+
+
+
+	Classification
+
+  			High:
+            Critical service disruption, widespread operational impact,
+            immediate safety or security risks, serious property damage
+            risks, or an issue that prevents essential university
+            activities from continuing.
+
+            Medium:
+            Significant issue affecting a person, office, facility,
+            or service where operations can partially continue and
+            a reasonable workaround may exist.
+
+            Low:
+            Minor issue, routine maintenance, nonurgent repair,
+            standard service request, or problem with minimal
+            operational impact and no immediate safety concern.
+
+
