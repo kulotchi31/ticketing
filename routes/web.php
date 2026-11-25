@@ -23,7 +23,8 @@ use App\Http\Controllers\provider\StockProviderController;
 use App\Http\Controllers\provider\MaintenanceController;
 use App\Http\Controllers\provider\ReportController;
 use App\Http\Controllers\provider\DashboardController;
-
+use App\Http\Controllers\provider\EquipmentController;
+use App\Http\Controllers\provider\EquipmentMaintenanceController;
 use App\Http\Controllers\worker\DashboardController as WorkerDashboardController;
 use App\Http\Controllers\staff\DashboardController as StaffDashboardController;
 
@@ -156,7 +157,6 @@ Route::middleware(['auth','staff'])->prefix('staff')->group(function () {
 });
 
 
-
 Route::middleware(['auth', 'service_provider'])->prefix('provider')->group(function () {
 
     // Facility & Next-Action Prediction Endpoints (BMGS only: fk_provider_id = 2)
@@ -176,6 +176,29 @@ Route::middleware(['auth', 'service_provider'])->prefix('provider')->group(funct
         Route::resource('facility-provider', FacilityController::class);
     });
 
+    // Equipment & Next-Action Prediction Endpoints (MIS scoped)
+    Route::get('equipment-provider/create-data', [EquipmentController::class, 'createData'])
+        ->name('equipment-provider.createData');
+
+    Route::get('equipment-provider/{id}/next-action', [EquipmentController::class, 'getNextAction'])
+        ->name('equipment-provider.next-action');
+
+    Route::post('equipment-provider/{id}/next-action/predict', [EquipmentController::class, 'predictNextAction'])
+        ->name('equipment-provider.next-action.predict');
+
+    Route::resource('equipment-provider', EquipmentController::class);
+
+    // Equipment Maintenance Routes
+    Route::resource('equipment-maintenance-provider', EquipmentMaintenanceController::class);
+
+    Route::post('equipment-maintenance', [EquipmentMaintenanceController::class, 'store'])
+        ->name('equipment-maintenance.store');
+    Route::put('equipment-maintenance/{id}', [EquipmentMaintenanceController::class, 'update'])
+        ->name('equipment-maintenance.update');
+    Route::delete('equipment-maintenance/{id}', [EquipmentMaintenanceController::class, 'destroy'])
+        ->name('equipment-maintenance.destroy');
+
+    // Other Provider Resource Routes
     Route::resource('ticket-provider', TicketProvider::class);
     Route::resource('maintenance-provider', MaintenanceController::class);
     Route::resource('stock-provider', StockProviderController::class);

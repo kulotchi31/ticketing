@@ -1,5 +1,13 @@
 @php
 
+    $providerName = strtolower(trim((string) (
+        auth()->user()?->provider?->provider_name
+        ?? auth()->user()?->provider?->name
+        ?? ''
+    )));
+
+    // Adjust `1` below if MIS has a different provider_id in your database
+    $isMisProvider  = (int) (auth()->user()?->fk_provider_id ?? 0) === 1 || str_contains($providerName, 'mis');
     $isBmgsProvider = (int) (auth()->user()?->fk_provider_id ?? 0) === 2;
 
     $currentPage = match (true) {
@@ -7,6 +15,7 @@
         request()->routeIs('ticket-provider.*') => 'ticket',
         request()->routeIs('report-provider.*') => 'report',
         request()->routeIs('facility-provider.*') && $isBmgsProvider => 'facility',
+        request()->routeIs('equipment-provider.*') && $isMisProvider => 'equipment',
         request()->routeIs('stock-provider.index') => 'stock',
         request()->routeIs('department.*') => 'department',
         request()->routeIs('users.*') => 'users',
@@ -162,6 +171,23 @@
 
                         <span class="nav__label">
                             Facility
+                        </span>
+
+                    </a>
+                @endif
+
+
+                @if ($isMisProvider)
+                    <a
+                        href="{{ route('equipment-provider.index') }}"
+                        class="nav__item {{ request()->routeIs('equipment-provider.*') ? 'active' : '' }}"
+                        data-page="equipment"
+                    >
+
+                        <i class="bi bi-pc-display nav__icon"></i>
+
+                        <span class="nav__label">
+                            Equipment
                         </span>
 
                     </a>

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-   public function index()
+public function index()
 {
     $user = auth()->user();
     $campusId   = $user?->department?->fk_campus_id;
@@ -104,16 +104,20 @@ class DashboardController extends Controller
         ->limit(6)
         ->get();
 
-    // 4. Worker Workload Breakdown (Campus Workers)
-    $workers = User::where('type', 'worker')
+    // 4. Worker Workload Breakdown (Strictly this Provider on this Campus)
+    $workers = User::query()
+        ->whereRaw('LOWER(TRIM(type)) = ?', ['worker'])
+        ->where('fk_provider_id', $providerId)
         ->whereHas('department', function ($q) use ($campusId) {
             $q->where('fk_campus_id', $campusId);
         })
         ->orderBy('name')
-        ->get(['id', 'name']);
+        ->get(['id', 'name', 'fk_provider_id', 'fk_department_id']);
+
+    $workerIds = $workers->pluck('id');
 
     $workerTicketCounts = (clone $baseQuery)
-        ->whereNotNull('assign_to')
+        ->whereIn('assign_to', $workerIds)
         ->select(
             'assign_to',
             DB::raw('COUNT(*) as total'),

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\provider;
 
 use App\Http\Controllers\Controller;
+use App\Models\AuditLogs;
 use App\Models\Facility;
 use App\Models\FacilityMaintenance;
 use App\Models\NextMaintenancePrediction;
@@ -51,6 +52,24 @@ class FacilityController extends Controller
     }
 
     /**
+     * Write an audit log entry matching your AuditLogs model format.
+     */
+    private function logAudit(int|string|null $targetId, string $actionType, array $payload): void
+    {
+        try {
+            AuditLogs::create([
+                'fk_user_id'       => Auth::id(),
+                'target_id'        => $targetId,
+                'action_type'      => $actionType,
+                'payload'          => $payload,
+                'transaction_date' => now(),
+            ]);
+        } catch (Throwable $e) {
+            report($e);
+        }
+    }
+
+    /**
      * Provide form metadata and reference data for async modals.
      */
     public function createData(Request $request)
@@ -58,7 +77,7 @@ class FacilityController extends Controller
         $campus = $this->getProviderCampus();
 
         return response()->json([
-            'campuses' => [$campus],
+            'campuses'       => [$campus],
             'user_campus_id' => $campus->campus_id,
         ]);
     }
@@ -114,10 +133,16 @@ class FacilityController extends Controller
             ],
         ]);
 
-        Facility::create([
-            'facility_name' => $validated['facility_name'],
+        $facility = Facility::create([
+            'facility_name'  => $validated['facility_name'],
             'date_establish' => $validated['date_establish'] ?? null,
-            'fk_campus_id' => $campus->campus_id,
+            'fk_campus_id'   => $campus->campus_id,
+        ]);
+
+        $this->logAudit($facility->facility_id, 'Create Facility', [
+            'facility_name'  => $facility->facility_name,
+            'date_establish' => optional($facility->date_establish)->toDateString(),
+            'fk_campus_id'   => $facility->fk_campus_id,
         ]);
 
         if ($request->wantsJson() || $request->ajax()) {
@@ -171,6 +196,12 @@ class FacilityController extends Controller
     {
         $facility = $this->getFacility($id);
 
+        $oldData = [
+            'facility_name'  => $facility->facility_name,
+            'date_establish' => optional($facility->date_establish)->toDateString(),
+            'fk_campus_id'   => $facility->fk_campus_id,
+        ];
+
         $validated = $request->validate([
             'facility_name' => [
                 'required',
@@ -184,6 +215,16 @@ class FacilityController extends Controller
         ]);
 
         $facility->update($validated);
+        $fresh = $facility->fresh();
+
+        $this->logAudit($fresh->facility_id, 'Update Facility', [
+            'old' => $oldData,
+            'new' => [
+                'facility_name'  => $fresh->facility_name,
+                'date_establish' => optional($fresh->date_establish)->toDateString(),
+                'fk_campus_id'   => $fresh->fk_campus_id,
+            ],
+        ]);
 
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
@@ -203,7 +244,19 @@ class FacilityController extends Controller
     public function destroy(Request $request, string $id)
     {
         $facility = $this->getFacility($id);
+
+        $snapshot = [
+            'facility_name'  => $facility->facility_name,
+            'date_establish' => optional($facility->date_establish)->toDateString(),
+            'fk_campus_id'   => $facility->fk_campus_id,
+        ];
+
+        $deletedId = $facility->facility_id;
         $facility->delete();
+
+        $this->logAudit($deletedId, 'Delete Facility', [
+            'deleted_facility' => $snapshot,
+        ]);
 
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
@@ -252,12 +305,21 @@ class FacilityController extends Controller
         $facility = Facility::where('fk_campus_id', $campus->campus_id)
             ->findOrFail($validated['fk_facility_id']);
 
-        FacilityMaintenance::create([
-            'fk_facility_id' => $facility->facility_id,
-            'maintenance_date' => $validated['maintenance_date'],
-            'maintenance_type' => $validated['maintenance_type'],
+        $maintenance = FacilityMaintenance::create([
+            'fk_facility_id'          => $facility->facility_id,
+            'maintenance_date'        => $validated['maintenance_date'],
+            'maintenance_type'        => $validated['maintenance_type'],
             'maintenance_description' => $validated['maintenance_description'] ?? null,
-            'maintenance_cost' => $validated['maintenance_cost'] ?? null,
+            'maintenance_cost'        => $validated['maintenance_cost'] ?? null,
+        ]);
+
+        $this->logAudit($maintenance->getKey(), 'Create Facility Maintenance', [
+            'fk_facility_id'          => $facility->facility_id,
+            'facility_name'           => $facility->facility_name,
+            'maintenance_date'        => $validated['maintenance_date'],
+            'maintenance_type'        => $validated['maintenance_type'],
+            'maintenance_description' => $validated['maintenance_description'] ?? null,
+            'maintenance_cost'        => $validated['maintenance_cost'] ?? null,
         ]);
 
         // Refresh next-action prediction automatically after new maintenance is logged
@@ -274,8 +336,8 @@ class FacilityController extends Controller
 
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
-                'success' => true,
-                'message' => 'Maintenance record saved successfully.',
+                'success'    => true,
+                'message'    => 'Maintenance record saved successfully.',
                 'prediction' => $prediction,
             ]);
         }
@@ -305,7 +367,7 @@ class FacilityController extends Controller
 
                 return response()->json([
                     'success' => true,
-                    'data' => $generated,
+                    'data'    => $generated,
                 ]);
             } catch (Throwable $e) {
                 return response()->json([
@@ -317,7 +379,7 @@ class FacilityController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $prediction,
+            'data'    => $prediction,
         ]);
     }
 
@@ -337,7 +399,7 @@ class FacilityController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Next maintenance action predicted successfully.',
-                'data' => $result,
+                'data'    => $result,
             ]);
         } catch (Throwable $e) {
             return response()->json([
