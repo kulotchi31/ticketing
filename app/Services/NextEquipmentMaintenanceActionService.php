@@ -244,4 +244,4 @@ class NextEquipmentMaintenanceActionService
         $nextDate = $reference->copy()->addDays($interval);
         return $nextDate->lt($today) ? $today->copy()->addDays(7) : $nextDate;
     }
-}
+}   
