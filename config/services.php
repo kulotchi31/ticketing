@@ -35,6 +35,14 @@ return [
         ],
     ],
 
+    'python' => [
+    'bin' => env('PYTHON_BIN', 'python'),
+],
+
+'equipment_prediction' => [
+    'markov_weight' => env('EQUIPMENT_MARKOV_WEIGHT', 0.6),
+],
+
     
 
 ];
